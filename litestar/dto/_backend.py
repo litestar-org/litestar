@@ -41,6 +41,7 @@ from litestar.params import KwargDefinition
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
+from litestar.utils.helpers import unique_name_for_scope
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Collection, Mapping, Set
@@ -62,7 +63,7 @@ class CompositeTypeHandler(Protocol):
         include: Set[str],
         rename_fields: dict[str, str],
         unique_name: str,
-        owner_field: str,
+        field_path: tuple[str, ...],
         nested_depth: int,
     ) -> CompositeType: ...
 
@@ -186,6 +187,7 @@ class DTOBackend:
         include: Set[str],
         rename_fields: dict[str, str],
         nested_depth: int = 0,
+        field_path: tuple[str, ...] = (),
     ) -> tuple[TransferDTOFieldDefinition, ...]:
         """Reduce :attr:`model_type` to a tuple :class:`TransferDTOFieldDefinition` instances.
 
@@ -212,7 +214,7 @@ class DTOBackend:
                     rename_fields=rename_fields,
                     field_name=field_definition.name,
                     unique_name=field_definition.model_name,
-                    owner_field=field_definition.name,
+                    field_path=(*field_path, field_definition.name),
                     nested_depth=nested_depth,
                 )
             except RecursionError:
@@ -432,7 +434,7 @@ class DTOBackend:
         rename_fields: dict[str, str],
         field_name: str,
         unique_name: str,
-        owner_field: str,
+        field_path: tuple[str, ...],
         nested_depth: int,
     ) -> CompositeType | SimpleType:
         exclude = _filter_nested_field(exclude, field_name)
@@ -446,7 +448,7 @@ class DTOBackend:
                 include=include,
                 rename_fields=rename_fields,
                 unique_name=unique_name,
-                owner_field=owner_field,
+                field_path=field_path,
                 nested_depth=nested_depth,
             )
 
@@ -456,7 +458,7 @@ class DTOBackend:
             if nested_depth == self.dto_factory.config.max_nested_depth:
                 raise RecursionError
 
-            unique_name = self._nested_model_name(unique_name, owner_field, field_definition.raw.__name__)
+            unique_name = self._nested_model_name(unique_name, field_path, field_definition.raw.__name__)
 
             nested_field_definitions = self.parse_model(
                 model_type=field_definition.annotation,
@@ -464,6 +466,7 @@ class DTOBackend:
                 include=include,
                 rename_fields=rename_fields,
                 nested_depth=nested_depth + 1,
+                field_path=field_path,
             )
 
             transfer_model = NestedFieldInfo(
@@ -473,10 +476,14 @@ class DTOBackend:
 
         return SimpleType(field_definition, nested_field_info=transfer_model)
 
-    def _nested_model_name(self, unique_name: str, owner_field: str, model_name: str) -> str:
+    def _nested_model_name(self, unique_name: str, field_path: tuple[str, ...], model_name: str) -> str:
         name = f"{unique_name}{model_name}"
+        for length in range(1, len(field_path) + 1):
+            if name not in self._nested_model_names:
+                break
+            name = f"{unique_name}_{'_'.join(field_path[-length:])}{model_name}"
         if name in self._nested_model_names:
-            name = f"{unique_name}_{owner_field}{model_name}"
+            name = unique_name_for_scope(name, self._nested_model_names)
         self._nested_model_names.add(name)
         return name
 
@@ -487,7 +494,7 @@ class DTOBackend:
         include: Set[str],
         rename_fields: dict[str, str],
         unique_name: str,
-        owner_field: str,
+        field_path: tuple[str, ...],
         nested_depth: int,
     ) -> CollectionType:
         inner_types = field_definition.inner_types
@@ -497,7 +504,7 @@ class DTOBackend:
             include=include,
             field_name="0",
             unique_name=f"{unique_name}_0",
-            owner_field=owner_field,
+            field_path=field_path,
             nested_depth=nested_depth,
             rename_fields=rename_fields,
         )
@@ -512,7 +519,7 @@ class DTOBackend:
         include: Set[str],
         rename_fields: dict[str, str],
         unique_name: str,
-        owner_field: str,
+        field_path: tuple[str, ...],
         nested_depth: int,
     ) -> MappingType:
         inner_types = field_definition.inner_types
@@ -522,7 +529,7 @@ class DTOBackend:
             include=include,
             field_name="0",
             unique_name=f"{unique_name}_0",
-            owner_field=owner_field,
+            field_path=field_path,
             nested_depth=nested_depth,
             rename_fields=rename_fields,
         )
@@ -532,7 +539,7 @@ class DTOBackend:
             include=include,
             field_name="1",
             unique_name=f"{unique_name}_1",
-            owner_field=owner_field,
+            field_path=field_path,
             nested_depth=nested_depth,
             rename_fields=rename_fields,
         )
@@ -550,7 +557,7 @@ class DTOBackend:
         include: Set[str],
         rename_fields: dict[str, str],
         unique_name: str,
-        owner_field: str,
+        field_path: tuple[str, ...],
         nested_depth: int,
     ) -> TupleType:
         inner_types = tuple(
@@ -560,7 +567,7 @@ class DTOBackend:
                 include=include,
                 field_name=str(i),
                 unique_name=f"{unique_name}_{i}",
-                owner_field=owner_field,
+                field_path=field_path,
                 nested_depth=nested_depth,
                 rename_fields=rename_fields,
             )
@@ -579,7 +586,7 @@ class DTOBackend:
         include: Set[str],
         rename_fields: dict[str, str],
         unique_name: str,
-        owner_field: str,
+        field_path: tuple[str, ...],
         nested_depth: int,
     ) -> UnionType:
         inner_types = tuple(
@@ -589,7 +596,7 @@ class DTOBackend:
                 include=include,
                 field_name=str(i),
                 unique_name=f"{unique_name}_{i}",
-                owner_field=owner_field,
+                field_path=field_path,
                 nested_depth=nested_depth,
                 rename_fields=rename_fields,
             )
