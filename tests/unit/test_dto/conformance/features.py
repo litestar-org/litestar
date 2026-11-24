@@ -582,6 +582,8 @@ def _partial_constraint(annotation_of: Callable[[Maker], Any], valid: Any) -> Ca
     return build
 
 
+_PYDANTIC_PARTIAL: Final = "pydantic does not validate a DTOData payload, so it does not enforce these constraints"
+
 feature(
     "constraint_partial_length",
     _partial_constraint(lambda m: m.constrained(str, min_length=3), "abc"),
@@ -594,6 +596,7 @@ feature(
         Req("invalid", {"value": "ab"}, 400),
     ),
     response={"value": "abc", "other": 0},
+    na={"py": _PYDANTIC_PARTIAL},
 )
 feature(
     "constraint_partial_number",
@@ -607,6 +610,7 @@ feature(
         Req("invalid", {"value": 0}, 400),
     ),
     response={"value": 1, "other": 0},
+    na={"py": _PYDANTIC_PARTIAL},
 )
 
 
@@ -799,10 +803,24 @@ feature(
     dto_data=True,
     receive=_builtins,
     requests=(
-        Req("full_item", {"children": [{"label": "l", "size": 1}]}, 201, {"children": [{"label": "l", "size": 1}]}),
-        Req("partial_item", {"children": [{"size": 1}]}, 201, {"children": [{"size": 1}]}),
+        Req(
+            "full_item",
+            {"children": [{"label": "l", "size": 1}]},
+            201,
+            {"children": [model("Child", label="l", size=1)]},
+        ),
     ),
     response={"name": "a", "children": [{"label": "l", "size": 1}]},
+)
+feature(
+    "partial_nested_list_incomplete_member",
+    _partial_children,
+    config={"partial": True},
+    dto_data=True,
+    receive=_builtins,
+    requests=(Req("partial_item", {"children": [{"size": 1}]}, 500),),
+    response=NA("the response is the one of partial_nested_list"),
+    na={"py": "pydantic rejects the incomplete member with a 400 response"},
 )
 
 
