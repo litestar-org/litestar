@@ -1,5 +1,6 @@
 from litestar import Router, WebSocket, get, post, websocket
-from litestar.dto._registry import TransferModelNaming, TransferModelRegistry, handler_name_scope
+from litestar.dto._plan import handler_name_scope
+from litestar.dto._registry import TransferModelNaming, TransferModelRegistry
 
 
 def fetch() -> None:

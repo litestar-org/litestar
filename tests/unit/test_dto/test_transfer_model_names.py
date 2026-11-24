@@ -11,7 +11,7 @@ from litestar import Controller, Litestar, Router, get, post, websocket_listener
 from litestar.dto import DataclassDTO, DTOConfig
 from litestar.dto._backend import DTOBackend
 from litestar.dto._plan import build_dto_plan, create_backend
-from litestar.dto._registry import TransferModelRegistry
+from litestar.dto._registry import TransferModelNaming, TransferModelRegistry
 from litestar.exceptions import LitestarWarning
 from litestar.handlers import HTTPRouteHandler
 from litestar.params import JSONBody
@@ -168,8 +168,7 @@ def build(backend_cls: type[DTOBackend], registry: TransferModelRegistry, name_s
         is_data_field=False,
         handler_id=HANDLER_ID,
         backend_cls=backend_cls,
-        registry=registry,
-        name_scope=name_scope,
+        naming=TransferModelNaming(registry, name_scope),
     )
 
 
@@ -317,20 +316,6 @@ def test_backend_constructed_inside_a_constructor_is_private() -> None:
 
     assert nesting.transfer_model_type.__name__ == QUALIFIED
     assert nesting.inner.transfer_model_type.__name__ == SHORT
-
-
-@pytest.mark.parametrize(
-    "keywords", [{"registry": TransferModelRegistry()}, {"name_scope": "s"}], ids=["registry", "name_scope"]
-)
-def test_create_backend_requires_registry_and_scope_together(keywords: dict[str, Any]) -> None:
-    with pytest.raises(TypeError):
-        create_backend(
-            DataclassDTO[User],
-            FieldDefinition.from_annotation(User),
-            is_data_field=False,
-            handler_id="test",
-            **keywords,
-        )
 
 
 def test_standalone_backends_do_not_share_names() -> None:

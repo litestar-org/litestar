@@ -10,7 +10,7 @@ import msgspec
 from litestar._layers.errors import HandlerErrorPrefix
 from litestar.di._helpers import _format_key
 from litestar.dto._backend import DTOBackend, _qualified_name
-from litestar.dto._registry import TransferModelNaming, TransferModelRegistry, handler_name_scope
+from litestar.dto._registry import TransferModelNaming
 from litestar.dto.data_structures import DTOData
 from litestar.enums import RequestEncodingType
 from litestar.exceptions.dto_exceptions import (
@@ -236,24 +236,18 @@ def create_backend(
     is_data_field: bool,
     handler_id: str,
     backend_cls: type[DTOBackend] | None = None,
-    registry: TransferModelRegistry | None = None,
-    name_scope: Hashable | None = None,
+    naming: TransferModelNaming | None = None,
     target: DTOTarget | None = None,
 ) -> DTOBackend:
     """Create the backend of ``dto`` for ``field_definition``, the data a handler receives if ``is_data_field``,
     otherwise the data it returns. Every backend of a plan is created here.
 
-    The backend names its transfer models in ``registry`` under ``name_scope``, which are given together; without
-    them it names them in a registry of its own. It is built for ``target``, or, without one, for what
-    :func:`resolve_dto_target` resolves.
+    The backend names its transfer models through ``naming``, or, without it, in a registry of its own. It is built
+    for ``target``, or, without one, for what :func:`resolve_dto_target` resolves.
 
     Raises:
         InvalidAnnotationException: If ``dto`` cannot be applied to ``field_definition``
-        TypeError: If only one of ``registry`` and ``name_scope`` is given
     """
-    if (registry is None) != (name_scope is None):
-        raise TypeError("create_backend() takes both 'registry' and 'name_scope', or neither")
-
     if target is None:
         target = resolve_dto_target(dto, field_definition, "data" if is_data_field else "return")
         if target is None:
@@ -265,8 +259,8 @@ def create_backend(
         backend_cls = DTOBackend
 
     backend = backend_cls.__new__(backend_cls)
-    if registry is not None:
-        backend._naming = TransferModelNaming(registry, name_scope)
+    if naming is not None:
+        backend._naming = naming
     backend_cls.__init__(
         backend,
         dto_factory=dto,
@@ -293,6 +287,16 @@ def build_schema_annotation(dto: type[AbstractDTO[Any]], backend: DTOBackend, fi
     return backend.annotation
 
 
+def handler_name_scope(handler: BaseRouteHandler) -> Hashable:
+    """Return the value that identifies ``handler`` for naming, equal for every merge of the same registration."""
+    return (
+        str(handler),
+        type(handler).__qualname__,
+        tuple(sorted(handler.paths)),
+        tuple(sorted(getattr(handler, "http_methods", ()))),
+    )
+
+
 def build_dto_plan(handler: BaseRouteHandler, app: Litestar) -> DTOPlan:
     """Resolve the DTOs of ``handler`` from its configuration and the serialization plugins of ``app``, and build
     their backends. It reads the handler and does not modify it; a second call returns an independent plan.
@@ -303,12 +307,18 @@ def build_dto_plan(handler: BaseRouteHandler, app: Litestar) -> DTOPlan:
     """
     with HandlerErrorPrefix.for_handler(handler).wrap_dto_exception():
         registry = app._transfer_model_registry
+        name_scope = handler_name_scope(handler)
         data_field = handler.parsed_data_field
         data_dto, data_target = _resolve_data_dto(handler, app, data_field)
         data: DTODirectionPlan | None = None
         if data_field is not None and data_dto is not None and data_target is not None:
             data = _build_direction(
-                data_dto, data_field, data_target, is_data_field=True, handler=handler, registry=registry
+                data_dto,
+                data_field,
+                data_target,
+                is_data_field=True,
+                handler=handler,
+                naming=TransferModelNaming(registry, name_scope),
             )
         if data is None and data_field is not None and data_field.is_subclass_of(DTOData):
             raise MissingDTOError(handler_name=handler.handler_name, annotation=data_field.annotation)
@@ -318,7 +328,12 @@ def build_dto_plan(handler: BaseRouteHandler, app: Litestar) -> DTOPlan:
         if resolved := _resolve_return_dto(handler, app, return_field, data_dto):
             return_dto, return_target = resolved
             return_ = _build_direction(
-                return_dto, return_field, return_target, is_data_field=False, handler=handler, registry=registry
+                return_dto,
+                return_field,
+                return_target,
+                is_data_field=False,
+                handler=handler,
+                naming=TransferModelNaming(registry, name_scope),
             )
 
         return DTOPlan(
@@ -444,15 +459,14 @@ def _build_direction(
     *,
     is_data_field: bool,
     handler: BaseRouteHandler,
-    registry: TransferModelRegistry,
+    naming: TransferModelNaming,
 ) -> DTODirectionPlan:
     backend = create_backend(
         dto,
         field_definition,
         is_data_field=is_data_field,
         handler_id=str(handler.handler_id),
-        registry=registry,
-        name_scope=handler_name_scope(handler),
+        naming=naming,
         target=target,
     )
     backend._bind_handler(type_decoders=handler.type_decoders, default_deserializer=handler.default_deserializer)
