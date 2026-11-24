@@ -37,6 +37,7 @@ from litestar.dto._types import (
 from litestar.dto.data_structures import DTOData, DTOFieldDefinition
 from litestar.dto.field import Mark
 from litestar.enums import RequestEncodingType
+from litestar.exceptions.base_exceptions import SerializationException
 from litestar.exceptions.dto_exceptions import DTOTransferTypeError
 from litestar.params import KwargDefinition
 from litestar.serialization import decode_json, decode_msgpack
@@ -336,13 +337,16 @@ class DTOBackend:
         """
         if (dec_hook := self._default_deserializer) is None:
             dec_hook = asgi_connection.route_handler.default_deserializer
-        return convert(
-            obj=builtins,
-            type=self.annotation,
-            dec_hook=dec_hook,
-            strict=False,
-            str_keys=True,
-        )
+        try:
+            return convert(
+                obj=builtins,
+                type=self.annotation,
+                dec_hook=dec_hook,
+                strict=False,
+                str_keys=True,
+            )
+        except msgspec.ValidationError as exc:
+            raise SerializationException(str(exc)) from exc
 
     def populate_data_from_builtins(self, builtins: Any, asgi_connection: ASGIConnection) -> Any:
         """Populate model instance from builtin types.
