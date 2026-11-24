@@ -312,12 +312,8 @@ startup with :exc:`~litestar.exceptions.DTOTransferTypeError`. To read the DTO c
 registered route handler applies, use ``handler.data_dto`` and ``handler.return_dto``.
 There is no replacement yet for decoding or encoding with a DTO outside a route handler.
 
-A tool calling :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema` must pass
-the object returned by ``handler.handler_id``, which carries its handler; a copy such as
-``str(handler.handler_id)``, an f-string or a value read back from serialized data raises
-:exc:`~litestar.exceptions.DTOFactoryException`. ``handler.handler_id`` is a :class:`str`
-subclass: ``msgspec.json.encode`` rejects it, and pickling or deep-copying it yields a plain
-:class:`str`. A backend created by calling ``create_for_field_definition`` directly is kept
+:meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema` finds a registered handler
+by ``handler.handler_id`` as long as the handler is alive. A backend created by calling ``create_for_field_definition`` directly is kept
 on the DTO class it was called on, is not inherited by subclasses, and serves a registered
 handler only for a direction in which the handler applies no DTO. The ``parsed_data_field``
 of a websocket listener no longer carries a body marker; ``create_openapi_schema`` treats it

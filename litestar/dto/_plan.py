@@ -17,7 +17,6 @@ from litestar.enums import RequestEncodingType
 from litestar.exceptions.dto_exceptions import (
     DTONotApplicableError,
     DTOTransferTypeError,
-    InvalidAnnotationException,
     MissingDTOError,
 )
 from litestar.params import BodyKwarg
@@ -212,33 +211,18 @@ def _match_target(
 
 def create_backend(
     dto: type[AbstractDTO[Any]],
-    field_definition: FieldDefinition,
+    target: DTOTarget,
     *,
     is_data_field: bool,
     handler_id: str,
-    backend_cls: type[DTOBackend] | None = None,
     naming: TransferModelNaming | None = None,
-    target: DTOTarget | None = None,
+    backend_cls: type[DTOBackend] = DTOBackend,
 ) -> DTOBackend:
-    """Create the backend of ``dto`` for ``field_definition``, the data a handler receives if ``is_data_field``,
-    otherwise the data it returns. Every backend of a plan is created here.
+    """Create the backend of ``dto`` for ``target``, in the data a handler receives if ``is_data_field``, otherwise
+    in the data it returns. Every backend is created here.
 
-    The backend names its transfer models through ``naming``, or, without it, in a registry of its own. It is built
-    for ``target``, or, without one, for what :func:`resolve_dto_target` resolves.
-
-    Raises:
-        InvalidAnnotationException: If ``dto`` cannot be applied to ``field_definition``
+    The backend names its transfer models through ``naming``, or, without it, in a registry of its own.
     """
-    if target is None:
-        target = resolve_dto_target(dto, field_definition, is_data_field=is_data_field)
-        if target is None:
-            raise InvalidAnnotationException(
-                f"DTO narrowed with '{dto.model_type}', handler type is '{field_definition.annotation}'"  # pyright: ignore[reportGeneralTypeIssues]
-            )
-
-    if backend_cls is None:
-        backend_cls = DTOBackend
-
     backend = backend_cls.__new__(backend_cls)
     if naming is not None:
         backend._naming = naming
@@ -457,14 +441,7 @@ def _build_direction(
     handler: BaseRouteHandler,
     naming: TransferModelNaming,
 ) -> DTODirectionPlan:
-    backend = create_backend(
-        dto,
-        field_definition,
-        is_data_field=is_data_field,
-        handler_id=str(handler.handler_id),
-        naming=naming,
-        target=target,
-    )
+    backend = create_backend(dto, target, is_data_field=is_data_field, handler_id=handler.handler_id, naming=naming)
     backend._bind_handler(type_decoders=handler.type_decoders, default_deserializer=handler.default_deserializer)
     return DTODirectionPlan(
         dto=dto,

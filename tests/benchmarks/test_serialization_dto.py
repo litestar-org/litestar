@@ -18,11 +18,11 @@ from pytest_codspeed import BenchmarkFixture
 from litestar import Litestar, get, post
 from litestar._request_parameters.validation import RequestParameterValidator
 from litestar.dto import DataclassDTO
-from litestar.dto._plan import create_backend
 from litestar.params import FromQuery, JSONBody
 from litestar.serialization import decode_json, encode_json
 from litestar.typing import FieldDefinition
 from tests.benchmarks.helpers import ASGIRunner, make_scope, response_status
+from tests.unit.test_dto import create_backend_for
 
 pytestmark = pytest.mark.benchmark
 
@@ -97,7 +97,7 @@ def test_dto_encode_list_100(benchmark: BenchmarkFixture) -> None:
     class PersonDTO(DataclassDTO[Person]):
         pass
 
-    backend = create_backend(
+    backend = create_backend_for(
         PersonDTO, FieldDefinition.from_annotation(list[Person]), is_data_field=False, handler_id="bench"
     )
     people = make_people(100)

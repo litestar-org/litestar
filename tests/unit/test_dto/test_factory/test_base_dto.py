@@ -8,10 +8,10 @@ import pytest
 
 from litestar import Request
 from litestar.dto import DataclassDTO, DTOConfig
-from litestar.dto._plan import create_backend
 from litestar.exceptions.dto_exceptions import InvalidAnnotationException
 from litestar.params import JSONBody
 from litestar.typing import FieldDefinition
+from tests.unit.test_dto import create_backend_for
 
 from . import Model
 
@@ -104,7 +104,7 @@ async def test_from_bytes(asgi_connection: Request[Any, Any, Any]) -> None:
 def test_config_field_rename(asgi_connection: Request[Any, Any, Any]) -> None:
     config = DTOConfig(rename_fields={"a": "z"})
     dto_type = DataclassDTO[Annotated[Model, config]]
-    backend = create_backend(
+    backend = create_backend_for(
         dto_type, FieldDefinition.from_annotation(JSONBody[Model]), is_data_field=True, handler_id="handler_id"
     )
     field_definitions = backend.parsed_field_definitions
@@ -148,7 +148,7 @@ def test_sub_types_supported() -> None:
     class SubType(Model):
         c: int
 
-    backend = create_backend(
+    backend = create_backend_for(
         dto_type, FieldDefinition.from_annotation(JSONBody[SubType]), is_data_field=True, handler_id="handler_id"
     )
     assert backend.parsed_field_definitions[-1].name == "c"

@@ -17,11 +17,11 @@ from pytest_codspeed import BenchmarkFixture
 from litestar import Litestar, post
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig
 from litestar.dto._backend import DTOBackend
-from litestar.dto._plan import create_backend
 from litestar.params import JSONBody
 from litestar.serialization import encode_json
 from litestar.typing import FieldDefinition
 from tests.benchmarks.helpers import ASGIRunner, make_scope, response_body, response_status
+from tests.unit.test_dto import create_backend_for
 
 pytestmark = pytest.mark.benchmark
 
@@ -186,7 +186,7 @@ def test_dto_backend_create_self_referential(benchmark: BenchmarkFixture) -> Non
     field_definition = FieldDefinition.from_annotation(Node)
 
     def create() -> DTOBackend:
-        return create_backend(NodeDTO, field_definition, is_data_field=False, handler_id="self_referential")
+        return create_backend_for(NodeDTO, field_definition, is_data_field=False, handler_id="self_referential")
 
     backend = benchmark(create)
     assert len(backend.parsed_field_definitions) == 3

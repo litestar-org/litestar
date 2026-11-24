@@ -170,10 +170,6 @@
         :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema` are deprecated
         and will be removed in 4.0. Code that relied on the following needs to change:
 
-        - ``create_openapi_schema`` needs the object returned by ``handler.handler_id``;
-          a copy such as ``str(handler.handler_id)`` raises ``DTOFactoryException``.
-        - ``handler.handler_id`` is a :class:`str` subclass that ``msgspec.json.encode``
-          rejects; pass ``str(handler.handler_id)``.
         - ``to_response()`` of a route handler and the DTO handlers of a websocket
           listener raise a :exc:`~litestar.exceptions.LitestarException` saying the
           handler is not registered when they are used before registration.

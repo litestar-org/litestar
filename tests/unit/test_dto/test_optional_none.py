@@ -11,13 +11,12 @@ import pytest
 from litestar import Litestar, Response, get, post, websocket_listener
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, DTOData, MsgspecDTO
 from litestar.dto._backend import DTOBackend
-from litestar.dto._plan import create_backend
 from litestar.handlers import websocket_stream
 from litestar.params import JSONBody, MultipartBody, URLEncodedBody
 from litestar.testing import RequestFactory, TestClient, create_test_client
 from litestar.typing import FieldDefinition
 from tests.helpers import not_none
-from tests.unit.test_dto import registered
+from tests.unit.test_dto import create_backend_for, registered
 
 T = TypeVar("T")
 
@@ -163,7 +162,7 @@ class CopyingBackend(DTOBackend):
 
 
 def test_backend_subclass_skipping_base_constructor_with_optional_annotation() -> None:
-    backend = create_backend(
+    backend = create_backend_for(
         DataclassDTO[Annotated[DCPerson, EXCLUDE]],
         FieldDefinition.from_annotation(Optional[DCPerson]),
         is_data_field=False,
