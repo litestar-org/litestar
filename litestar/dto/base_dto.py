@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import dataclasses
+import sys
 import typing
 import warnings
 from abc import abstractmethod
@@ -465,12 +466,19 @@ def register_handler_id(handler: BaseRouteHandler) -> None:
 
 def _warn_overridden_entry_points(dto: type[AbstractDTO[Any]]) -> None:
     for name in _DEPRECATED_ENTRY_POINTS:
-        if getattr(getattr(dto, name), "__func__", getattr(dto, name)) is not _base_function(name):
-            warnings.warn(
+        function = getattr(getattr(dto, name), "__func__", getattr(dto, name))
+        if function is not _base_function(name):
+            if (code := getattr(function, "__code__", None)) is not None:
+                filename, lineno = code.co_filename, code.co_firstlineno
+            else:
+                filename, lineno = getattr(sys.modules.get(dto.__module__), "__file__", None) or dto.__module__, 1
+            warnings.warn_explicit(
                 f"{dto_name(dto)} overrides AbstractDTO.{name}, which is deprecated since litestar 3.0 and no longer "
                 "called: the override has no effect. The method will be removed in 4.0.",
                 LitestarDeprecationWarning,
-                stacklevel=4,
+                filename=filename,
+                lineno=lineno,
+                module=dto.__module__,
             )
 
 
