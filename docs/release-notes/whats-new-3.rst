@@ -936,5 +936,5 @@ This includes handlers returning ``None``, ``Any``, ``str``, a bare ``Response``
 ``Redirect``, ``File`` or ``Template`` response with a ``return_dto`` of their own; remove it,
 or declare ``return_dto=None`` to opt out of one inherited from a layer, which is skipped
 where it does not apply. A ``return_dto`` written in the body of a ``WebsocketListener``
-class follows the same rule; one inherited from a base listener class is treated like a
+class follows the same rule; one inherited from a base class, a mixin included, is treated like a
 layer declaration. A ``dto`` declared on a handler without request data is not affected.

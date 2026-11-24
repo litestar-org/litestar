@@ -106,7 +106,7 @@ What happens when a DTO cannot handle the annotation depends on where it is decl
 A ``dto`` or ``return_dto`` given to the decorator of a controller method is declared on the handler; the class
 attributes of the controller are declared on a layer. For a :class:`~litestar.handlers.WebsocketListener` class, the
 attributes defined in the body of the class itself are declared on the handler, and the ones inherited from a base
-listener class behave like a layer declaration.
+class, a mixin included, behave like a layer declaration.
 
 A ``dto`` declared on a handler without request data is not an error: it is used for the return value when no
 ``return_dto`` is declared and it can handle the return annotation.
