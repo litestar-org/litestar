@@ -272,3 +272,25 @@ def test_validation_error_is_converted(body: str) -> None:
     extra[0].pop("url")
     assert response.status_code == 400
     assert extra == SHORT_FOO_ERRORS
+
+
+class PydanticBag(pydantic_v2.BaseModel):
+    items: list[int]
+    secret: str = "s"
+
+    def __len__(self) -> int:
+        return len(self.items)
+
+    def __iter__(self) -> Any:
+        return iter(self.items)
+
+    def __contains__(self, item: object) -> bool:
+        return item in self.items
+
+
+@pytest.mark.parametrize("placement", ["handler", "app"])
+def test_collection_like_pydantic_model_is_the_model(placement: str) -> None:
+    from tests.unit.test_dto.test_applicability import assert_collection_like_model_round_trips
+
+    dto = PydanticDTO[Annotated[PydanticBag, DTOConfig(exclude={"secret"})]]
+    assert_collection_like_model_round_trips(PydanticBag, dto, placement)  # type: ignore[arg-type]
