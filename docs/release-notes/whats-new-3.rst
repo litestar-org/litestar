@@ -846,14 +846,13 @@ parameter and forward it, because :func:`~.handlers.asgi` always passes it.
 DTO applicability and startup errors
 ------------------------------------
 
-Litestar decides with one set of rules, in both directions, whether a DTO handles the
-annotation of a handler's request data or return value, see
-:ref:`usage/dto/0-basic-use:When a DTO applies`. A DTO declared on a controller, a router or
-the application that cannot handle an annotation is now skipped for it, where some of
-these cases raised :exc:`~litestar.exceptions.InvalidAnnotationException` when the
-application was created. The same holds for the ``dto`` used for the return value when no
-``return_dto`` is declared, and for a DTO created by a serialization plugin. A skipped
-declaration is not replaced by another source.
+Whether a DTO is used for a handler's request data or return value now follows the rules
+of :ref:`usage/dto/0-basic-use:When a DTO applies`. A DTO declared on a controller, a router
+or the application that cannot handle an annotation is skipped for it, where some of these
+cases raised :exc:`~litestar.exceptions.InvalidAnnotationException` when the application
+was created. The ``dto`` used for the return value when no ``return_dto`` is declared, and a
+DTO created by a serialization plugin, are skipped in the same way, and nothing takes their
+place.
 
 .. code-block:: python
     :caption: Before
@@ -896,10 +895,10 @@ wrapper. A form body annotated with a collection, such as ``MultipartBody[list[U
 used to inject the raw form values, or to fail with a ``500`` response for URL-encoded
 data. A DTO declared on the handler raises for both; a DTO declared on a layer is skipped.
 
-``-> Optional[Wrapper[User]]`` and ``-> Optional[Response[User]]`` now go through the
-return DTO, which used to be ignored for them: excluded fields disappear from the response
-and renamed fields are renamed. Declare ``return_dto=None`` on the handler to keep the
-previous output. With an optional annotation, ``None`` now passes through a DTO in both
+The return DTO now also applies to ``-> Optional[Wrapper[User]]`` and
+``-> Optional[Response[User]]``, so excluded fields disappear from these responses and
+renamed fields are renamed. Declare ``return_dto=None`` on the handler to keep the previous
+output. With an optional annotation, ``None`` now passes through a DTO in both
 directions; a websocket listener with a return DTO sends nothing when it returns ``None``,
 where the connection used to fail.
 
@@ -933,7 +932,9 @@ of the returned object, including the ones the DTO excludes
     # on the handler, but cannot encode its return value annotated 'Profile': the DTO handles 'User'.
     app = Litestar([get_profile])
 
-The rule covers a return annotation of ``None``, ``Any``, a streamed response or server-sent
-events too. A ``return_dto`` declared on a controller, a router or the application is still
-skipped where it does not apply; to opt a handler out of it, declare ``return_dto=None`` on
-the handler. A ``dto`` declared on a handler without request data is not affected.
+This includes handlers returning ``None``, ``Any``, ``str``, a bare ``Response`` or a
+``Redirect``, ``File`` or ``Template`` response with a ``return_dto`` of their own; remove it,
+or declare ``return_dto=None`` to opt out of one inherited from a layer, which is skipped
+where it does not apply. A ``return_dto`` written in the body of a ``WebsocketListener``
+class follows the same rule; one inherited from a base listener class is treated like a
+layer declaration. A ``dto`` declared on a handler without request data is not affected.
