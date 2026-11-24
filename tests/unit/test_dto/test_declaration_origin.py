@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
 from typing import Annotated, Any, Literal
@@ -221,31 +222,20 @@ def test_unregistered_merged_handler_reports_inherited_dto() -> None:
         merged.return_dto
 
 
-class ForwardingHandler(HTTPRouteHandler):
+_BASE_PARAMETERS = set(inspect.signature(HTTPRouteHandler.__init__).parameters)
+
+
+class StrictHandler(HTTPRouteHandler):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **{key: value for key, value in kwargs.items() if key in _BASE_PARAMETERS})
 
 
-class SwallowingHandler(HTTPRouteHandler):
-    def __init__(self, *args: Any, inherited_dto: Any = Empty, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-
-
-@pytest.mark.parametrize(
-    ("handler_cls", "expected"),
-    [
-        pytest.param(ForwardingHandler, DTODeclaration("dto", UserDTO, "layer"), id="forwarding"),
-        pytest.param(SwallowingHandler, DTODeclaration("dto", Empty, None), id="swallowing"),
-    ],
-)
-def test_handler_subclass_forwarding_kwargs_keeps_layer_dto(
-    handler_cls: type[HTTPRouteHandler], expected: DTODeclaration
-) -> None:
+def test_handler_subclass_with_strict_signature_keeps_layer_dto() -> None:
     async def handler() -> User:
         return User(id=1, name="a")
 
-    route_handler = handler_cls("/", fn=handler, http_method="GET")
+    route_handler = StrictHandler("/", fn=handler, http_method="GET")
 
     app = Litestar([Router("/", route_handlers=[route_handler], dto=UserDTO)])
 
-    assert read_dto_declaration(_http(app), "dto") == expected
+    assert read_dto_declaration(_http(app), "dto") == DTODeclaration("dto", UserDTO, "layer")

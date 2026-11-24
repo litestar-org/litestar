@@ -122,8 +122,6 @@ class BaseRouteHandler:
         parameters: ParametersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
-        inherited_dto: type[AbstractDTO] | None | EmptyType = Empty,
-        inherited_return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         **kwargs: Any,
     ) -> None:
         """Initialize ``HTTPRouteHandler``.
@@ -153,10 +151,6 @@ class BaseRouteHandler:
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             parameters: A mapping of :func:`Parameter <.params.ParameterKwarg>` definitions
-            inherited_dto: The ``dto`` declared by the layers above the handler. Set by ``merge()``, not meant to
-                be passed by applications.
-            inherited_return_dto: The ``return_dto`` declared by the layers above the handler. Set by ``merge()``,
-                not meant to be passed by applications.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self._parsed_fn_signature: ParsedSignature | EmptyType = Empty
@@ -168,8 +162,8 @@ class BaseRouteHandler:
         self.dependencies = narrow_dependencies(dependencies)
         self._dto = dto
         self._return_dto = return_dto
-        self._inherited_dto = inherited_dto
-        self._inherited_return_dto = inherited_return_dto
+        self._inherited_dto: type[AbstractDTO] | None | EmptyType = Empty
+        self._inherited_return_dto: type[AbstractDTO] | None | EmptyType = Empty
         self.exception_handlers = exception_handlers or {}
         self.guards: tuple[AsyncGuard, ...] = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()  # pyright: ignore[reportAttributeAccessIssue]
         self.middleware = tuple(middleware) if middleware else ()
@@ -254,10 +248,18 @@ class BaseRouteHandler:
         """Return a new instance of the handler, replacing attributes specified in **kwargs"""
         opts = self._get_merge_opts(())
         opts.update(kwargs)
-        return type(self)(**opts)
+        return self._from_merge_opts(opts)
 
     def merge(self, *others: Router) -> Self:
-        return type(self)(**self._get_merge_opts(others))
+        return self._from_merge_opts(self._get_merge_opts(others))
+
+    def _from_merge_opts(self, opts: dict[str, Any]) -> Self:
+        inherited_dto = opts.pop("inherited_dto", Empty)
+        inherited_return_dto = opts.pop("inherited_return_dto", Empty)
+        handler = type(self)(**opts)
+        handler._inherited_dto = inherited_dto
+        handler._inherited_return_dto = inherited_return_dto
+        return handler
 
     @property
     def handler_id(self) -> str:
@@ -458,7 +460,9 @@ class BaseRouteHandler:
         check_middleware_constraints(self.middleware)
 
     def _validate_handler_function(self) -> None:
-        """Validate the route handler function once set by inspecting its return annotations."""
+        """Hook to validate the route handler function when the handler is registered. It does nothing here;
+        subclasses override it.
+        """
 
     def __str__(self) -> str:
         """Return a unique identifier for the route handler.
