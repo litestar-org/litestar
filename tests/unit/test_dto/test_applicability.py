@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
-from typing import Annotated, Any, Generic, Literal, Optional, TypeVar, Union
+from typing import Annotated, Any, Generic, Literal, Optional, TypeVar, Union, cast
 
+import msgspec
 import pytest
 
 from litestar import Controller, Litestar, Response, Router, get, post, websocket_listener
 from litestar.datastructures import UploadFile
-from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, DTOData
+from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, DTOData, MsgspecDTO
 from litestar.dto._plan import resolve_dto_target
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import DTONotApplicableError, InvalidAnnotationException, MissingDTOError
@@ -890,3 +891,77 @@ def test_listener_return_dto_inherited_from_base_class_applies() -> None:
 def test_listener_return_dto_in_own_class_body_must_apply() -> None:
     with pytest.raises(DTONotApplicableError, match=r"cannot encode its return value annotated 'str'"):
         Litestar([OwnTextListener], openapi_config=None)
+
+
+class CollectionMethods:
+    items: list[int]
+
+    def __len__(self) -> int:
+        return len(self.items)
+
+    def __iter__(self) -> Any:
+        return iter(self.items)
+
+    def __contains__(self, item: object) -> bool:
+        return item in self.items
+
+
+@dataclass
+class DataclassBag(CollectionMethods):
+    items: list[int]
+    secret: str = "s"
+
+
+class StructBag(msgspec.Struct):
+    items: list[int]
+    secret: str = "s"
+
+    def __len__(self) -> int:
+        return len(self.items)
+
+    def __iter__(self) -> Any:
+        return iter(self.items)
+
+    def __contains__(self, item: object) -> bool:
+        return item in self.items
+
+
+def assert_collection_like_model_round_trips(model: Any, dto: type[AbstractDTO[Any]], placement: Placement) -> None:
+    received: list[Any] = []
+
+    async def read() -> Any:
+        return model(items=[1, 2], secret="x")
+
+    async def create(data: Any) -> None:
+        received.append(data)
+
+    read.__annotations__ = {"return": model}
+    create.__annotations__ = {"data": cast("Any", JSONBody)[model], "return": None}
+    read_options: dict[str, Any] = {"return_dto": dto} if placement == "handler" else {}
+    create_options: dict[str, Any] = {"dto": dto} if placement == "handler" else {}
+    app_options: dict[str, Any] = {"dto": dto, "return_dto": dto} if placement == "app" else {}
+    app = Litestar([get("/", **read_options)(read), post("/", **create_options)(create)], **app_options)
+
+    with TestClient(app) as client:
+        read_response = client.get("/")
+        create_response = client.post("/", json={"items": [3], "secret": "y"})
+        schema_response = client.get("/schema/openapi.json")
+
+    assert read_response.json() == {"items": [1, 2]}
+    assert create_response.status_code == 201
+    assert received == [model(items=[3], secret="s")]
+    assert schema_response.status_code == 200
+
+
+@pytest.mark.parametrize("placement", ["handler", "app"])
+@pytest.mark.parametrize(
+    ("model", "dto"),
+    [
+        pytest.param(
+            DataclassBag, DataclassDTO[Annotated[DataclassBag, DTOConfig(exclude={"secret"})]], id="dataclass"
+        ),
+        pytest.param(StructBag, MsgspecDTO[Annotated[StructBag, DTOConfig(exclude={"secret"})]], id="msgspec"),
+    ],
+)
+def test_collection_like_model_is_the_model(model: Any, dto: type[AbstractDTO[Any]], placement: Placement) -> None:
+    assert_collection_like_model_round_trips(model, dto, placement)

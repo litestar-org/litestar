@@ -197,11 +197,14 @@ def _match_target(
 ) -> DTOTarget | None:
     if (inner := _without_optional(field_definition)) is None or field_definition is None:
         return None
-    if not inner.inner_types and (inner.is_collection or inner.is_subclass_of(DTOData)):
+    if not inner.inner_types and inner.is_subclass_of(dto.model_type):  # pyright: ignore[reportGeneralTypeIssues]
+        model_field = inner
+    elif not inner.inner_types and (inner.is_collection or inner.is_subclass_of(DTOData)):
         return None
+    else:
+        model_field = dto.resolve_model_type(inner)
 
     passes_none = field_definition.is_optional
-    model_field = dto.resolve_model_type(inner)
     if model_field.is_subclass_of(dto.model_type):  # pyright: ignore[reportGeneralTypeIssues]
         if direction == "data" and model_field is not inner and _is_form_collection(field_definition, inner):
             return None

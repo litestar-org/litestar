@@ -265,7 +265,7 @@ class TransferFunctionFactory:
         attribute_accessor: Callable[[object, str], Any],
         cache: TransferFunctionCache,
     ) -> Callable[[Any], Any]:
-        if field_definition and field_definition.is_non_string_collection:
+        if field_definition and field_definition.is_non_string_collection and field_definition.inner_types:
             factory = cls(
                 is_data_field=is_data_field,
                 nested_as_dict=False,
