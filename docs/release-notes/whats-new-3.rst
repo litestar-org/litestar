@@ -249,73 +249,29 @@ instance whose own nested models are dictionaries.
 DTOs enforce ``Annotated`` constraints and string marks
 -------------------------------------------------------
 
-DTOs now keep the constraints declared with ``msgspec.Meta``, ``annotated_types``
-metadata or Litestar parameter definitions on every part of a field's type: the field
-itself, collection items, mapping keys and values, tuple members and union members. In
-2.x many of them were dropped when the DTO rebuilt the type, so data violating them was
-accepted. Such requests now receive a ``400 Bad Request`` response.
-
-This includes ``DTOConfig(partial=True)``: ``min_length`` and ``max_length`` used to be
-ignored for partial DTOs and now apply to every value that is sent. A field that is
-omitted is still accepted.
-
-.. code-block:: python
-
-    from typing import Annotated
-
-    from msgspec import Meta, Struct
-
-
-    class User(Struct):
-        name: Annotated[str, Meta(min_length=2)]
-        tags: list[Annotated[str, Meta(max_length=10)]] = []
-        nickname: Annotated[str, Meta(pattern="^[a-z]+$")] | None = None
-
-Previously, with ``MsgspecDTO[User]``, the constraint on ``tags`` was ignored and the one
-on ``nickname`` made every request fail with a ``500`` response. All three constraints
-are now enforced.
+DTOs keep constraints declared with ``msgspec.Meta``, ``annotated_types`` metadata or Litestar
+parameter definitions on every part of a field's type where msgspec can express them, including with
+``DTOConfig(partial=True)``. Requests violating them, which 2.x often accepted, receive a
+``400 Bad Request`` response; when a ``msgspec.Meta`` and another constraint target the same
+attribute, the ``Meta`` wins. See :ref:`usage/dto/1-abstract-dto:Constraints`.
 
 A ``msgspec.Meta`` that msgspec does not support where it is written, such as
-``Annotated[str | None, Meta(min_length=2)]``, used to be ignored by ``DataclassDTO``. A
-DTO used for inbound data now fails at startup with
-:exc:`~litestar.exceptions.InvalidAnnotationException` until the constraint is attached to
-the member: ``Annotated[str, Meta(min_length=2)] | None``. ``MsgspecDTO`` already failed at
-startup for such a model, whichever the direction. The same startup error replaces the
-``500`` response every request received for a DTO over a union of models without tags.
-``PydanticDTO`` and DTO classes that decode the request body themselves are not checked.
+``Annotated[str | None, Meta(min_length=2)]``, makes a DTO used for inbound data fail at startup
+with :exc:`~litestar.exceptions.InvalidAnnotationException` until it is attached to the member:
+``Annotated[str, Meta(min_length=2)] | None``. A union of models without tags fails at startup the
+same way instead of answering every request with a ``500``. ``PydanticDTO`` and DTO classes that
+decode the request body themselves are not checked.
 
-Constraints from ``annotated_types`` metadata, such as
-``Annotated[str, annotated_types.MinLen(2)]``, and from parameter definitions are
-enforced wherever msgspec can express them, which is stricter than a handler without a
-DTO, where msgspec ignores that metadata. Where msgspec cannot express them, they are
-still not enforced. When a field carries both a ``msgspec.Meta`` and another constraint
-for the same attribute, the ``Meta`` now wins. The rules are described in
-:ref:`usage/dto/1-abstract-dto:Constraints`.
+A mark passed to :class:`~litestar.dto.field.DTOField` as a string, such as
+``DTOField(mark="private")``, is now honoured. With ``DTOConfig(forbid_unknown_fields=True)``, a
+client that still sends such a field receives a ``400`` response, and a ``"private"`` or
+``"read-only"`` field without a default can no longer be populated from request data: give it a
+default. Properties are no longer required in request data.
 
-A mark passed to :class:`~litestar.dto.field.DTOField` as a string is now honoured.
-``Annotated[str, DTOField(mark="private")]`` was previously ignored: the field was returned
-in responses and accepted from request data. Such fields are now excluded exactly like
-fields marked with :class:`~litestar.dto.field.Mark` or
-:func:`~litestar.dto.field.dto_field`, and an unknown mark raises :exc:`ValueError`.
-Because properties are marked this way internally, ``DataclassDTO`` and ``MsgspecDTO``
-no longer require a model's properties in request data.
-
-Two consequences for applications that wrote the mark as a string: with
-``DTOConfig(forbid_unknown_fields=True)``, a client that still sends the now-excluded
-field receives a ``400 Bad Request`` response; and a ``"private"`` or ``"read-only"``
-field without a default can no longer be populated from request data, so the model
-cannot be created. Give such a field a default.
-
-DTOs also apply ``exclude``, ``include``, renaming and field marks to models nested in
-fixed-length tuples such as ``tuple[Dog, Cat]``; fields that were returned unfiltered
-from such tuples are no longer part of the response. A handler that returns a tuple
-whose length differs from such an annotation now fails with a ``500`` response, where
-the value was serialized as returned.
-
-The OpenAPI schemas of DTO models change accordingly: constraints are documented on the
-properties concerned (``minimum``, ``minLength``, ``pattern``, ``minItems``), and a
-field of a partial DTO whose type is an annotated union lists that union as a single
-``oneOf`` member. Component names are unchanged.
+DTOs also filter and rename models nested in fixed-length tuples, and a handler returning a tuple of
+another length than its annotation fails with a ``500`` response. The OpenAPI schemas of DTO models
+document the constraints, and list an annotated-union field of a partial DTO as a single ``oneOf``
+member; component names are unchanged.
 
 
 Removal of the ``litestar.pagination`` module

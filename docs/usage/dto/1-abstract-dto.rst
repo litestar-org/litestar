@@ -149,10 +149,9 @@ However, we annotate the handler with the ``Foo`` type. This will raise an error
 Constraints
 -----------
 
-Constraints declared with ``msgspec.Meta``, with ``annotated_types`` metadata or with a Litestar parameter definition
-such as ``Parameter(ge=1)`` are part of the type a DTO validates inbound data against. They apply wherever they are
-declared: on the field itself, on the items of a collection, on the keys and values of a mapping, on the members of a
-tuple and on the members of a union.
+Constraints declared with ``msgspec.Meta``, ``annotated_types`` metadata or a parameter definition such as
+``Parameter(ge=1)`` are validated on inbound data wherever they are declared: on the field, on collection items,
+mapping keys and values, and tuple and union members.
 
 .. code-block:: python
 
@@ -174,24 +173,17 @@ tuple and on the members of a union.
     class PatchUserDTO(DataclassDTO[User]):
         config = DTOConfig(partial=True)
 
-A request whose data violates one of these constraints receives a ``400 Bad Request`` response. With
-``DTOConfig(partial=True)``, a field that is not sent is not validated and a field that is sent is validated in full.
-Constraints are not applied to data returned from a handler.
+A request violating them receives a ``400 Bad Request`` response; with ``partial=True``, only the fields sent are
+validated. Data returned from a handler is not validated.
 
-A ``msgspec.Meta`` stays where it is written; the DTO does not move it. If msgspec does not support it in that position,
-such as a length on a union in ``Annotated[str | None, Meta(min_length=2)]``, a DTO used for inbound data raises
-:exc:`~litestar.exceptions.InvalidAnnotationException` when the application starts, naming the field.
-Attach the constraint to the member it applies to instead, as ``nickname`` does above. A DTO used only for returned
-data keeps the schema attributes of such a ``Meta``, such as its ``description``, and leaves out the rest, except
-:class:`~litestar.dto.msgspec_dto.MsgspecDTO`: msgspec rejects the model itself, whichever the direction.
+A ``msgspec.Meta`` stays where it is written. If msgspec does not support it there, as in
+``Annotated[str | None, Meta(min_length=2)]``, a DTO for inbound data raises
+:exc:`~litestar.exceptions.InvalidAnnotationException` at startup, naming the field: attach it to the member, as
+``nickname`` does. A DTO for returned data only keeps the ``Meta``'s schema attributes, such as ``description``, except
+:class:`~litestar.dto.msgspec_dto.MsgspecDTO`, whose model msgspec rejects.
 
-Constraints from ``annotated_types`` metadata and from Litestar parameter definitions are enforced where msgspec can
-express them. Where it cannot, for example a ``gt`` bound on a ``Decimal`` or a length on ``str | None``, the DTO does
-not enforce them.
-
-When a field carries both a ``msgspec.Meta`` and another constraint for the same attribute or a conflicting bound, such
-as ``Annotated[int, Meta(ge=1), annotated_types.Ge(3)]`` or ``Annotated[int, Meta(gt=0), annotated_types.Ge(5)]``, the
-``Meta`` wins and the other constraint is not enforced.
+Other constraints are enforced where msgspec can express them, and not otherwise, such as ``gt`` on a ``Decimal``. When
+a ``msgspec.Meta`` and another constraint target the same attribute or conflict, the ``Meta`` wins.
 
 The startup check does not apply to :class:`~litestar.plugins.pydantic.PydanticDTO` or to DTO classes that decode the
 request body themselves by overriding ``decode_bytes`` or ``decode_builtins``.

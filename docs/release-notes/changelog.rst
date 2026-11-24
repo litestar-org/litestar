@@ -11,22 +11,11 @@
         :breaking:
         :pr: 5256
 
-        Fix a bug where a mark passed to :class:`~litestar.dto.field.DTOField` as a
-        string, for example ``Annotated[str, DTOField(mark="private")]``, was stored
-        unchanged and then ignored by the DTO: a ``"private"`` or ``"write-only"`` field
-        was returned in responses, and a ``"private"`` or ``"read-only"`` field was
-        accepted from request data. ``DTOField`` now converts the value to
-        :class:`~litestar.dto.field.Mark`, as :func:`~litestar.dto.field.dto_field`
-        always did, and raises :exc:`ValueError` for an unknown mark.
-
-        Fields marked this way are now excluded as documented, which changes the
-        payloads of applications that relied on the previous behaviour:
-
-        - with ``DTOConfig(forbid_unknown_fields=True)``, a client that still sends such
-          a field receives a ``400 Bad Request`` response;
-        - a ``"private"`` or ``"read-only"`` mark on a field without a default makes the
-          model impossible to create from request data, as it already is when the mark
-          is a :class:`~litestar.dto.field.Mark` member. Give the field a default.
+        A mark given to :class:`~litestar.dto.field.DTOField` as a string, such as
+        ``DTOField(mark="private")``, was ignored; it is now converted to
+        :class:`~litestar.dto.field.Mark`, and an unknown mark raises :exc:`ValueError`. With
+        ``forbid_unknown_fields=True``, clients sending such a field get a ``400``, and a ``"private"``
+        or ``"read-only"`` field now needs a default.
 
     .. change:: DTO: Stop requiring properties in request data
         :type: bugfix
@@ -41,21 +30,12 @@
         :pr: 5256
         :issue: 4181 4195 5025 5031 5051
 
-        Constraints declared with ``msgspec.Meta``, ``annotated_types`` metadata or
-        Litestar parameter definitions are kept on every part of a field's type: the
-        field itself, collection items, mapping keys and values, tuple members and union
-        members, and with ``DTOConfig(partial=True)``. Requests that violate them were
-        accepted and now receive a ``400 Bad Request`` response. Constraints msgspec
-        cannot express are, as before, not enforced. The OpenAPI schemas of DTO models
-        document them; component names are unchanged.
-
-        - A ``msgspec.Meta`` msgspec does not support where it is placed, such as
-          ``Annotated[Optional[str], Meta(min_length=1)]``, and a union of models without
-          tags make a DTO for inbound data raise
-          :exc:`~litestar.exceptions.InvalidAnnotationException` at startup, naming the field.
-        - When a field carries both a ``msgspec.Meta`` and another constraint for the
-          same attribute, the ``Meta`` wins.
-
+        Constraints from ``msgspec.Meta``, ``annotated_types`` or parameter definitions are now enforced
+        on every part of a field's type where msgspec can express them, also for partial DTOs; violating
+        requests get a ``400``. An inbound DTO raises
+        :exc:`~litestar.exceptions.InvalidAnnotationException` at startup for a ``Meta`` msgspec does
+        not support where it is placed, such as ``Annotated[Optional[str], Meta(min_length=1)]``, and
+        for an untagged union of models. A ``Meta`` wins over another constraint on the same attribute.
         See :ref:`usage/dto/1-abstract-dto:Constraints`.
 
     .. change:: DTO: ``MsgspecDTO.generate_field_definitions`` keeps the parsed ``kwarg_definition``
@@ -63,10 +43,8 @@
         :breaking:
         :pr: 5256
 
-        The field definitions :meth:`~litestar.dto.msgspec_dto.MsgspecDTO.generate_field_definitions`
-        yields keep the ``kwarg_definition`` parsed from the annotation; it is no longer
-        replaced by one built from the ``msgspec.Meta`` of the field, whose constraints
-        stay on the type.
+        :meth:`~litestar.dto.msgspec_dto.MsgspecDTO.generate_field_definitions` keeps the
+        ``kwarg_definition`` parsed from the annotation instead of one built from ``msgspec.Meta``.
 
     .. change:: DTO: Apply field filtering to nested models in fixed-length tuples
         :type: bugfix
@@ -74,14 +52,9 @@
         :pr: 5256
         :issue: 3342
 
-        Fix a bug where DTOs skipped nested models inside fixed-length tuple fields such
-        as ``tuple[Model, int]``, so excluded and private fields were returned in
-        responses, renaming was not applied, and handlers received the internal transfer
-        model instead of ``Model``.
-
-        A handler that returns a tuple whose length differs from its ``tuple[A, B]``
-        annotation now fails with a ``500`` response; the value was previously
-        serialized as returned.
+        DTOs now filter and rename models nested in fixed-length tuples such as ``tuple[Model, int]``,
+        and pass ``Model`` instances to handlers. Returning a tuple whose length differs from the
+        annotation now fails with a ``500``.
 
     .. change:: DTO: The codegen backend is the only DTO backend
         :type: feature
