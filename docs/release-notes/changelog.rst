@@ -6,6 +6,20 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: Unique names for nested models of one type under several fields
+        :type: bugfix
+        :breaking:
+        :pr: 5258
+        :issue: 5102
+
+        When a model had several fields holding the same nested model, such as
+        ``first: User`` and ``second: User``, or ``Optional[User]`` and ``list[User]``, the
+        transfer model of the second field was named with the module-qualified name of
+        the handler, such as ``app.get_holderHolderUserResponseBody``. It is now named
+        after the field, such as ``GetHolderHolder_secondUserResponseBody``, which changes
+        these OpenAPI component names. The names of the other transfer models are
+        unchanged.
+
     .. change:: DTO: Overrides of the deprecated DTO entry points are no longer called
         :type: misc
         :breaking:

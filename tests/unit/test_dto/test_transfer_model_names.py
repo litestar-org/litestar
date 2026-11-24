@@ -1,6 +1,6 @@
 from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Annotated, Any, get_args
+from typing import Annotated, Any, Optional, get_args
 
 import msgspec
 import pytest
@@ -238,8 +238,32 @@ def test_names_do_not_depend_on_an_unrelated_app() -> None:
     target = Litestar([get_post])
 
     assert component_names(target) == sorted(
-        ["GetPostPostResponseBody", "GetPostPostUserResponseBody", f"{get_post!s}PostUserResponseBody"]
+        ["GetPostPostResponseBody", "GetPostPostUserResponseBody", "GetPostPost_editorUserResponseBody"]
     )
+
+
+@dataclass
+class Holder:
+    maybe: Optional[User]
+    many: list[User]
+    first: User
+    second: User
+
+
+def test_nested_models_of_one_type_under_several_fields_get_unqualified_names() -> None:
+    @get("/holders", return_dto=DataclassDTO[Holder], sync_to_thread=False)
+    def get_holder() -> Holder:
+        return Holder(maybe=None, many=[], first=User(id=1), second=User(id=2))
+
+    app = Litestar([get_holder])
+
+    assert component_names(app) == [
+        "GetHolderHolderResponseBody",
+        "GetHolderHolderUserResponseBody",
+        "GetHolderHolder_0UserResponseBody",
+        "GetHolderHolder_0_manyUserResponseBody",
+        "GetHolderHolder_secondUserResponseBody",
+    ]
 
 
 def test_register_keeps_existing_component_names() -> None:
@@ -263,7 +287,7 @@ def test_rebuilding_a_plan_returns_the_same_names() -> None:
 
     assert plan_names(registered, app) == original
     assert plan_names(registered.merge(), app) == original
-    assert original == ["GetPostPostResponseBody", "GetPostPostUserResponseBody", f"{get_post!s}PostUserResponseBody"]
+    assert original == ["GetPostPostResponseBody", "GetPostPostUserResponseBody", "GetPostPost_editorUserResponseBody"]
 
 
 def test_rebuilding_a_plan_reserves_no_new_name() -> None:

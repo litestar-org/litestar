@@ -152,6 +152,7 @@ def create_transfer_type(
         include=include or set(),
         field_name=field_name,
         unique_name=unique_name,
+        owner_field=field_name,
         nested_depth=nested_depth,
         rename_fields=rename_fields or {},
     )

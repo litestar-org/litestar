@@ -62,6 +62,7 @@ class CompositeTypeHandler(Protocol):
         include: Set[str],
         rename_fields: dict[str, str],
         unique_name: str,
+        owner_field: str,
         nested_depth: int,
     ) -> CompositeType: ...
 
@@ -71,6 +72,7 @@ class DTOBackend:
         "_default_deserializer",
         "_encode_data",
         "_naming",
+        "_nested_model_names",
         "_transfer_function_cache",
         "_transfer_to_dict",
         "_transfer_to_model_type",
@@ -111,6 +113,7 @@ class DTOBackend:
         """
         self._type_decoders: TypeDecodersSequence | None = None
         self._default_deserializer: Callable[[Any, Any], Any] | None = None
+        self._nested_model_names: set[str] = set()
         self.dto_factory: Final[type[AbstractDTO]] = dto_factory
         self.field_definition: Final[FieldDefinition] = field_definition
         self.is_data_field: Final[bool] = is_data_field
@@ -209,6 +212,7 @@ class DTOBackend:
                     rename_fields=rename_fields,
                     field_name=field_definition.name,
                     unique_name=field_definition.model_name,
+                    owner_field=field_definition.name,
                     nested_depth=nested_depth,
                 )
             except RecursionError:
@@ -428,6 +432,7 @@ class DTOBackend:
         rename_fields: dict[str, str],
         field_name: str,
         unique_name: str,
+        owner_field: str,
         nested_depth: int,
     ) -> CompositeType | SimpleType:
         exclude = _filter_nested_field(exclude, field_name)
@@ -441,6 +446,7 @@ class DTOBackend:
                 include=include,
                 rename_fields=rename_fields,
                 unique_name=unique_name,
+                owner_field=owner_field,
                 nested_depth=nested_depth,
             )
 
@@ -450,7 +456,7 @@ class DTOBackend:
             if nested_depth == self.dto_factory.config.max_nested_depth:
                 raise RecursionError
 
-            unique_name = f"{unique_name}{field_definition.raw.__name__}"
+            unique_name = self._nested_model_name(unique_name, owner_field, field_definition.raw.__name__)
 
             nested_field_definitions = self.parse_model(
                 model_type=field_definition.annotation,
@@ -467,6 +473,13 @@ class DTOBackend:
 
         return SimpleType(field_definition, nested_field_info=transfer_model)
 
+    def _nested_model_name(self, unique_name: str, owner_field: str, model_name: str) -> str:
+        name = f"{unique_name}{model_name}"
+        if name in self._nested_model_names:
+            name = f"{unique_name}_{owner_field}{model_name}"
+        self._nested_model_names.add(name)
+        return name
+
     def _create_collection_type(
         self,
         field_definition: FieldDefinition,
@@ -474,6 +487,7 @@ class DTOBackend:
         include: Set[str],
         rename_fields: dict[str, str],
         unique_name: str,
+        owner_field: str,
         nested_depth: int,
     ) -> CollectionType:
         inner_types = field_definition.inner_types
@@ -483,6 +497,7 @@ class DTOBackend:
             include=include,
             field_name="0",
             unique_name=f"{unique_name}_0",
+            owner_field=owner_field,
             nested_depth=nested_depth,
             rename_fields=rename_fields,
         )
@@ -497,6 +512,7 @@ class DTOBackend:
         include: Set[str],
         rename_fields: dict[str, str],
         unique_name: str,
+        owner_field: str,
         nested_depth: int,
     ) -> MappingType:
         inner_types = field_definition.inner_types
@@ -506,6 +522,7 @@ class DTOBackend:
             include=include,
             field_name="0",
             unique_name=f"{unique_name}_0",
+            owner_field=owner_field,
             nested_depth=nested_depth,
             rename_fields=rename_fields,
         )
@@ -515,6 +532,7 @@ class DTOBackend:
             include=include,
             field_name="1",
             unique_name=f"{unique_name}_1",
+            owner_field=owner_field,
             nested_depth=nested_depth,
             rename_fields=rename_fields,
         )
@@ -532,6 +550,7 @@ class DTOBackend:
         include: Set[str],
         rename_fields: dict[str, str],
         unique_name: str,
+        owner_field: str,
         nested_depth: int,
     ) -> TupleType:
         inner_types = tuple(
@@ -541,6 +560,7 @@ class DTOBackend:
                 include=include,
                 field_name=str(i),
                 unique_name=f"{unique_name}_{i}",
+                owner_field=owner_field,
                 nested_depth=nested_depth,
                 rename_fields=rename_fields,
             )
@@ -559,6 +579,7 @@ class DTOBackend:
         include: Set[str],
         rename_fields: dict[str, str],
         unique_name: str,
+        owner_field: str,
         nested_depth: int,
     ) -> UnionType:
         inner_types = tuple(
@@ -568,6 +589,7 @@ class DTOBackend:
                 include=include,
                 field_name=str(i),
                 unique_name=f"{unique_name}_{i}",
+                owner_field=owner_field,
                 nested_depth=nested_depth,
                 rename_fields=rename_fields,
             )
