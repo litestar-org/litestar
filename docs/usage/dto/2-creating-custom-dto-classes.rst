@@ -42,7 +42,8 @@ instantiated per request. Litestar no longer calls these members, nor a DTO clas
 overrides one of them to change how data is decoded, encoded or documented must move that logic out of the DTO.
 
 Calling them directly keeps working and emits a deprecation warning, except for
-:meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`. To find the DTO classes a registered route handler
+:meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`, which plugins call and which has no replacement yet.
+A class that overrides one of them emits a deprecation warning when a route handler using it is registered. To find the DTO classes a registered route handler
 applies, read ``handler.data_dto`` and ``handler.return_dto``. There is no replacement yet for decoding or encoding
 with a DTO outside a route handler.
 
