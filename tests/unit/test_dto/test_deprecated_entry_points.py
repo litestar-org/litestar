@@ -7,8 +7,6 @@ from typing import Annotated, Any
 
 import msgspec
 import pytest
-from advanced_alchemy.extensions.litestar import SQLAlchemyDTO
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, Request, post, websocket_listener
 from litestar._openapi.schema_generation import SchemaCreator
@@ -156,16 +154,6 @@ def test_create_openapi_schema_does_not_find_a_collected_handler() -> None:
         DataclassDTO[Model].create_openapi_schema(field_definition, handler_id, SchemaCreator())
 
 
-class Base(DeclarativeBase):
-    pass
-
-
-class Row(Base):
-    __tablename__ = "row"
-    a: Mapped[int] = mapped_column(primary_key=True)
-    b: Mapped[str]
-
-
 class StructModel(msgspec.Struct):
     a: int
     b: str
@@ -177,7 +165,19 @@ def in_tree_dto(kind: str) -> tuple[type[AbstractDTO[Any]], type[Any]]:
     if kind == "msgspec":
         return MsgspecDTO[StructModel], StructModel
     if kind == "sqlalchemy":
-        return SQLAlchemyDTO[Row], Row
+        alchemy = pytest.importorskip("advanced_alchemy.extensions.litestar")
+        orm = pytest.importorskip("sqlalchemy.orm")
+        base = type("Base", (orm.DeclarativeBase,), {})
+        row = type(
+            "Row",
+            (base,),
+            {
+                "__tablename__": "row",
+                "__annotations__": {"a": orm.Mapped[int], "b": orm.Mapped[str]},
+                "a": orm.mapped_column(primary_key=True),
+            },
+        )
+        return alchemy.SQLAlchemyDTO[row], row
     pydantic = pytest.importorskip("pydantic")
     from litestar.plugins.pydantic import PydanticDTO
 
