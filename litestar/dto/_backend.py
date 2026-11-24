@@ -100,6 +100,8 @@ class DTOBackend:
         is_data_field: bool,
         model_type: type[Any],
         wrapper_attribute_name: str | None,
+        *,
+        naming: TransferModelNaming | None = None,
     ) -> None:
         """Create dto backend instance.
 
@@ -111,7 +113,9 @@ class DTOBackend:
             model_type: Model type.
             wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure,
                 this is the name of the attribute that the data is stored in.
+            naming: Names the transfer models; without it, they are named in a registry of the backend's own.
         """
+        self._naming = naming or TransferModelNaming(TransferModelRegistry(), handler_id)
         self._type_decoders: TypeDecodersSequence | None = None
         self._default_deserializer: Callable[[Any, Any], Any] | None = None
         self._nested_model_names: set[str] = set()
@@ -241,10 +245,7 @@ class DTOBackend:
 
         name_suffix = "RequestBody" if self.is_data_field else "ResponseBody"
 
-        naming: TransferModelNaming | None = getattr(self, "_naming", None)
-        if naming is None:
-            naming = self._naming = TransferModelNaming(TransferModelRegistry(), self.handler_id)
-        return naming.name_for(
+        return self._naming.name_for(
             is_data_field=self.is_data_field,
             model_name=model_name,
             preferred=f"{short_name_prefix}{model_name}{name_suffix}",

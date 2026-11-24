@@ -103,19 +103,16 @@ def create_backend(
     if backend_cls is None:
         backend_cls = DTOBackend
 
-    backend = backend_cls.__new__(backend_cls)
-    if naming is not None:
-        backend._naming = naming
-    backend_cls.__init__(
-        backend,
+    keywords: dict[str, Any] = {"naming": naming} if naming is not None else {}
+    return backend_cls(
         dto_factory=dto,
         field_definition=field_definition,
         model_type=model_type_field_definition.annotation,
         wrapper_attribute_name=wrapper_attribute_name,
         is_data_field=is_data_field,
         handler_id=handler_id,
+        **keywords,
     )
-    return backend
 
 
 def build_schema_annotation(
@@ -226,7 +223,9 @@ def _build_direction(
     )
     backend._bind_handler(type_decoders=handler.type_decoders, default_deserializer=handler.default_deserializer)
     return DTODirectionPlan(
-        dto=dto, backend=backend, schema_annotation=build_schema_annotation(dto, backend, field_definition)
+        dto=dto,
+        backend=backend,
+        schema_annotation=build_schema_annotation(dto, backend, field_definition),
     )
 
 
