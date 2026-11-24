@@ -1,6 +1,7 @@
+import re
 import traceback
 from collections.abc import Callable, Generator
-from dataclasses import dataclass
+from dataclasses import dataclass, make_dataclass
 from typing import TYPE_CHECKING, Annotated, Any, Optional, Union, cast
 
 import msgspec
@@ -10,7 +11,7 @@ from msgspec import Meta
 
 from litestar import Litestar, get, post, websocket_listener
 from litestar._layers.errors import HandlerErrorPrefix
-from litestar.dto import DataclassDTO, DTOData, DTOFieldDefinition, MsgspecDTO
+from litestar.dto import DataclassDTO, DTOConfig, DTOData, DTOFieldDefinition, MsgspecDTO
 from litestar.dto._plan import create_dto_openapi_schema
 from litestar.exceptions import (
     DTOFactoryException,
@@ -234,6 +235,81 @@ def test_rejected_transfer_type_raises_dto_transfer_type_error(make_handler: Any
     with pytest.raises(DTOTransferTypeError, match=rf"^\[paths='/', handler='create'\] {match}") as exc_info:
         Litestar([make_handler()], openapi_config=None)
 
+    assert isinstance(exc_info.value.__cause__, TypeError)
+
+
+@dataclass
+class RejectedInner:
+    g: Annotated[Optional[str], Meta(min_length=5)] = None
+
+
+@dataclass
+class RejectedOuter:
+    inner: RejectedInner
+
+
+@dataclass
+class RejectedMappingOuter:
+    _hidden: int
+    inners: dict[str, RejectedInner]
+
+
+CONSTRAINT_HINT = "attach the constraint to the member type it applies to, e.g. Optional[Annotated[str, Meta(...)]]"
+_REJECTED_FIELD_CASES = [
+    *(
+        pytest.param(
+            make_dataclass("Model", [("f", annotation)]), "Model", "f", annotation, CONSTRAINT_HINT, id=case_id
+        )
+        for case_id, annotation in (
+            ("optional-meta", Annotated[Optional[str], Meta(min_length=5)]),
+            ("int-meta", Annotated[int, Meta(min_length=1)]),
+            ("item-meta", list[Annotated[int, Meta(min_length=1)]]),
+        )
+    ),
+    pytest.param(
+        RejectedOuter,
+        "RejectedInner",
+        "g",
+        Annotated[Optional[str], Meta(min_length=5)],
+        CONSTRAINT_HINT,
+        id="nested-field",
+    ),
+    pytest.param(
+        RejectedMappingOuter,
+        "RejectedInner",
+        "g",
+        Annotated[Optional[str], Meta(min_length=5)],
+        CONSTRAINT_HINT,
+        id="mapping-value-after-excluded-field",
+    ),
+    pytest.param(
+        UnionHolder, "UnionHolder", "f", Union[U1, U2], "tag the union members or decode the body yourself", id="union"
+    ),
+]
+
+
+@pytest.mark.parametrize("partial", [False, True])
+@pytest.mark.parametrize(("model", "owner", "field_name", "annotation", "hint"), _REJECTED_FIELD_CASES)
+def test_startup_error_names_the_rejected_field_and_a_hint(
+    model: Any, owner: str, field_name: str, annotation: Any, hint: str, partial: bool
+) -> None:
+    async def create(data: Any) -> None: ...
+
+    create.__annotations__ = {"data": JSONBody[model], "return": None}
+    handler = post("/", dto=DataclassDTO[Annotated[model, DTOConfig(partial=partial)]], return_dto=None)(create)
+
+    with pytest.raises(DTOTransferTypeError) as exc_info:
+        Litestar([handler], openapi_config=None)
+
+    assert re.fullmatch(
+        re.escape(
+            f"[paths='/', handler='create'] msgspec cannot decode the transfer model of '{__name__}.{model.__name__}': "
+            f"field '{field_name}' of '{__name__}.{owner}', annotated {annotation!r}, is rejected by msgspec ("
+        )
+        + r"[^;]+"
+        + re.escape(f"); {hint}"),
+        str(exc_info.value),
+    )
     assert isinstance(exc_info.value.__cause__, TypeError)
 
 

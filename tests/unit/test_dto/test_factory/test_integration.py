@@ -1312,72 +1312,6 @@ def test_return_dto_schema_builds_with_field_constraint_msgspec_rejects() -> Non
     assert component["properties"]["f"]["description"] == "d"
 
 
-@pytest.mark.parametrize("partial", [False, True])
-@pytest.mark.parametrize(
-    "annotation",
-    [
-        pytest.param(Annotated[Optional[str], Meta(min_length=5)], id="optional_meta"),
-        pytest.param(Annotated[int, Meta(min_length=1)], id="int_meta"),
-        pytest.param(list[Annotated[int, Meta(min_length=1)]], id="item_meta"),
-    ],
-)
-def test_data_dto_raises_at_startup_when_msgspec_rejects_the_transfer_type(annotation: Any, partial: bool) -> None:
-    model = _make_model(DataclassDTO, annotation)
-
-    @post(
-        "/",
-        dto=DataclassDTO[Annotated[model, DTOConfig(partial=partial)]],  # type: ignore[valid-type]
-        return_dto=None,
-        signature_namespace={"model": model},
-    )
-    def create_rejected(data: JSONBody[DTOData[model]]) -> None:  # type: ignore[valid-type]
-        pass
-
-    with pytest.raises(DTOTransferTypeError, match="min_length") as exc_info:
-        Litestar(route_handlers=[create_rejected], openapi_config=None)
-
-    message = str(exc_info.value)
-    assert message.startswith("[paths='/', handler='create_rejected'] msgspec cannot decode the transfer model of ")
-    assert "field 'f'" in message
-    assert repr(annotation) in message
-    assert "create_rejected" in message
-    assert "attach the constraint to the member type it applies to" in message
-    assert isinstance(exc_info.value.__cause__, TypeError)
-
-
-@dataclass
-class RejectedInner:
-    g: Annotated[Optional[str], Meta(min_length=5)] = None
-
-
-@dataclass
-class RejectedOuter:
-    inner: RejectedInner
-
-
-@dataclass
-class RejectedMappingOuter:
-    _hidden: int
-    inners: dict[str, RejectedInner]
-
-
-@pytest.mark.parametrize("model", [RejectedOuter, RejectedMappingOuter])
-def test_data_dto_startup_error_names_the_nested_field(model: Any) -> None:
-    @post("/", dto=DataclassDTO[model], return_dto=None, signature_namespace={"model": model})
-    def create_rejected_outer(data: JSONBody[model]) -> None:  # pyright: ignore[reportInvalidTypeForm]
-        pass
-
-    with pytest.raises(InvalidAnnotationException) as exc_info:
-        Litestar(route_handlers=[create_rejected_outer], openapi_config=None)
-
-    message = str(exc_info.value)
-    assert message.startswith(
-        "[paths='/', handler='create_rejected_outer'] msgspec cannot decode the transfer model of "
-    )
-    assert f"field 'g' of '{RejectedInner.__module__}.RejectedInner'" in message
-    assert "RequestBody" not in message
-
-
 @pytest.mark.parametrize("direction", ["data", "return"])
 def test_msgspec_dto_raises_invalid_annotation_when_msgspec_rejects_the_model(direction: str) -> None:
     annotation: Any = Annotated[Optional[str], Meta(min_length=5)]
@@ -1401,59 +1335,6 @@ def test_msgspec_dto_raises_invalid_annotation_when_msgspec_rejects_the_model(di
                 return struct()
 
             Litestar(route_handlers=[read_rejected_struct], openapi_config=None)
-
-
-@dataclass
-class U1:
-    a: int
-
-
-@dataclass
-class U2:
-    b: int
-
-
-@dataclass
-class UH:
-    f: Union[U1, U2]
-
-
-@dataclass
-class Bad:
-    f: Annotated[Optional[str], Meta(min_length=5)] = None
-
-
-def test_data_dto_over_union_of_models_raises_at_startup() -> None:
-    @post("/", dto=DataclassDTO[UH], return_dto=None)
-    def create_union_holder(data: JSONBody[UH]) -> None:
-        pass
-
-    with pytest.raises(DTOTransferTypeError, match="must be tagged") as exc_info:
-        Litestar(route_handlers=[create_union_holder], openapi_config=None)
-
-    message = str(exc_info.value)
-    assert message.startswith("[paths='/', handler='create_union_holder'] msgspec cannot decode the transfer model of ")
-    assert f"field 'f' of '{UH.__module__}.UH'" in message
-    assert "tag the union members or decode the body yourself" in message
-    assert "RequestBody" not in message
-
-
-def test_return_dto_is_not_checked_at_startup() -> None:
-    @get("/union", return_dto=DataclassDTO[UH])
-    def read_union_holder() -> UH:
-        return UH(f=U2(b=1))
-
-    @get("/bad", return_dto=DataclassDTO[Bad])
-    def read_bad() -> Bad:
-        return Bad(f="12")
-
-    with create_test_client([read_union_holder, read_bad], openapi_config=None) as client:
-        response = client.get("/union")
-        assert response.status_code == 200
-        assert response.json() == {"f": {"b": 1}}
-        response = client.get("/bad")
-        assert response.status_code == 200
-        assert response.json() == {"f": "12"}
 
 
 @pytest.mark.parametrize(
