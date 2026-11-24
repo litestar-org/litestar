@@ -136,6 +136,10 @@ def _without_optional(field_definition: FieldDefinition | None) -> FieldDefiniti
     return field_definition
 
 
+def _model_type(dto: "type[AbstractDTO[Any]]") -> Any:
+    return dto.model_type  # pyright: ignore[reportGeneralTypeIssues]
+
+
 def _is_form_body(field_definition: FieldDefinition) -> bool:
     kwarg_definition = field_definition.kwarg_definition
     return isinstance(kwarg_definition, BodyKwarg) and kwarg_definition.media_type in _FORM_MEDIA_TYPES
@@ -171,7 +175,7 @@ def _match_target(
 ) -> DTOTarget | None:
     if (inner := _without_optional(field_definition)) is None or field_definition is None:
         return None
-    if not inner.inner_types and inner.is_subclass_of(dto.model_type):  # pyright: ignore[reportGeneralTypeIssues]
+    if not inner.inner_types and inner.is_subclass_of(_model_type(dto)):
         model_field = inner
     elif not inner.inner_types and (inner.is_collection or inner.is_subclass_of(DTOData)):
         return None
@@ -179,7 +183,7 @@ def _match_target(
         model_field = dto.resolve_model_type(inner)
 
     passes_none = field_definition.is_optional
-    if model_field.is_subclass_of(dto.model_type):  # pyright: ignore[reportGeneralTypeIssues]
+    if model_field.is_subclass_of(_model_type(dto)):
         if is_data_field and model_field is not inner and _is_form_collection(field_definition, inner):
             return None
         return DTOTarget(
@@ -241,7 +245,7 @@ def build_schema_annotation(
     transfer model.
     """
     if backend.wrapper_attribute_name and not field_definition.is_subclass_of(Response):
-        model_type = dto.model_type  # pyright: ignore[reportGeneralTypeIssues]
+        model_type = _model_type(dto)
         generic_args = tuple(backend.transfer_model_type if arg is model_type else arg for arg in field_definition.args)
         return field_definition.safe_generic_origin[generic_args]
     return backend.annotation
@@ -391,8 +395,9 @@ def _not_applicable_reason(
 
 
 def _mentions_model(field_definition: FieldDefinition, dto: "type[AbstractDTO[Any]]") -> bool:
+    model_type = _model_type(dto)
     return any(
-        inner.is_subclass_of(dto.model_type) or _mentions_model(inner, dto)  # pyright: ignore[reportGeneralTypeIssues]
+        inner.match_predicate_recursively(lambda field: field.is_subclass_of(model_type))
         for inner in field_definition.inner_types
     )
 
@@ -413,7 +418,7 @@ def _not_applicable(
         action = "decode its request body" if is_data_field else "encode its return value"
         message = (
             f"{declared}, but cannot {action} annotated '{annotation}': the DTO handles "
-            f"'{_format_key(dto.model_type)}'."  # pyright: ignore[reportGeneralTypeIssues]
+            f"'{_format_key(_model_type(dto))}'."
         )
         if reason := _not_applicable_reason(dto, field_definition, is_data_field=is_data_field):
             message = f"{message} {reason}"

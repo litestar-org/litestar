@@ -93,7 +93,7 @@ def test_optional_return_none_matches_handler_without_dto(library: tuple[Any, An
     assert response.json() is None
 
 
-def test_optional_return_value_is_still_encoded(library: tuple[Any, Any]) -> None:
+def test_optional_return_value_is_encoded(library: tuple[Any, Any]) -> None:
     model, dto = library
     route_handler = _handler(Optional[model], lambda: model(id=1, name="a", secret="x"), "/dto", return_dto=dto)
 
