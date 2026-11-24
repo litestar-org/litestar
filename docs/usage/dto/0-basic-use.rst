@@ -116,7 +116,8 @@ asynchronous generators an HTTP handler returns; the items a websocket stream yi
 annotation, ``None`` passes through the DTO in both directions. Form data is decoded into one model, never a
 collection, and invalid form data receives the same ``400`` response as invalid JSON data.
 
-DTO errors raised when the application is created start with ``[paths='/users', handler='create_user']``:
+The following errors are raised when the application is created and start with
+``[paths='/users', handler='create_user']``:
 :exc:`~litestar.exceptions.DTONotApplicableError` when a DTO cannot handle an annotation as described above,
 :exc:`~litestar.exceptions.MissingDTOError` when request data is annotated with ``DTOData`` but no DTO decodes it, and
 :exc:`~litestar.exceptions.DTOTransferTypeError` when msgspec rejects the transferred type (see

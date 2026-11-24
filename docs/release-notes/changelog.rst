@@ -43,7 +43,8 @@
         :breaking:
         :pr: 5259
 
-        DTO startup errors start with ``[paths=..., handler=...]``. ``DTONotApplicableError`` and
+        A ``DTOFactoryException`` raised at startup starts with ``[paths=..., handler=...]``.
+        ``DTONotApplicableError`` and
         ``DTOTransferTypeError`` subclass :exc:`~litestar.exceptions.InvalidAnnotationException`, and
         ``MissingDTOError`` subclasses :exc:`~litestar.exceptions.DTOFactoryException` and
         :exc:`~litestar.exceptions.ImproperlyConfiguredException`, the exceptions raised before. A return

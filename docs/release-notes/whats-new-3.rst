@@ -332,7 +332,8 @@ Whether a DTO is used now follows :ref:`usage/dto/0-basic-use:When a DTO applies
       # on the handler, but cannot encode its return value annotated 'Profile': the DTO handles 'User'.
       app = Litestar([get_profile])
 
-- DTO startup errors start with ``[paths=..., handler=...]``. ``DTOData`` without a DTO raises
+- A :exc:`~litestar.exceptions.DTOFactoryException` raised at startup starts with
+  ``[paths=..., handler=...]``. ``DTOData`` without a DTO raises
   :exc:`~litestar.exceptions.MissingDTOError` for websocket listeners too, and
   :class:`~litestar.plugins.pydantic.PydanticDTO` is covered by the startup check.
 - ``JSONBody[Wrapper[User]]`` and form bodies annotated with a collection, such as
