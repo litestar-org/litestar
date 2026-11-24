@@ -1,3 +1,4 @@
+import json
 import sys
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
@@ -5,7 +6,7 @@ from typing import Annotated, Any, Generic, Literal, Optional, TypeVar, Union, c
 
 import msgspec
 import pytest
-from typing_extensions import TypeAliasType
+from typing_extensions import TypeAliasType, TypeVarTuple
 
 from litestar import Controller, Litestar, Response, Router, get, post, websocket_listener
 from litestar.app import DEFAULT_OPENAPI_CONFIG
@@ -1152,44 +1153,54 @@ def test_collection_like_model_is_the_model(model: Any, dto: type[AbstractDTO[An
     assert_collection_like_model_round_trips(model, dto, placement)
 
 
-def make_alias(kind: Literal["typing_extensions", "statement"], value: Any) -> Any:
-    generic = value == list[T]
-    if kind == "typing_extensions":
-        return TypeAliasType("Alias", value, type_params=(T,) if generic else ())
-    namespace: dict[str, Any] = {"value": value}
-    exec("type Alias[T] = list[T]" if generic else "type Alias = value", namespace)
+UserAlias = TypeAliasType("UserAlias", User)
+UsersAlias = TypeAliasType("UsersAlias", list[User])
+UserAliasAlias = TypeAliasType("UserAliasAlias", UserAlias)
+OptionalUserAlias = TypeAliasType("OptionalUserAlias", Optional[User])
+ForwardAlias = TypeAliasType("ForwardAlias", list["User"])
+PageAlias = TypeAliasType("PageAlias", list[T], type_params=(T,))
+Ts = TypeVarTuple("Ts")
+TupleAlias = TypeAliasType("TupleAlias", tuple[*Ts], type_params=(Ts,))
+Json = TypeAliasType("Json", Union[dict[str, "Json"], list["Json"], str, int, None])
+NEEDS_TYPE_STATEMENT = pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword needs 3.12")
+
+
+def type_statement(source: str) -> Any:
+    namespace: dict[str, Any] = {"User": User}
+    exec(source, namespace)
     return namespace["Alias"]
 
 
-ALIAS_SHAPES = [
-    pytest.param("data", User, lambda alias: alias, USER_IN, id="data-alias"),
-    pytest.param("data", list[User], lambda alias: alias, [USER_IN], id="data-alias-of-list"),
-    pytest.param("data", User, lambda alias: Optional[alias], USER_IN, id="data-optional-alias"),
-    pytest.param("data", list[T], lambda alias: alias[User], [USER_IN], id="data-generic-alias"),
-    pytest.param("return", User, lambda alias: alias, USER, id="return-alias"),
-    pytest.param("return", list[User], lambda alias: alias, [USER], id="return-alias-of-list"),
-    pytest.param("return", User, lambda alias: list[alias], [USER], id="return-list-of-alias"),
-    pytest.param("return", User, lambda alias: Optional[alias], USER, id="return-optional-alias"),
-    pytest.param("return", list[User], lambda alias: Response[alias], Response([USER]), id="return-response"),
-    pytest.param("return", User, lambda alias: Wrapper[alias], Wrapper(USER), id="return-wrapper"),
+ALIAS_ROWS = [
+    pytest.param("app", "data", lambda: UserAlias, User, USER_IN, id="data-alias"),
+    pytest.param("handler", "data", lambda: UsersAlias, list[User], [USER_IN], id="data-alias-of-list"),
+    pytest.param("app", "data", lambda: OptionalUserAlias, Optional[User], USER_IN, id="data-alias-of-optional"),
+    pytest.param("app", "data", lambda: PageAlias[User], list[User], [USER_IN], id="data-generic-alias"),
+    pytest.param(
+        "app",
+        "return",
+        lambda: type_statement("type Alias = User"),
+        User,
+        USER,
+        id="return-type-statement",
+        marks=NEEDS_TYPE_STATEMENT,
+    ),
+    pytest.param("app", "return", lambda: list[UserAlias], list[User], [USER], id="return-list-of-alias"),
+    pytest.param("app", "return", lambda: Optional[UserAlias], Optional[User], USER, id="return-optional-alias"),
+    pytest.param(
+        "handler", "return", lambda: Response[UsersAlias], Response[list[User]], Response([USER]), id="return-response"
+    ),
+    pytest.param("app", "return", lambda: Wrapper[UserAlias], Wrapper[User], Wrapper(USER), id="return-wrapper"),
+    pytest.param("app", "return", lambda: UserAliasAlias, User, USER, id="return-alias-of-alias"),
+    pytest.param("app", "return", lambda: ForwardAlias, list[User], [USER], id="return-forward-reference"),
 ]
 
 
-@pytest.mark.parametrize(
-    "kind",
-    [
-        "typing_extensions",
-        pytest.param(
-            "statement", marks=pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword needs 3.12")
-        ),
-    ],
-)
-@pytest.mark.parametrize("placement", ["handler", "app"])
-@pytest.mark.parametrize(("direction", "value", "shape", "sent"), ALIAS_SHAPES)
+@pytest.mark.parametrize(("placement", "direction", "alias", "plain", "sent"), ALIAS_ROWS)
 def test_type_alias_applies_like_its_value(
-    direction: str, value: Any, shape: Callable[[Any], Any], sent: Any, placement: Placement, kind: Any
+    placement: Placement, direction: str, alias: Callable[[], Any], plain: Any, sent: Any
 ) -> None:
-    def observe(annotation: Any) -> tuple[int, Any, dict[str, Any]]:
+    def observe(annotation: Any) -> tuple[int, str, str]:
         if direction == "data":
             app = build_app(
                 placement,
@@ -1211,21 +1222,58 @@ def test_type_alias_applies_like_its_value(
             )
         with TestClient(app) as client:
             response = client.post("/", json=sent) if direction == "data" else client.get("/")
-        return response.status_code, response.json(), app.openapi_schema.to_schema()
+        return response.status_code, response.text, json.dumps(app.openapi_schema.to_schema())
 
-    assert observe(shape(make_alias(kind, value))) == observe(shape(value))
+    observed = observe(alias())
+
+    assert observed == observe(plain)
+    assert '"secret":"x"' not in observed[1]
+    assert "secret" not in observed[2]
 
 
-@pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword needs 3.12")
-@pytest.mark.parametrize("option", ["dto", "return_dto"])
-@pytest.mark.parametrize("placement", ["handler", "app"])
-def test_unresolvable_type_alias_fails_at_startup(placement: Placement, option: str) -> None:
-    namespace: dict[str, Any] = {}
-    exec("type Alias = list[Missing]", namespace)
-    alias = namespace["Alias"]
+@pytest.mark.parametrize(
+    ("option", "alias", "reason"),
+    [
+        pytest.param(
+            "dto",
+            lambda: type_statement("type Alias = list[Missing]"),
+            "name 'Missing' is not defined",
+            id="name-error",
+            marks=NEEDS_TYPE_STATEMENT,
+        ),
+        pytest.param(
+            "return_dto",
+            lambda: TypeAliasType("Alias", list["Missing"]),  # noqa: F821
+            "name 'Missing' is not defined",
+            id="forward-reference",
+        ),
+        pytest.param("return_dto", lambda: PageAlias, "type parameters", id="bare-generic-alias"),
+        pytest.param("return_dto", lambda: TupleAlias[User, int], "type parameters", id="type-var-tuple"),
+    ],
+)
+def test_unresolvable_type_alias_fails_at_startup(option: str, alias: Callable[[], Any], reason: str) -> None:
+    pattern = rf"^\[paths='/', handler='handler\w*'\] Cannot resolve the type alias '.+': .*{reason}"
 
-    with pytest.raises(InvalidAnnotationException, match=r"^\[paths='/', handler='handler\w*'\] .*'Alias'.*Missing"):
+    with pytest.raises(InvalidAnnotationException, match=pattern):
         if option == "dto":
-            build_app(placement, body=JSONBody[alias], dto=UserDTO, handler_options={"return_dto": None})
+            build_app("app", body=JSONBody[alias()], dto=UserDTO, handler_options={"return_dto": None})
         else:
-            build_app(placement, method="GET", returns=alias, return_dto=UserDTO)
+            build_app("app", method="GET", returns=alias(), return_dto=UserDTO)
+
+
+@pytest.mark.parametrize(
+    "alias",
+    [
+        pytest.param(lambda: Json, id="typing_extensions"),
+        pytest.param(
+            lambda: type_statement("type Alias = dict[str, Alias] | list[Alias] | str | int | None"),
+            id="type-statement",
+            marks=NEEDS_TYPE_STATEMENT,
+        ),
+    ],
+)
+def test_recursive_type_alias_without_the_model_starts_under_layer_dto(alias: Callable[[], Any]) -> None:
+    app = build_app("app", method="GET", returns=alias(), respond=lambda data: {"a": [1]}, dto=UserDTO)
+
+    with TestClient(app) as client:
+        assert client.get("/").json() == {"a": [1]}

@@ -42,9 +42,11 @@ def create_request_body(
     if isinstance(data_field.kwarg_definition, BodyKwarg) and data_field.kwarg_definition.media_type:
         media_type = data_field.kwarg_definition.media_type
 
+    required = not data_field.is_optional
     if (plan := route_handler._dto_plan) is not None and plan.data is not None:
         schema = create_dto_openapi_schema(plan.data, data_field, route_handler, schema_creator)
+        required = not plan.data.passes_none
     else:
         schema = schema_creator.for_field_definition(data_field)
 
-    return RequestBody(required=not data_field.is_optional, content={media_type: OpenAPIMediaType(schema=schema)})
+    return RequestBody(required=required, content={media_type: OpenAPIMediaType(schema=schema)})

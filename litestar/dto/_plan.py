@@ -1,7 +1,8 @@
+import sys
 from collections.abc import AsyncGenerator, AsyncIterator, Generator, Iterator
 from dataclasses import dataclass
 from types import NoneType
-from typing import TYPE_CHECKING, Annotated, Any, Literal, TypeAlias, Union, get_args, get_origin
+from typing import TYPE_CHECKING, Annotated, Any, ForwardRef, Literal, TypeAlias, TypeVar, Union, get_args, get_origin
 
 import msgspec
 
@@ -299,23 +300,41 @@ def handler_name_scope(handler: "BaseRouteHandler") -> "Hashable":
     )
 
 
-def _resolve_type_aliases(annotation: Any) -> Any:
+def _unresolvable_alias(annotation: Any, reason: object) -> InvalidAnnotationException:
+    return InvalidAnnotationException(f"Cannot resolve the type alias {_format_annotation(annotation)!r}: {reason}")
+
+
+def _resolve_type_aliases(annotation: Any, expanding: tuple[Any, ...] = ()) -> Any:
     origin = get_origin(annotation)
-    try:
-        if isinstance(annotation, TypeAliasTypes):
-            return _resolve_type_aliases(annotation.__value__)
-        if isinstance(origin, TypeAliasTypes):
-            type_vars = dict(zip(origin.__type_params__, get_args(annotation), strict=True))
-            return _resolve_type_aliases(_substitute_typevars(origin.__value__, type_vars))
-    except (NameError, ValueError) as exc:
-        raise InvalidAnnotationException(
-            f"Cannot resolve the type alias {_format_annotation(annotation)!r}: {exc}"
-        ) from exc
+    if isinstance(alias := annotation if origin is None else origin, TypeAliasTypes):
+        if alias in expanding:
+            return annotation
+        params, args = alias.__type_params__, get_args(annotation)
+        if len(params) != len(args) or not all(isinstance(param, TypeVar) for param in params):
+            raise _unresolvable_alias(annotation, f"each of its type parameters {params!r} needs one type argument")
+        try:
+            value = alias.__value__
+        except NameError as exc:
+            raise _unresolvable_alias(annotation, exc) from exc
+        if params:
+            value = _substitute_typevars(value, dict(zip(params, args, strict=True)))
+        return _resolve_type_aliases(value, (*expanding, alias))
+    if expanding and isinstance(annotation, (str, ForwardRef)):
+        namespace = getattr(sys.modules.get(expanding[-1].__module__), "__dict__", {})
+        source = annotation.__forward_arg__ if isinstance(annotation, ForwardRef) else annotation
+        try:
+            value = eval(source, namespace)  # noqa: S307
+        except (NameError, AttributeError, SyntaxError) as exc:
+            raise _unresolvable_alias(expanding[-1], exc) from exc
+        return _resolve_type_aliases(value, expanding)
     args = get_args(annotation)
-    if not args or (resolved := tuple(_resolve_type_aliases(arg) for arg in args)) == args:
+    if not args or origin is Literal:
         return annotation
     if origin is Annotated:
-        return Annotated[(resolved[0], *args[1:])]
+        inner = _resolve_type_aliases(args[0], expanding)
+        return annotation if inner is args[0] else Annotated[(inner, *args[1:])]
+    if (resolved := tuple(_resolve_type_aliases(arg, expanding) for arg in args)) == args:
+        return annotation
     if origin in UnionTypes:
         return Union[resolved]
     return annotation.copy_with(resolved) if hasattr(annotation, "copy_with") else origin[resolved]
@@ -340,9 +359,12 @@ def build_dto_plan(handler: "BaseRouteHandler", app: "Litestar") -> DTOPlan:
         name_scope = handler_name_scope(handler)
         data_field = handler.parsed_data_field
         return_field = handler.parsed_return_field
-        declared = (read_dto_declaration(handler, is_data_field=is_data)[0] for is_data in (True, False))
-        if any(dto is not None and dto is not Empty for dto in declared):
-            data_field = _without_type_aliases(data_field) if data_field is not None else None
+        dto, _ = read_dto_declaration(handler, is_data_field=True)
+        return_dto, _ = read_dto_declaration(handler, is_data_field=False)
+        declares_dto = dto is not None and dto is not Empty
+        if data_field is not None and declares_dto:
+            data_field = _without_type_aliases(data_field)
+        if return_dto is not None and (return_dto is not Empty or declares_dto):
             return_field = _without_type_aliases(return_field)
         data_dto, data_target = _resolve_data_dto(handler, app, data_field)
         data: DTODirectionPlan | None = None
