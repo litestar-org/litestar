@@ -23,17 +23,12 @@ from litestar.dto._types import (
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.types import DataclassProtocol
 from litestar.typing import FieldDefinition
+from tests.unit.test_dto import Model
 
 if TYPE_CHECKING:
     from collections.abc import Set
 
     from litestar.dto._types import TransferType
-
-
-@dataclass
-class Model:
-    a: int
-    b: str
 
 
 @dataclass

@@ -1,42 +1,27 @@
-import dataclasses
-import gc
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
-from typing import Annotated, Any, Generic, Optional, TypeVar
+from typing import Annotated, Any, Generic, TypeVar
 
 import msgspec
 import pytest
 
 from litestar import Controller, Litestar, Response, get, post, websocket_listener
 from litestar._openapi.schema_generation import SchemaCreator
-from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar.connection import ASGIConnection
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig
 from litestar.dto._backend import DTOBackend
-from litestar.dto._plan import (
-    build_dto_plan,
-    build_schema_annotation,
-    create_backend,
-    create_dto_openapi_schema,
-)
+from litestar.dto._plan import build_dto_plan, build_schema_annotation, create_backend
 from litestar.enums import RequestEncodingType
-from litestar.exceptions import DTOFactoryException, InvalidAnnotationException, LitestarException, LitestarWarning
+from litestar.exceptions import InvalidAnnotationException, LitestarException, LitestarWarning
 from litestar.handlers import HTTPRouteHandler, WebsocketListenerRouteHandler, websocket_stream
-from litestar.openapi.spec import Reference
 from litestar.params import BodyKwarg, JSONBody, MultipartBody, URLEncodedBody
 from litestar.plugins import SerializationPlugin
 from litestar.testing import RequestFactory, TestClient, create_test_client
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from tests.unit.test_dto import registered
+from tests.unit.test_dto import Model, registered
 
 T = TypeVar("T")
-
-
-@dataclass
-class Model:
-    a: int
-    b: str
 
 
 @dataclass
@@ -469,97 +454,6 @@ def test_stream_resolves_dtos_once() -> None:
             assert ws.receive_json() == {"a": 1}
 
 
-def openapi_ref(dto: type[AbstractDTO[Any]], field_definition: FieldDefinition | None, handler_id: str) -> str:
-    assert field_definition is not None
-    schema_creator = SchemaCreator(plugins=openapi_schema_plugins)
-    result = dto.create_openapi_schema(
-        field_definition=field_definition, handler_id=handler_id, schema_creator=schema_creator
-    )
-    schema_creator.schema_registry.generate_components_schemas()
-    assert isinstance(result, Reference)
-    return result.ref
-
-
-def _operation_refs(app: Litestar) -> tuple[str, str]:
-    operation = app.openapi_schema.paths["/"].post  # type: ignore[index, union-attr]
-    request_ref = operation.request_body.content["application/json"].schema.ref  # type: ignore[union-attr]
-    response_ref = operation.responses["201"].content["application/json"].schema.ref  # type: ignore[union-attr, index]
-    return request_ref, response_ref
-
-
-def test_create_openapi_schema_with_handler_id() -> None:
-    app = Litestar([make_rule_handler(ModelDTO, ModelReadDTO, Model, Model)])
-    handler = registered(app)
-    request_ref, response_ref = _operation_refs(app)
-
-    assert openapi_ref(ModelReadDTO, handler.parsed_fn_signature.return_type, handler.handler_id) == response_ref
-    assert openapi_ref(ModelDTO, handler.parsed_data_field, handler.handler_id) == request_ref
-
-
-@pytest.mark.parametrize(
-    "field_name",
-    [
-        pytest.param("parsed_data_field", id="data-field"),
-        pytest.param("return_type", id="signature-return-type"),
-        pytest.param("parsed_return_field", id="parsed-return-field"),
-    ],
-)
-def test_create_openapi_schema_same_model_in_both_directions(field_name: str) -> None:
-    data_dto = DataclassDTO[Annotated[Model, DTOConfig(exclude={"a"})]]
-    return_dto = DataclassDTO[Annotated[Model, DTOConfig(exclude={"b"})]]
-    app = Litestar([make_rule_handler(data_dto, return_dto, Model, Model)])
-    handler = registered(app)
-    request_ref, response_ref = _operation_refs(app)
-    components = app.openapi_schema.components.schemas
-    field_definition = (
-        handler.parsed_fn_signature.return_type if field_name == "return_type" else getattr(handler, field_name)
-    )
-    is_data_field = field_name == "parsed_data_field"
-
-    assert field_definition == handler.parsed_data_field
-    ref = openapi_ref(data_dto if is_data_field else return_dto, field_definition, handler.handler_id)
-
-    assert ref == (request_ref if is_data_field else response_ref)
-    name = ref.rsplit("/", 1)[1]
-    assert name.endswith("RequestBody" if is_data_field else "ResponseBody")
-    assert set(components[name].properties) == ({"b"} if is_data_field else {"a"})  # type: ignore[arg-type]
-
-
-def test_create_openapi_schema_for_listener_data_field() -> None:
-    @websocket_listener("/ws", dto=ItemDTO)
-    async def handler(data: Item) -> None:
-        return None
-
-    listener = registered(Litestar([handler]), "/ws", "websocket")
-
-    assert openapi_ref(ItemDTO, listener.parsed_data_field, listener.handler_id).endswith("ItemRequestBody")
-
-
-def test_create_openapi_schema_for_copy_of_listener_data_field_is_return_direction() -> None:
-    @websocket_listener("/ws", dto=ItemDTO)
-    async def handler(data: Item) -> Item:
-        return data
-
-    listener = registered(Litestar([handler]), "/ws", "websocket")
-    copied_field = dataclasses.replace(listener.parsed_data_field)
-
-    assert openapi_ref(ItemDTO, copied_field, listener.handler_id).endswith("ItemResponseBody")
-
-
-def test_create_openapi_schema_finds_a_live_handler_by_a_copy_of_its_id() -> None:
-    app = Litestar([make_rule_handler(ModelDTO, None, Model, None)])
-    handler = registered(app)
-    field_definition = handler.parsed_data_field
-    handler_id = f"{handler.handler_id}"
-
-    assert openapi_ref(ModelDTO, field_definition, handler_id).endswith("ModelRequestBody")
-
-    del app, handler
-    gc.collect()
-    with pytest.raises(DTOFactoryException):
-        ModelDTO.create_openapi_schema(field_definition, handler_id, SchemaCreator())
-
-
 class NoInstanceDTO(DataclassDTO[Model]):
     def __init__(self, asgi_connection: ASGIConnection[Any, Any, Any, Any]) -> None:
         raise AssertionError("a stock DTO must not be instantiated per request")
@@ -693,44 +587,6 @@ async def test_to_response_on_unregistered_handler_raises() -> None:
 
     with pytest.raises(LitestarException):
         await handler.to_response(Model(a=1, b="two"), RequestFactory().get("/", route_handler=handler))
-
-
-@pytest.mark.parametrize(
-    ("is_data_field", "annotation"),
-    [
-        pytest.param(True, Model, id="data-model"),
-        pytest.param(True, list[Model], id="data-list"),
-        pytest.param(True, Optional[Model], id="data-optional"),
-        pytest.param(False, Model, id="return-model"),
-        pytest.param(False, list[Model], id="return-list"),
-        pytest.param(False, Optional[Model], id="return-optional"),
-        pytest.param(False, WithCount[Model], id="return-generic-wrapper"),
-        pytest.param(False, Response[Model], id="return-response"),
-    ],
-)
-def test_plan_schema_matches_create_openapi_schema(is_data_field: bool, annotation: Any) -> None:
-    if is_data_field:
-        handler_fn = make_rule_handler(ModelDTO, None, annotation, None)
-    else:
-        handler_fn = make_rule_handler(Empty, ModelDTO, None, annotation)
-    handler = registered(Litestar([handler_fn]))
-    plan = handler._dto_plan
-    direction = plan.data if is_data_field else plan.return_
-    field_definition = handler.parsed_data_field if is_data_field else handler.parsed_fn_signature.return_type
-    assert direction is not None
-
-    plan_creator = SchemaCreator(plugins=openapi_schema_plugins)
-    shim_creator = SchemaCreator(plugins=openapi_schema_plugins)
-    from_plan = create_dto_openapi_schema(direction, field_definition, plan_creator)
-    from_shim = ModelDTO.create_openapi_schema(
-        field_definition=field_definition, handler_id=handler.handler_id, schema_creator=shim_creator
-    )
-
-    assert from_plan == from_shim
-    assert (
-        plan_creator.schema_registry.generate_components_schemas()
-        == shim_creator.schema_registry.generate_components_schemas()
-    )
 
 
 def test_openapi_generation_does_not_call_create_openapi_schema(monkeypatch: pytest.MonkeyPatch) -> None:

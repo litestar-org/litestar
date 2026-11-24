@@ -1,30 +1,24 @@
+import dataclasses
+import gc
 import warnings
-from dataclasses import dataclass
-from typing import Any
+from typing import Annotated, Any
 
 import msgspec
 import pytest
 from advanced_alchemy.extensions.litestar import SQLAlchemyDTO
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from litestar import Litestar, Request, post
+from litestar import Litestar, Request, post, websocket_listener
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
-from litestar.dto import AbstractDTO, DataclassDTO, MsgspecDTO
+from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, MsgspecDTO
 from litestar.exceptions import DTOFactoryException, InvalidAnnotationException, LitestarDeprecationWarning
 from litestar.handlers import HTTPRouteHandler
 from litestar.openapi.spec import Reference
 from litestar.params import JSONBody, URLEncodedBody
 from litestar.testing import RequestFactory, TestClient
 from litestar.typing import FieldDefinition
-from tests.unit.test_dto import registered
-
-
-@dataclass
-class Model:
-    a: int
-    b: str
-
+from tests.unit.test_dto import Model, registered
 
 PAYLOAD = b'{"a":1,"b":"two"}'
 
@@ -73,14 +67,6 @@ def test_instance_method_called_directly_warns(
     )
 
 
-def test_instance_method_on_unregistered_handler_raises() -> None:
-    handler = make_handler()
-    request = RequestFactory().post("/", route_handler=handler)
-
-    with pytest.warns(LitestarDeprecationWarning), pytest.raises(DTOFactoryException):
-        DataclassDTO[Model](request).decode_bytes(PAYLOAD)
-
-
 def test_create_for_field_definition_warns_and_validates() -> None:
     dto = DataclassDTO[Model]
 
@@ -93,69 +79,79 @@ def test_create_for_field_definition_warns_and_validates() -> None:
         dto.create_for_field_definition(FieldDefinition.from_annotation(tuple[Model, str]), handler_id="h")
 
 
-def test_direct_create_for_field_definition_keeps_shims_working() -> None:
+def test_direct_backend_serves_the_direction_the_plan_lacks_on_its_class_only() -> None:
     class DirectDTO(DataclassDTO[Model]):
         pass
 
-    handler = make_handler()
-    request = RequestFactory().post("/", route_handler=handler)
-    field_definition = FieldDefinition.from_annotation(JSONBody[Model])
+    class ChildDTO(DirectDTO):
+        pass
 
-    with pytest.warns(LitestarDeprecationWarning):
-        DirectDTO.create_for_field_definition(field_definition, handler_id=handler.handler_id)
-        assert DirectDTO(request).decode_bytes(PAYLOAD) == Model(a=1, b="two")
-        assert DirectDTO(request).decode_builtins({"a": 1, "b": "two"}) == Model(a=1, b="two")
-        schema = DirectDTO.create_openapi_schema(
-            field_definition, handler.handler_id, SchemaCreator(plugins=openapi_schema_plugins)
-        )
-        assert isinstance(schema, Reference)
-        assert schema.ref.endswith("ModelRequestBody")
-
-        DirectDTO.create_for_field_definition(
-            FieldDefinition.from_annotation(JSONBody[list[Model]]), handler_id=handler.handler_id
-        )
-        assert DirectDTO(request).decode_bytes(b"[" + PAYLOAD + b"]") == [Model(a=1, b="two")]
-
-        class ChildDTO(DirectDTO):
-            pass
-
-        with pytest.raises(DTOFactoryException):
-            ChildDTO(request).decode_bytes(PAYLOAD)
-
-    assert "_direct_backends" not in vars(AbstractDTO)
-    assert "_direct_backends" not in vars(DataclassDTO)
-    assert list(vars(DirectDTO)["_direct_backends"]) == [str(handler.handler_id)]
-
-
-def test_create_openapi_schema_does_not_warn(
-    handler_and_request: tuple[HTTPRouteHandler, Request[Any, Any, Any]],
-) -> None:
-    handler, _ = handler_and_request
-    assert handler.data_dto is not None
-    assert handler.parsed_data_field is not None
-
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        schema = handler.data_dto.create_openapi_schema(
-            field_definition=handler.parsed_data_field,
-            handler_id=handler.handler_id,
-            schema_creator=SchemaCreator(plugins=openapi_schema_plugins),
-        )
-
-    assert isinstance(schema, Reference)
-
-
-def test_instance_method_on_registered_handler_without_dto_for_direction_raises() -> None:
     app = Litestar([make_handler(DataclassDTO[Model], None)])
     handler: HTTPRouteHandler = registered(app)
     request = RequestFactory(app=app).post("/", route_handler=handler)
 
-    with pytest.warns(LitestarDeprecationWarning), pytest.raises(DTOFactoryException) as exc_info:
-        OtherDTO(request).data_to_encodable_type(Model(a=1, b="two"))
+    with pytest.warns(LitestarDeprecationWarning):
+        DirectDTO.create_for_field_definition(FieldDefinition.from_annotation(Model), handler_id=handler.handler_id)
+        encoded = DirectDTO(request).data_to_encodable_type(Model(a=1, b="two"))
+        with pytest.raises(DTOFactoryException) as exc_info:
+            ChildDTO(request).data_to_encodable_type(Model(a=1, b="two"))
 
+    assert msgspec.to_builtins(encoded) == {"a": 1, "b": "two"}
     assert str(exc_info.value) == (
-        f"Handler {str(handler)!r} has no return DTO, and no backend of OtherDTO was created for it"
+        f"Handler {str(handler)!r} has no return DTO, and no backend of {ChildDTO.__qualname__} was created for it"
     )
+    assert list(vars(DirectDTO)["_direct_backends"]) == [handler.handler_id]
+    assert "_direct_backends" not in vars(DataclassDTO)
+
+
+def openapi_component(dto: type[AbstractDTO[Any]], field_definition: Any, handler_id: str) -> tuple[str, Any]:
+    schema_creator = SchemaCreator(plugins=openapi_schema_plugins)
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        result = dto.create_openapi_schema(field_definition, handler_id, schema_creator)
+    components = schema_creator.schema_registry.generate_components_schemas()
+    assert isinstance(result, Reference)
+    name = result.ref.rsplit("/", 1)[1]
+    return name, components[name]
+
+
+def test_create_openapi_schema_documents_each_direction_without_warning() -> None:
+    data_dto = DataclassDTO[Annotated[Model, DTOConfig(exclude={"a"})]]
+    return_dto = DataclassDTO[Annotated[Model, DTOConfig(exclude={"b"})]]
+    handler: HTTPRouteHandler = registered(Litestar([make_handler(data_dto, return_dto)]))
+    handler_id = f"{handler.handler_id}"
+
+    request_name, request_schema = openapi_component(data_dto, handler.parsed_data_field, handler_id)
+    response_name, response_schema = openapi_component(return_dto, handler.parsed_return_field, handler_id)
+
+    assert (request_name, set(request_schema.properties)) == ("HandlerModelRequestBody", {"b"})
+    assert (response_name, set(response_schema.properties)) == ("HandlerModelResponseBody", {"a"})
+
+
+def test_create_openapi_schema_treats_only_the_listener_data_field_itself_as_received_data() -> None:
+    @websocket_listener("/ws", dto=DataclassDTO[Model])
+    async def listener(data: Model) -> Model:
+        return data
+
+    handler = registered(Litestar([listener]), "/ws", "websocket")
+
+    copied_field = dataclasses.replace(handler.parsed_data_field)
+
+    assert openapi_component(DataclassDTO[Model], handler.parsed_data_field, handler.handler_id)[0].endswith(
+        "RequestBody"
+    )
+    assert openapi_component(DataclassDTO[Model], copied_field, handler.handler_id)[0].endswith("ResponseBody")
+
+
+def test_create_openapi_schema_does_not_find_a_collected_handler() -> None:
+    app = Litestar([make_handler()])
+    field_definition = registered(app).parsed_data_field
+    handler_id = registered(app).handler_id
+
+    del app
+    gc.collect()
+    with pytest.raises(DTOFactoryException):
+        DataclassDTO[Model].create_openapi_schema(field_definition, handler_id, SchemaCreator())
 
 
 class Base(DeclarativeBase):
@@ -229,25 +225,3 @@ def test_overriding_a_deprecated_entry_point_warns_once_per_class_and_method() -
         "effect. The method will be removed in 4.0."
         for name in ("decode_bytes", "create_openapi_schema")
     ]
-
-
-class OtherDTO(DataclassDTO[Model]):
-    pass
-
-
-def test_direct_create_for_field_definition_serves_direction_the_plan_lacks() -> None:
-    app = Litestar([make_handler(DataclassDTO[Model], None)])
-    handler: HTTPRouteHandler = registered(app)
-    request = RequestFactory(app=app).post("/", route_handler=handler)
-    return_field = FieldDefinition.from_annotation(Model)
-
-    with pytest.warns(LitestarDeprecationWarning):
-        OtherDTO.create_for_field_definition(return_field, handler_id=handler.handler_id)
-        encoded = OtherDTO(request).data_to_encodable_type(Model(a=1, b="two"))
-    schema = OtherDTO.create_openapi_schema(
-        return_field, handler.handler_id, SchemaCreator(plugins=openapi_schema_plugins)
-    )
-
-    assert msgspec.to_builtins(encoded) == {"a": 1, "b": "two"}
-    assert isinstance(schema, Reference)
-    assert schema.ref.endswith("ModelResponseBody")
