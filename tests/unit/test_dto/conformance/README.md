@@ -16,28 +16,9 @@ A cell is `<feature>-<library>-<direction>`, for example `exclude_nested-ms-out`
 - `out`: the handler returns an instance and the response body is compared.
 
 A row marks a direction as not applicable by passing `NA(reason)` as its `requests` or `response`, and a
-library with `na={"py": reason}`; such cells are not collected.
-Cells for `py` are skipped when pydantic is not installed.
+library with `na={"py": reason}`; such cells are not collected. A behaviour a library does not share,
+such as pydantic not validating a `DTOData` payload, is a `na` entry with the reason, and a limit all
+libraries share is the row's expectation. Cells for `py` are skipped when pydantic is not installed.
 
-## Known gaps
-
-`known_gaps.py::KNOWN_GAPS` lists the cells that do not conform yet, with the exact text of the failure:
-
-    "tuple_fixed-dc-out": 'out: expected 200 {...}, got 200 {...}'
-
-The test asserts that the cell still fails with exactly this text and then reports it as `xfail`.
-A cell that fails differently, a cell that conforms while it is still listed, and a key that names no
-cell all fail the suite.
-
-## Flipping a cell
-
-1. Fix the behaviour.
-2. Run the grid. The fixed cells fail with `assert None == '...'`.
-3. Delete their entries from `KNOWN_GAPS`. Do not edit the expectation in `features.py` to match the code.
-
-Five entries are not expected to flip: `partial_nested_list-{dc,ms,py}-in` (`DTOData` does not convert the
-members of nested collections) and `constraint_partial_length-py-in`, `constraint_partial_number-py-in`
-(pydantic does not validate a `DTOData` payload). They record accepted limits, not planned work.
-
-To record a new gap, add the row to `features.py`, run the grid, and copy the text shown on the left of
-the failing assertion into `KNOWN_GAPS`; add `-vv` when pytest truncates it.
+A failing cell reports the difference between the expected and the observed exchange, for example
+`assert 'in invalid: expected 400, got 201 {"value": "ab"}' is None`.
