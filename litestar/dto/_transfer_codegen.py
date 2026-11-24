@@ -42,6 +42,10 @@ TransferFunctionCache = dict[tuple[Any, ...], Callable[[Any], Any]]
 IDENTIFIER_PARTS_PATTERN = re.compile(r"\w+")
 
 
+def _is_plain_identifier(name: str) -> bool:
+    return name.isidentifier() and not keyword.iskeyword(name) and name == unicodedata.normalize("NFKC", name)
+
+
 @cache
 def _compile(source: str) -> "CodeType":
     # add the function to linecache, to get better stacktraces when an error occurs
@@ -154,6 +158,13 @@ class TransferFunctionFactory:
             with self._try_except_pass("KeyError"):
                 yield value_expr
 
+    def _attribute_expr(self, source_name: str, field_name: str) -> str:
+        if self.attribute_accessor_name:
+            return f"{self.attribute_accessor_name}({source_name}, {field_name!r})"
+        if _is_plain_identifier(field_name):
+            return f"{source_name}.{field_name}"
+        return f"getattr({source_name}, {field_name!r})"
+
     @contextmanager
     def _access_attribute(self, source_name: str, field_name: str, expect_optional: bool) -> Generator[str, None, None]:
         """Enter a context within which an attribute of an object can be accessed
@@ -161,17 +172,7 @@ class TransferFunctionFactory:
         Yields an expression that retrieves the object attribute. Content written while
         within this context can use this expression to access the desired value.
         """
-
-        if self.attribute_accessor_name:
-            value_expr = f"{self.attribute_accessor_name}({source_name}, {field_name!r})"
-        elif (
-            field_name.isidentifier()
-            and not keyword.iskeyword(field_name)
-            and field_name == unicodedata.normalize("NFKC", field_name)
-        ):
-            value_expr = f"{source_name}.{field_name}"
-        else:
-            value_expr = f"getattr({source_name}, {field_name!r})"
+        value_expr = self._attribute_expr(source_name, field_name)
 
         # if we expect an optional attribute it's faster to check with hasattr
         if expect_optional:
@@ -182,6 +183,29 @@ class TransferFunctionFactory:
         else:
             with self._try_except_pass("AttributeError"):
                 yield value_expr
+
+    @contextmanager
+    def _try_keyword_call(
+        self,
+        assignment_target: str,
+        destination_type_name: str,
+        source_instance_name: str,
+        field_definitions: tuple[TransferDTOFieldDefinition, ...],
+    ) -> Generator[None, None, None]:
+        """Enter a `try / except AttributeError` block that builds the destination type in a single keyword call
+        when every field is an attribute passed through unchanged. Content written while inside this context goes
+        into the `except` block, or is written unchanged if a field needs more than that.
+        """
+        if not all(
+            self._is_passed_through(f.transfer_type) and _is_plain_identifier(f.name) for f in field_definitions
+        ):
+            yield
+            return
+        kwargs = ", ".join(f"{f.name}={self._attribute_expr(source_instance_name, f.name)}" for f in field_definitions)
+        with self._start_block("try:"):
+            self._add_stmt(f"{assignment_target} = {destination_type_name}({kwargs})")
+        with self._start_block("except AttributeError:"):
+            yield
 
     @classmethod
     def create_transfer_instance_data(
@@ -329,6 +353,13 @@ class TransferFunctionFactory:
         local_dict_name = self._create_local_name("unstructured_data")
         self._add_stmt(f"{local_dict_name} = {{}}")
 
+        # if the destination type is a dict we can reuse our temporary dictionary of
+        # unstructured data as the "return value"
+        if not destination_type_is_dict:
+            build_stmt = f"{tmp_return_type_name} = {destination_type_name}(**{local_dict_name})"
+        else:
+            build_stmt = f"{tmp_return_type_name} = {local_dict_name}"
+
         if field_definitions := tuple(f for f in field_definitions if self.is_data_field or not f.is_excluded):
             if len(field_definitions) > 1 and not source_instance_name.isidentifier():
                 # If there's more than one field we have to access, we check if it is
@@ -342,6 +373,7 @@ class TransferFunctionFactory:
                 source_instance_name = new_source_instance_name
 
             for source_type in ("mapping", "object"):
+                keyword_call: AbstractContextManager[None] = nullcontext()
                 if source_type == "mapping":
                     struct_check = f"not isinstance({source_instance_name}, Struct) and " if self.is_data_field else ""
                     block_expr = f"if {struct_check}isinstance({source_instance_name}, Mapping):"
@@ -349,21 +381,24 @@ class TransferFunctionFactory:
                 else:
                     block_expr = "else:"
                     access_item = self._access_attribute
+                    if not (self.is_data_field or destination_type_is_dict):
+                        keyword_call = self._try_keyword_call(
+                            assignment_target=tmp_return_type_name,
+                            destination_type_name=destination_type_name,
+                            source_instance_name=source_instance_name,
+                            field_definitions=field_definitions,
+                        )
 
-                with self._start_block(expr=block_expr):
+                with self._start_block(expr=block_expr), keyword_call:
                     self._create_transfer_instance_data_inner(
                         local_dict_name=local_dict_name,
                         field_definitions=field_definitions,
                         access_field_safe=access_item,
                         source_instance_name=source_instance_name,
                     )
-
-        # if the destination type is a dict we can reuse our temporary dictionary of
-        # unstructured data as the "return value"
-        if not destination_type_is_dict:
-            self._add_stmt(f"{tmp_return_type_name} = {destination_type_name}(**{local_dict_name})")
+                    self._add_stmt(build_stmt)
         else:
-            self._add_stmt(f"{tmp_return_type_name} = {local_dict_name}")
+            self._add_stmt(build_stmt)
 
     def _create_transfer_instance_data_inner(
         self,
@@ -486,6 +521,12 @@ class TransferFunctionFactory:
             return
 
         self._add_stmt(f"{assignment_target} = {source_value_name}")
+
+    @staticmethod
+    def _is_passed_through(transfer_type: TransferType) -> bool:
+        if isinstance(transfer_type, SimpleType):
+            return not transfer_type.has_nested
+        return isinstance(transfer_type, (UnionType, TupleType)) and not transfer_type.has_nested
 
     @staticmethod
     def _contains_nested_instance(transfer_type: TransferType) -> bool:

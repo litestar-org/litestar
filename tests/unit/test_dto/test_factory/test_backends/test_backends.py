@@ -9,7 +9,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field, make_dataclass
 from datetime import date
 from decimal import Decimal
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 from typing import TYPE_CHECKING, Annotated, ClassVar, Optional, Union
 from unittest.mock import MagicMock
 
@@ -374,6 +374,53 @@ def test_backend_encode_optional_nested_none() -> None:
     result = to_builtins(data)
     assert result["name"] == "test"
     assert result["inner"] is None
+
+
+@dataclass
+class OptionalFieldDC:
+    a: int
+    b: str
+    c: Optional[str] = None
+
+
+class RaisingAttribute:
+    a = 1
+    b = "two"
+
+    def __init__(self, raising: str) -> None:
+        self.raising = raising
+
+    def __getattribute__(self, name: str) -> Any:
+        if name == object.__getattribute__(self, "raising"):
+            raise AttributeError(name)
+        return object.__getattribute__(self, name)
+
+
+def _optional_field_backend() -> DTOBackend:
+    return DTOBackend(
+        handler_id="test",
+        dto_factory=DataclassDTO[OptionalFieldDC],
+        field_definition=FieldDefinition.from_annotation(OptionalFieldDC),
+        model_type=OptionalFieldDC,
+        wrapper_attribute_name=None,
+        is_data_field=False,
+    )
+
+
+@pytest.mark.parametrize(
+    "source",
+    [pytest.param(SimpleNamespace(a=1, b="two"), id="absent"), pytest.param(RaisingAttribute("c"), id="raising")],
+)
+def test_backend_encode_object_lacking_optional_attribute(source: Any) -> None:
+    assert to_builtins(_optional_field_backend().encode_data(source)) == {"a": 1, "b": "two", "c": None}
+
+
+@pytest.mark.parametrize(
+    "source", [pytest.param(SimpleNamespace(a=1), id="absent"), pytest.param(RaisingAttribute("b"), id="raising")]
+)
+def test_backend_encode_object_lacking_required_attribute(source: Any) -> None:
+    with pytest.raises(TypeError, match="Missing required argument 'b'"):
+        _optional_field_backend().encode_data(source)
 
 
 def _custom_accessor(obj: object, attr: str) -> Any:
