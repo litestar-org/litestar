@@ -138,7 +138,7 @@ def describe(data: Any) -> dict[str, Any]:
 
 
 def _target(annotation: Any, direction: Literal["data", "return"]) -> Any:
-    target = resolve_dto_target(UserDTO, FieldDefinition.from_annotation(annotation), direction)
+    target = resolve_dto_target(UserDTO, FieldDefinition.from_annotation(annotation), is_data_field=direction == "data")
     if target is None:
         return None
     return target.wrapper_attribute_name, target.passes_none, target.wrapped_passes_none
@@ -199,8 +199,8 @@ def test_resolve_dto_target_annotation_table(annotation: Any, data: Any, return_
 
 
 def test_resolve_dto_target_of_missing_annotation() -> None:
-    assert resolve_dto_target(UserDTO, None, "data") is None
-    assert resolve_dto_target(UserDTO, FieldDefinition.from_annotation(Empty), "return") is None
+    assert resolve_dto_target(UserDTO, None, is_data_field=True) is None
+    assert resolve_dto_target(UserDTO, FieldDefinition.from_annotation(Empty), is_data_field=False) is None
 
 
 def respond_described(data: Any) -> dict[str, Any]:

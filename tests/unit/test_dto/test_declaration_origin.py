@@ -7,7 +7,7 @@ import pytest
 
 from litestar import Controller, Litestar, Router, get, post
 from litestar.dto import DataclassDTO, DTOConfig
-from litestar.dto._plan import DTODeclaration, read_dto_declaration
+from litestar.dto._plan import read_dto_declaration
 from litestar.exceptions import LitestarException
 from litestar.handlers import HTTPRouteHandler, WebsocketListener, asgi, websocket_stream
 from litestar.params import JSONBody
@@ -24,6 +24,10 @@ class User:
 
 UserDTO = DataclassDTO[User]
 UserReadDTO = DataclassDTO[Annotated[User, DTOConfig(exclude={"name"})]]
+
+
+def declared(handler: Any, option: Option) -> tuple[Any, bool]:
+    return read_dto_declaration(handler, is_data_field=option == "dto")
 
 
 def _set(option: Option, value: Any) -> dict[str, Any]:
@@ -133,7 +137,7 @@ def _asgi_under_router(option: Option) -> Any:
     ],
 )
 def test_declaration_source(build: Callable[[Option], Any], value: Any, source: Any, option: Option) -> None:
-    assert read_dto_declaration(build(option), option) == DTODeclaration(option=option, value=value, source=source)
+    assert declared(build(option), option) == (value, source == "handler")
 
 
 @pytest.mark.parametrize("option", ["dto", "return_dto"])
@@ -144,16 +148,16 @@ def test_handler_registered_on_two_routers_has_independent_inherited_values(opti
 
     app = Litestar([first, second])
 
-    assert read_dto_declaration(_http(app, "/first"), option) == DTODeclaration(option, UserDTO, "layer")
-    assert read_dto_declaration(_http(app, "/second"), option) == DTODeclaration(option, UserReadDTO, "layer")
+    assert declared(_http(app, "/first"), option) == (UserDTO, False)
+    assert declared(_http(app, "/second"), option) == (UserReadDTO, False)
 
 
 def test_generated_options_handler_inherits_app_dtos_as_layer() -> None:
     app = Litestar([_handler()], dto=UserDTO, return_dto=UserReadDTO)
     options_handler = _http(app, method="OPTIONS")
 
-    assert read_dto_declaration(options_handler, "dto") == DTODeclaration("dto", UserDTO, "layer")
-    assert read_dto_declaration(options_handler, "return_dto") == DTODeclaration("return_dto", UserReadDTO, "layer")
+    assert declared(options_handler, "dto") == (UserDTO, False)
+    assert declared(options_handler, "return_dto") == (UserReadDTO, False)
 
 
 @pytest.mark.parametrize("option", ["dto", "return_dto"])
@@ -163,7 +167,7 @@ def test_merge_twice_keeps_closest_layer(option: Option) -> None:
 
     merged = _handler().merge(closest).merge(outer)
 
-    assert read_dto_declaration(merged, option) == DTODeclaration(option, UserDTO, "layer")
+    assert declared(merged, option) == (UserDTO, False)
 
 
 @pytest.mark.parametrize("own", [Empty, UserReadDTO])
@@ -175,7 +179,7 @@ def test_with_changes_preserves_declarations(option: Option, own: Any) -> None:
     changed = merged._with_changes(path="/x")
 
     for name in ("dto", "return_dto"):
-        assert read_dto_declaration(changed, name) == read_dto_declaration(merged, name)
+        assert declared(changed, name) == declared(merged, name)
 
 
 def test_app_register_keeps_declarations_of_registered_handlers() -> None:
@@ -188,8 +192,8 @@ def test_app_register_keeps_declarations_of_registered_handlers() -> None:
 
     app.register(other)
 
-    assert read_dto_declaration(registered, "dto") == DTODeclaration("dto", UserDTO, "layer")
-    assert read_dto_declaration(_http(app, "/other", "POST"), "dto") == DTODeclaration("dto", UserReadDTO, "handler")
+    assert declared(registered, "dto") == (UserDTO, False)
+    assert declared(_http(app, "/other", "POST"), "dto") == (UserReadDTO, True)
 
 
 def test_user_held_handler_is_not_mutated() -> None:
@@ -236,4 +240,4 @@ def test_handler_subclass_with_strict_signature_keeps_layer_dto() -> None:
 
     app = Litestar([Router("/", route_handlers=[route_handler], dto=UserDTO)])
 
-    assert read_dto_declaration(_http(app), "dto") == DTODeclaration("dto", UserDTO, "layer")
+    assert declared(_http(app), "dto") == (UserDTO, False)

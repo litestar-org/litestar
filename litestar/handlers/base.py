@@ -396,7 +396,7 @@ class BaseRouteHandler:
     def data_dto(self) -> type[AbstractDTO] | None:
         if (plan := self._dto_plan) is not None:
             return plan.data_dto
-        if (declared := read_dto_declaration(self, "dto").value) is Empty:
+        if (declared := read_dto_declaration(self, is_data_field=True)[0]) is Empty:
             self._raise_not_registered()
         return declared
 
@@ -408,7 +408,7 @@ class BaseRouteHandler:
     def return_dto(self) -> type[AbstractDTO] | None:
         if (plan := self._dto_plan) is not None:
             return plan.return_.dto if plan.return_ is not None else None
-        if (declared := read_dto_declaration(self, "return_dto").value) is Empty:
+        if (declared := read_dto_declaration(self, is_data_field=False)[0]) is Empty:
             self._raise_not_registered()
         return declared
 
