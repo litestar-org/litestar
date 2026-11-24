@@ -128,7 +128,10 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
 
         cookie_params = dict(extract_dataclass_items(self.config, exclude_none=True, include=Cookie.__dict__.keys()))
 
-        if scope_session is Empty:
+        if scope_session is Empty or not scope_session:
+            session_cookie = connection.cookies.get(self.config.key)
+            if not session_cookie or session_cookie == "null":
+                return
             await self.delete(session_id, store=store)
             headers.add(
                 "Set-Cookie",
@@ -202,7 +205,12 @@ class ServerSideSessionConfig(BaseBackendConfig[ServerSideSessionBackend]):
     samesite: Literal["lax", "strict", "none"] = field(default="lax")
     """Controls whether or not a cookie is sent with cross-site requests. Defaults to ``lax``."""
     exclude: str | list[str] | None = field(default=None)
-    """A pattern or list of patterns to skip in the session middleware."""
+    """A pattern or list of patterns to skip in the session middleware, matched against the request path."""
+    exclude_path_pattern: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns to skip in the session middleware, matched against the handler path at startup.
+
+    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+    """
     exclude_opt_key: str = field(default="skip_session")
     """An identifier to use on routes to disable the session middleware for a particular route."""
     store: str = "sessions"

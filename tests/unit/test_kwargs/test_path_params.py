@@ -7,9 +7,9 @@ from uuid import UUID, uuid1, uuid4
 
 import pytest
 
-from litestar import Litestar, MediaType, get, post
+from litestar import Litestar, MediaType, Router, get, post
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import FromPath, Parameter, PathParameter
+from litestar.params import FromPath, PathParameter
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 
@@ -121,15 +121,20 @@ def test_duplicate_path_param_validation() -> None:
         Litestar(route_handlers=[test_method])
 
 
-def test_path_param_defined_in_layered_params_error() -> None:
+def test_path_param_named_like_layer_path_parameter_binds_it() -> None:
     @get(path="/{param:int}")
-    def test_method(param: FromPath[int]) -> None:
-        raise AssertionError("should not be called")
+    async def test_method(param: FromPath[int]) -> int:
+        return param
 
-    with pytest.raises(ImproperlyConfiguredException) as exc_info:
-        Litestar(route_handlers=[test_method], parameters={"param": Parameter(gt=3)})
+    router = Router("/", route_handlers=[test_method], parameters={"param": PathParameter(gt=3)})
+    with create_test_client([router]) as client:
+        violated = client.get("/2")
+        valid = client.get("/5")
 
-    assert "Kwarg resolution ambiguity detected for the following keys: param." in str(exc_info.value)
+    assert violated.status_code == HTTP_400_BAD_REQUEST
+    assert violated.json()["extra"] == [{"message": "Expected `int` >= 4", "key": "param", "source": "path"}]
+    assert valid.status_code == HTTP_200_OK
+    assert valid.json() == 5
 
 
 @pytest.mark.parametrize(

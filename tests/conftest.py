@@ -45,7 +45,6 @@ if TYPE_CHECKING:
 
     from litestar import Litestar
     from litestar.types import (
-        AnyIOBackend,
         ASGIApp,
         ASGIVersion,
         Receive,
@@ -67,11 +66,6 @@ def mock() -> MagicMock:
 @pytest.fixture()
 def async_mock() -> AsyncMock:
     return AsyncMock()
-
-
-@pytest.fixture(params=[pytest.param("asyncio", id="asyncio"), pytest.param("trio", id="trio")])
-def anyio_backend(request: pytest.FixtureRequest) -> str:
-    return request.param  # type: ignore[no-any-return]
 
 
 @pytest.fixture()
@@ -171,20 +165,15 @@ def session_backend_config_memory(memory_store: MemoryStore) -> ServerSideSessio
 
 
 @pytest.fixture
-def session_middleware(session_backend: BaseSessionBackend, mock_asgi_app: ASGIApp) -> SessionMiddleware[Any]:
-    return SessionMiddleware(app=mock_asgi_app, backend=session_backend)
+def session_middleware(session_backend: BaseSessionBackend) -> SessionMiddleware[Any]:
+    return SessionMiddleware(backend=session_backend)
 
 
 @pytest.fixture
 def cookie_session_middleware(
-    cookie_session_backend: ClientSideSessionBackend, mock_asgi_app: ASGIApp
+    cookie_session_backend: ClientSideSessionBackend,
 ) -> SessionMiddleware[ClientSideSessionBackend]:
-    return SessionMiddleware(app=mock_asgi_app, backend=cookie_session_backend)
-
-
-@pytest.fixture
-def test_client_backend(anyio_backend_name: str) -> AnyIOBackend:
-    return cast("AnyIOBackend", anyio_backend_name)
+    return SessionMiddleware(backend=cookie_session_backend)
 
 
 @pytest.fixture
@@ -288,8 +277,8 @@ def request_factory() -> RequestFactory:
 
 @pytest.fixture()
 def reset_httpx_logging() -> Generator[None, None, None]:
-    # ensure that httpx logging is not interfering with our test client
-    httpx_logger = logging.getLogger("httpx")
+    # ensure that httpx2 logging is not interfering with our test client
+    httpx_logger = logging.getLogger("httpx2")
     initial_level = httpx_logger.level
     httpx_logger.setLevel(logging.WARNING)
     yield

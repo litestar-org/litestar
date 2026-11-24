@@ -9,6 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar import Litestar, put
 from litestar.dto import DTOConfig
+from litestar.params import JSONBody
 
 from .my_lib import Base
 
@@ -30,7 +31,7 @@ ReturnDTO = SQLAlchemyDTO[A]
 
 
 @put("/a", dto=DataDTO, return_dto=ReturnDTO, sync_to_thread=False)
-def update_a(data: A) -> A:
+def update_a(data: JSONBody[A]) -> A:
     # this shows that "b" was not parsed out of the inbound data
     assert "b" not in vars(data)
     # Now we'll create an instance of B and assign it"

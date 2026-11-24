@@ -1,11 +1,8 @@
-# pyright: reportUnnecessaryTypeIgnoreComment=false
-
 from __future__ import annotations
 
 import dataclasses
 from dataclasses import replace
 from typing import TYPE_CHECKING, Annotated, Any, Generic, TypeAlias, TypeVar
-from warnings import warn
 
 from typing_extensions import override
 
@@ -100,19 +97,9 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
             if field_info := model_fields.get(field_name):
                 # field_info might not exist, since FieldInfo isn't provided by pydantic
                 # for computed fields, but we still generate a FieldDefinition for them
-                try:
-                    extra = field_info.extra  # type: ignore[union-attr, attr-defined]
-                except AttributeError:
-                    extra = field_info.json_schema_extra  # type: ignore[union-attr]
-
-                if extra is not None and extra.pop(DTO_FIELD_META_KEY, None):  # pyright: ignore[reportFunctionMemberAccess]
-                    warn(
-                        message="Declaring 'DTOField' via Pydantic's 'Field.extra' is deprecated. "
-                        "Use 'Annotated', e.g., 'Annotated[str, DTOField(mark='read-only')]' instead. "
-                        "Support for 'DTOField' in 'Field.extra' will be removed in v3.",
-                        category=DeprecationWarning,
-                        stacklevel=2,
-                    )
+                extra = field_info.json_schema_extra
+                if isinstance(extra, dict):
+                    extra.pop(DTO_FIELD_META_KEY, None)
 
                 if not is_pydantic_undefined(field_info.default):
                     default = field_info.default

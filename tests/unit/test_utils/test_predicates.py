@@ -17,7 +17,6 @@ from typing import (
 import pytest
 
 from litestar import Response, get
-from litestar.pagination import CursorPagination
 from litestar.types import Empty
 from litestar.utils import is_any, is_async_callable, is_class_and_subclass, is_optional_union, is_union
 from litestar.utils.predicates import (
@@ -122,9 +121,32 @@ def test_is_non_string_sequence(value: Any, expected: bool) -> None:
     assert is_non_string_sequence(value) is expected
 
 
+T = TypeVar("T")
+
+
+@dataclass
+class NonGenericDataclass:
+    foo: int
+
+
+@dataclass
+class GenericDataclass(Generic[T]):
+    foo: T
+
+
+class NonDataclass: ...
+
+
 @pytest.mark.parametrize(
     "value, expected",
-    ((CursorPagination[str, str], True), (dict, False)),
+    (
+        (GenericDataclass[int], True),
+        (GenericDataclass, True),
+        (list[str], False),
+        (dict[str, int], False),
+        (dict, False),
+        (int, False),
+    ),
 )
 def test_is_generic(value: Any, expected: bool) -> None:
     assert is_generic(value) is expected
@@ -257,22 +279,6 @@ def test_not_undefined_sentinel() -> None:
     assert is_undefined_sentinel([]) is False
     assert is_undefined_sentinel({}) is False
     assert is_undefined_sentinel(None) is False
-
-
-T = TypeVar("T")
-
-
-@dataclass
-class NonGenericDataclass:
-    foo: int
-
-
-@dataclass
-class GenericDataclass(Generic[T]):
-    foo: T
-
-
-class NonDataclass: ...
 
 
 @pytest.mark.parametrize(

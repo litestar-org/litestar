@@ -13,6 +13,7 @@ from litestar._openapi.schema_generation.schema import SchemaCreator
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
+from litestar.params import JSONBody
 from litestar.plugins.pydantic import PydanticPlugin, PydanticSchemaPlugin
 from litestar.testing import TestClient, create_test_client
 from litestar.typing import FieldDefinition
@@ -291,7 +292,7 @@ def test_create_constrained_field_schema_v2(
 @pytest.mark.parametrize("cls", (PydanticPerson, PydanticDataclassPerson))
 def test_spec_generation(cls: Any) -> None:
     @post("/")
-    def handler(data: cls) -> cls:
+    def handler(data: JSONBody[cls]) -> cls:
         return data
 
     with create_test_client(handler) as client:
@@ -413,7 +414,7 @@ def test_schema_by_alias(base_model: AnyBaseModelType, pydantic_version: Pydanti
         first: str = pydantic_v2.Field(alias="second")
 
     @post("/", signature_types=[RequestWithAlias, ResponseWithAlias])
-    def handler(data: RequestWithAlias) -> ResponseWithAlias:
+    def handler(data: JSONBody[RequestWithAlias]) -> ResponseWithAlias:
         return ResponseWithAlias(second=data.first)
 
     app = Litestar(route_handlers=[handler], openapi_config=OpenAPIConfig(title="my title", version="1.0.0"))
@@ -448,7 +449,7 @@ def test_schema_by_alias_plugin_override(base_model: AnyBaseModelType, pydantic_
         first: str = pydantic_v2.Field(alias="second")
 
     @post("/", signature_types=[RequestWithAlias, ResponseWithAlias])
-    def handler(data: RequestWithAlias) -> ResponseWithAlias:
+    def handler(data: JSONBody[RequestWithAlias]) -> ResponseWithAlias:
         return ResponseWithAlias(second=data.first)
 
     app = Litestar(

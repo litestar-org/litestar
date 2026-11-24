@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from litestar import Litestar, post
 from litestar.dto import DTOConfig, dto_field
+from litestar.params import JSONBody
 
 from .my_lib import Base
 
@@ -23,7 +24,7 @@ UserDTO = SQLAlchemyDTO[Annotated[User, config]]
 
 
 @post("/users", dto=UserDTO, sync_to_thread=False)
-def create_user(data: User) -> User:
+def create_user(data: JSONBody[User]) -> User:
     assert data.first_name == "Litestar User"
     data.created_at = datetime.min
     return data

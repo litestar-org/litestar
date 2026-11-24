@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import ImproperlyConfiguredException
@@ -14,9 +13,8 @@ __all__ = ("ASGIRouteHandler", "asgi")
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping, Sequence
 
-    from litestar import Litestar, Router
+    from litestar import Router
     from litestar.connection import ASGIConnection
-    from litestar.routes import BaseRoute
     from litestar.types import (
         AsyncAnyCallable,
         ExceptionHandlersMap,
@@ -27,8 +25,11 @@ if TYPE_CHECKING:
 
 class ASGIRouteHandler(BaseRouteHandler):
     __slots__ = (
+        "_lifespan_state",
         "copy_scope",
+        "copy_state",
         "is_mount",
+        "lifespan",
     )
 
     def __init__(
@@ -42,8 +43,10 @@ class ASGIRouteHandler(BaseRouteHandler):
         opt: Mapping[str, Any] | None = None,
         is_mount: bool = False,
         signature_namespace: Mapping[str, Any] | None = None,
-        copy_scope: bool | None = None,
+        copy_scope: bool = True,
         parameters: ParametersMap | None = None,
+        lifespan: bool = False,
+        copy_state: bool = False,
         **kwargs: Any,
     ) -> None:
         """Route handler for ASGI routes.
@@ -60,19 +63,33 @@ class ASGIRouteHandler(BaseRouteHandler):
             opt: A string key mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
                 :class:`ASGI Scope <.types.Scope>`.
-            is_mount: A boolean dictating whether the handler's paths should be regarded as mount paths. Mount path
-                accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path
-                ``/some-path/`` will accept requests for ``/some-path/`` and any sub path under this, e.g.
-                ``/some-path/sub-path/`` etc.
+            is_mount: A boolean dictating whether the handler's paths should be regarded as mount paths. A mount path
+                accepts its own path and any sub path under it. For example, a mount with the path ``/some-path/``
+                will accept requests for ``/some-path/`` and any sub path under this, e.g. ``/some-path/sub-path/``
+                etc., but not ``/some-path-other/``.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
-            copy_scope: Copy the ASGI 'scope' before calling the mounted application. Should be set to 'True' unless
-                side effects via scope mutations by the mounted ASGI application are intentional
-            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
+            copy_scope: Copy the ASGI 'scope' before calling the wrapped ASGI application. The copy is shallow, so
+                nested values such as 'scope["state"]' remain shared, unless 'copy_state' is set. Set to 'False' if
+                the wrapped application is meant to communicate with the outer application through the scope
+            parameters: A mapping of :func:`Parameter <.params.ParameterKwarg>` definitions
+            lifespan: Run the ASGI lifespan of the wrapped ASGI application during the lifespan of the Litestar
+                application the handler is registered on
+            copy_state: Copy 'scope["state"]' before calling the wrapped ASGI application. The copy is shallow.
+                Requires 'copy_scope'
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
+
+        Raises:
+            ImproperlyConfiguredException: If ``copy_state`` is set and ``copy_scope`` is not.
         """
+        if copy_state and not copy_scope:
+            raise ImproperlyConfiguredException("'copy_state=True' requires 'copy_scope=True'")
+
         self.is_mount = is_mount
         self.copy_scope = copy_scope
+        self.copy_state = copy_state
+        self.lifespan = lifespan
+        self._lifespan_state: dict[str, Any] = {}
 
         super().__init__(
             path,
@@ -86,23 +103,12 @@ class ASGIRouteHandler(BaseRouteHandler):
             **kwargs,
         )
 
-    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
-        super().on_registration(app=app, route=route)
-
-        if self.copy_scope is None:
-            warnings.warn(
-                f"{self}: 'copy_scope' not set for ASGI handler. Leaving 'copy_scope' unset will warn about mounted "
-                "ASGI applications modifying the scope. Set 'copy_scope=True' to ensure calling into mounted ASGI apps "
-                "does not cause any side effects via scope mutations, or set 'copy_scope=False' if those mutations are "
-                "desired. 'copy'scope' will default to 'True' in Litestar 3",
-                category=DeprecationWarning,
-                stacklevel=1,
-            )
-
     def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
         merge_opts = super()._get_merge_opts(others)
         merge_opts["is_mount"] = self.is_mount
         merge_opts["copy_scope"] = self.copy_scope
+        merge_opts["copy_state"] = self.copy_state
+        merge_opts["lifespan"] = self.lifespan
         return merge_opts
 
     def _validate_handler_function(self) -> None:
@@ -134,6 +140,9 @@ class ASGIRouteHandler(BaseRouteHandler):
         if self.guards:
             await self.authorize_connection(connection=connection)
 
+        if self._lifespan_state:
+            connection.scope["state"].update(self._lifespan_state)
+
         await self.fn(scope=connection.scope, receive=connection.receive, send=connection.send)
 
 
@@ -146,7 +155,10 @@ def asgi(
     opt: Mapping[str, Any] | None = None,
     is_mount: bool = False,
     signature_namespace: Mapping[str, Any] | None = None,
+    copy_scope: bool = True,
     handler_class: type[ASGIRouteHandler] = ASGIRouteHandler,
+    lifespan: bool = False,
+    copy_state: bool = False,
     **kwargs: Any,
 ) -> Callable[[AsyncAnyCallable], ASGIRouteHandler]:
     """Create an :class:`ASGIRouteHandler`.
@@ -162,11 +174,18 @@ def asgi(
             :class:`ASGI Scope <.types.Scope>`.
         signature_namespace: A mapping of names to types for use in forward reference resolution during signature
             modelling.
-        is_mount: A boolean dictating whether the handler's paths should be regarded as mount paths. Mount path
-            accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path
-            ``/some-path/`` will accept requests for ``/some-path/`` and any sub path under this, e.g.
-            ``/some-path/sub-path/`` etc.
+        is_mount: A boolean dictating whether the handler's paths should be regarded as mount paths. A mount path
+            accepts its own path and any sub path under it. For example, a mount with the path ``/some-path/`` will
+            accept requests for ``/some-path/`` and any sub path under this, e.g. ``/some-path/sub-path/`` etc., but
+            not ``/some-path-other/``.
+        copy_scope: Copy the ASGI 'scope' before calling the wrapped ASGI application. The copy is shallow, so
+            nested values such as 'scope["state"]' remain shared, unless 'copy_state' is set. Set to 'False' if the
+            wrapped application is meant to communicate with the outer application through the scope
         handler_class: Route handler class instantiated by the decorator
+        lifespan: Run the ASGI lifespan of the wrapped ASGI application during the lifespan of the Litestar
+            application the handler is registered on
+        copy_state: Copy 'scope["state"]' before calling the wrapped ASGI application. The copy is shallow.
+            Requires 'copy_scope'
         **kwargs: Any additional kwarg - will be set in the opt dictionary.
     """
 
@@ -180,6 +199,9 @@ def asgi(
             opt=opt,
             is_mount=is_mount,
             signature_namespace=signature_namespace,
+            copy_scope=copy_scope,
+            lifespan=lifespan,
+            copy_state=copy_state,
             **kwargs,
         )
 

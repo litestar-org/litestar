@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from litestar import Litestar, post
 from litestar.dto import DataclassDTO
+from litestar.params import JSONBody
 
 
 @dataclass
@@ -11,7 +12,7 @@ class Foo:
 
 
 @post("/", dto=DataclassDTO[Foo], sync_to_thread=False)
-def handler(data: Foo) -> Foo:
+def handler(data: JSONBody[Foo]) -> Foo:
     return data
 
 

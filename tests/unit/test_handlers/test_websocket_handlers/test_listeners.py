@@ -9,14 +9,15 @@ from pytest_lazy_fixtures import lf
 
 from litestar import Controller, Litestar, Request, WebSocket
 from litestar.connection import ASGIConnection
-from litestar.datastructures import State
+from litestar.datastructures import MultiDict, State
 from litestar.di import NamedDependency, Provide
+from litestar.di.exceptions import MissingProviderError
 from litestar.dto import DataclassDTO, dto_field
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions import ImproperlyConfiguredException, LitestarDeprecationWarning
 from litestar.handlers import WebsocketListenerRouteHandler
 from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.websocket_handlers import WebsocketListener, websocket_listener
-from litestar.params import FromPath
+from litestar.params import FromPath, QueryParams
 from litestar.routes import WebSocketRoute
 from litestar.testing import create_test_client
 from litestar.types.asgi_types import WebSocketMode
@@ -233,6 +234,7 @@ def test_listener_pass_additional_dependencies(mock: MagicMock) -> None:
         ws.send_text("something")
         ws.send_text("something")
         assert ws.receive_json() == {"data": "something", "foo": 1}
+        assert ws.receive_json() == {"data": "something", "foo": 1}
 
 
 def test_listener_callback_no_data_arg_raises() -> None:
@@ -244,20 +246,12 @@ def test_listener_callback_no_data_arg_raises() -> None:
         handler.on_registration(WebSocketRoute(path="/", route_handler=handler), app=Litestar())
 
 
-def test_listener_callback_request_and_body_arg_raises() -> None:
-    with pytest.raises(ImproperlyConfiguredException):
+def test_listener_callback_request_arg_raises() -> None:
+    @websocket_listener("/")
+    def handler(data: str, request: Request) -> None: ...
 
-        @websocket_listener("/")
-        def handler_request(data: str, request: Request) -> None: ...
-
-        handler_request.on_registration(WebSocketRoute(path="/", route_handler=handler_request), app=Litestar())
-
-    with pytest.raises(ImproperlyConfiguredException):
-
-        @websocket_listener("/")
-        def handler_body(data: str, body: bytes) -> None: ...
-
-        handler_body.on_registration(WebSocketRoute(path="/", route_handler=handler_body), app=Litestar())
+    with pytest.raises(MissingProviderError, match="has no provider for dependency Request"):
+        Litestar([handler])
 
 
 def test_listener_accept_connection_callback() -> None:
@@ -336,7 +330,7 @@ def test_lifespan_dependencies() -> None:
     mock = MagicMock()
 
     @asynccontextmanager
-    async def lifespan(name: FromPath[str], state: State, query: dict) -> AsyncGenerator[None, None]:
+    async def lifespan(name: FromPath[str], state: State, query: QueryParams) -> AsyncGenerator[None, None]:
         mock(name=name, state=state, query=query)
         yield
 
@@ -344,12 +338,14 @@ def test_lifespan_dependencies() -> None:
     async def handler(data: str) -> None:
         pass
 
-    with create_test_client([handler]) as client, client.websocket_connect("/foo") as ws:
+    with pytest.warns(LitestarDeprecationWarning, match="'QueryParams', which is deprecated"):
+        client = create_test_client([handler])
+    with client, client.websocket_connect("/foo") as ws:
         ws.send_text("")
 
     assert mock.call_args_list[0].kwargs["name"] == "foo"
     assert isinstance(mock.call_args_list[0].kwargs["state"], State)
-    assert isinstance(mock.call_args_list[0].kwargs["query"], dict)
+    assert isinstance(mock.call_args_list[0].kwargs["query"], MultiDict)
 
 
 def test_hook_dependencies() -> None:
@@ -359,33 +355,32 @@ def test_hook_dependencies() -> None:
     def some_dependency() -> str:
         return "hello"
 
-    def on_accept(name: FromPath[str], state: State, query: dict, some: NamedDependency[str]) -> None:
+    def on_accept(name: FromPath[str], state: State, query: QueryParams, some: NamedDependency[str]) -> None:
         on_accept_mock(name=name, state=state, query=query, some=some)
 
-    def on_disconnect(name: FromPath[str], state: State, query: dict, some: NamedDependency[str]) -> None:
+    def on_disconnect(name: FromPath[str], state: State, query: QueryParams, some: NamedDependency[str]) -> None:
         on_disconnect_mock(name=name, state=state, query=query, some=some)
 
     @websocket_listener("/{name: str}", on_accept=on_accept, on_disconnect=on_disconnect)
     def handler(data: bytes) -> None:
         pass
 
-    with (
-        create_test_client([handler], dependencies={"some": some_dependency}) as client,
-        client.websocket_connect("/foo") as ws,
-    ):
+    with pytest.warns(LitestarDeprecationWarning, match="'QueryParams', which is deprecated"):
+        client = create_test_client([handler], dependencies={"some": some_dependency})
+    with client, client.websocket_connect("/foo") as ws:
         ws.send_text("")
 
     on_accept_kwargs = on_accept_mock.call_args_list[0].kwargs
     assert on_accept_kwargs["name"] == "foo"
     assert on_accept_kwargs["some"] == "hello"
     assert isinstance(on_accept_kwargs["state"], State)
-    assert isinstance(on_accept_kwargs["query"], dict)
+    assert isinstance(on_accept_kwargs["query"], MultiDict)
 
     on_disconnect_kwargs = on_disconnect_mock.call_args_list[0].kwargs
     assert on_disconnect_kwargs["name"] == "foo"
     assert on_disconnect_kwargs["some"] == "hello"
     assert isinstance(on_disconnect_kwargs["state"], State)
-    assert isinstance(on_disconnect_kwargs["query"], dict)
+    assert isinstance(on_disconnect_kwargs["query"], MultiDict)
 
 
 def test_websocket_listener_class_hook_dependencies() -> None:
@@ -398,32 +393,33 @@ def test_websocket_listener_class_hook_dependencies() -> None:
     class Listener(WebsocketListener):
         path = "/{name: str}"
 
-        def on_accept(self, name: FromPath[str], state: State, query: dict, some: NamedDependency[str]) -> None:
+        def on_accept(self, name: FromPath[str], state: State, query: QueryParams, some: NamedDependency[str]) -> None:
             on_accept_mock(name=name, state=state, query=query, some=some)
 
-        def on_disconnect(self, name: FromPath[str], state: State, query: dict, some: NamedDependency[str]) -> None:
+        def on_disconnect(
+            self, name: FromPath[str], state: State, query: QueryParams, some: NamedDependency[str]
+        ) -> None:
             on_disconnect_mock(name=name, state=state, query=query, some=some)
 
         def on_receive(self, data: bytes) -> None:
             pass
 
-    with (
-        create_test_client([Listener], dependencies={"some": some_dependency}) as client,
-        client.websocket_connect("/foo") as ws,
-    ):
+    with pytest.warns(LitestarDeprecationWarning, match="'QueryParams', which is deprecated"):
+        client = create_test_client([Listener], dependencies={"some": some_dependency})
+    with client, client.websocket_connect("/foo") as ws:
         ws.send_text("")
 
     on_accept_kwargs = on_accept_mock.call_args_list[0].kwargs
     assert on_accept_kwargs["name"] == "foo"
     assert on_accept_kwargs["some"] == "hello"
     assert isinstance(on_accept_kwargs["state"], State)
-    assert isinstance(on_accept_kwargs["query"], dict)
+    assert isinstance(on_accept_kwargs["query"], MultiDict)
 
     on_disconnect_kwargs = on_disconnect_mock.call_args_list[0].kwargs
     assert on_disconnect_kwargs["name"] == "foo"
     assert on_disconnect_kwargs["some"] == "hello"
     assert isinstance(on_disconnect_kwargs["state"], State)
-    assert isinstance(on_disconnect_kwargs["query"], dict)
+    assert isinstance(on_disconnect_kwargs["query"], MultiDict)
 
 
 @pytest.mark.parametrize("hook_name", ["on_accept", "on_disconnect", "connection_accept_handler"])

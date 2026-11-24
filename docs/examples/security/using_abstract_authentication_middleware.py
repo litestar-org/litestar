@@ -6,7 +6,6 @@ import anyio
 from litestar import Litestar, MediaType, Request, Response, WebSocket, get, websocket
 from litestar.connection import ASGIConnection
 from litestar.datastructures import State
-from litestar.di import Provide
 from litestar.exceptions import NotAuthorizedException, NotFoundException
 from litestar.middleware import AbstractAuthenticationMiddleware, AuthenticationResult
 from litestar.middleware.base import DefineMiddleware
@@ -84,5 +83,5 @@ auth_mw = DefineMiddleware(CustomAuthenticationMiddleware, exclude="schema")
 app = Litestar(
     route_handlers=[site_index, my_http_handler, my_ws_handler],
     middleware=[auth_mw],
-    dependencies={"some_dependency": Provide(my_dependency)},
+    dependencies={"some_dependency": my_dependency},
 )

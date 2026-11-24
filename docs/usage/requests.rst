@@ -4,7 +4,8 @@ Requests
 Request body
 ------------
 
-The body of HTTP requests can be accessed using the special ``data`` parameter in a handler function.
+The body of HTTP requests can be accessed using the special ``data`` parameter in a handler function,
+declared with a body marker. For a JSON body, that's :data:`~litestar.params.JSONBody`.
 
 .. literalinclude:: /examples/request_data/request_data_1.py
     :language: python
@@ -114,6 +115,20 @@ Content-Type header by specifying the data with :data:`~litestar.params.Multipar
     ``Annotated[<type>, Body(media_type=RequestEncodingType.MULTI_PART)]``. If you want
     to pass additional OpenAPI metadata or constraints, use the
     :class:`~typing.Annotated` form
+
+Text fields without a ``charset`` are decoded as UTF-8. A text field declaring a ``charset``
+is decoded with it if it is listed in the ``multipart_form_allowed_charsets`` parameter of
+:class:`~litestar.app.Litestar`, and rejected with a ``400 Bad Request`` otherwise. Any
+alias Python knows for a listed charset is accepted too, e.g. ``latin1`` for
+``iso-8859-1``. By default, UTF-8, ASCII and ISO-8859-1 are accepted. To accept additional
+charsets, extend the default list:
+
+.. code-block:: python
+
+    from litestar import Litestar
+    from litestar.constants import DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS
+
+    app = Litestar(multipart_form_allowed_charsets=[*DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS, "shift_jis"])
 
 
 File uploads

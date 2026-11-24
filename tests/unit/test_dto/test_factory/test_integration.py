@@ -7,7 +7,6 @@ from dataclasses import dataclass, field
 from types import ModuleType
 from typing import TYPE_CHECKING, Annotated, Generic, Optional, TypeVar, cast
 from unittest.mock import MagicMock
-from uuid import UUID
 
 import msgspec
 import pytest
@@ -20,10 +19,7 @@ from litestar.dto import DataclassDTO, DTOConfig, DTOData, MsgspecDTO, dto_field
 from litestar.dto.types import RenameStrategy
 from litestar.enums import MediaType
 from litestar.handlers import HTTPRouteHandler
-from litestar.openapi.spec.response import OpenAPIResponse
-from litestar.openapi.spec.schema import Schema
-from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
-from litestar.params import MultipartBody, URLEncodedBody
+from litestar.params import JSONBody, MultipartBody, URLEncodedBody
 from litestar.serialization import encode_json
 from litestar.testing import create_test_client
 from tests.helpers import not_none
@@ -94,7 +90,7 @@ def test_renamed_field(use_experimental_dto_backend: bool) -> None:
     dto = DataclassDTO[Annotated[Foo, config]]
 
     @post(dto=dto, signature_types=[Foo])
-    def handler(data: Foo) -> Foo:
+    def handler(data: JSONBody[Foo]) -> Foo:
         assert data.bar == "hello"
         return data
 
@@ -131,7 +127,7 @@ class Foo:
     dto = DataclassDTO[Annotated[Foo, config]]  # type: ignore[valid-type]
 
     @post(dto=dto, signature_types=[Foo])
-    def handler(data: Foo) -> Foo:  # type: ignore[valid-type]
+    def handler(data: JSONBody[Foo]) -> Foo:  # type: ignore[valid-type]
         return data
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -181,7 +177,7 @@ def test_fields_alias_generator(
     dto = DataclassDTO[Annotated[Fzop, config]]
 
     @post(dto=dto)
-    def handler(data: Fzop) -> Fzop:
+    def handler(data: JSONBody[Fzop]) -> Fzop:
         assert data.bar == instance.bar
         assert data.SPAM == instance.SPAM
         return data
@@ -200,7 +196,7 @@ def test_dto_data_injection(use_experimental_dto_backend: bool) -> None:
     config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=DataclassDTO[Annotated[Foo, config]], return_dto=None, signature_types=[Foo])
-    def handler(data: DTOData[Foo]) -> Foo:
+    def handler(data: JSONBody[DTOData[Foo]]) -> Foo:
         assert isinstance(data, DTOData)
         assert data.as_builtins() == {"bar": "hello"}
         assert isinstance(data.create_instance(), Foo)
@@ -231,7 +227,7 @@ def test_dto_data_injection_with_nested_model(use_experimental_dto_backend: bool
         ],
         return_dto=None,
     )
-    def handler(data: DTOData[NestingBar]) -> dict[str, Any]:
+    def handler(data: JSONBody[DTOData[NestingBar]]) -> dict[str, Any]:
         assert isinstance(data, DTOData)
         return cast("dict[str, Any]", data.as_builtins())
 
@@ -250,7 +246,7 @@ def test_dto_data_create_instance_nested_kwargs(use_experimental_dto_backend: bo
         ],
         return_dto=None,
     )
-    def handler(data: DTOData[NestingBar]) -> NestingBar:
+    def handler(data: JSONBody[DTOData[NestingBar]]) -> NestingBar:
         assert isinstance(data, DTOData)
         result = data.create_instance(foo__baz="world")
         assert result.foo.baz == "world"
@@ -324,7 +320,7 @@ def test_dto_data_create_instance_renamed_fields(use_experimental_dto_backend: b
             ]
         ],
     )
-    def handler(data: DTOData[RenamedBar]) -> RenamedBar:
+    def handler(data: JSONBody[DTOData[RenamedBar]]) -> RenamedBar:
         assert isinstance(data, DTOData)
         result = data.create_instance(foo_foo="world")
         assert result.foo_foo == "world"
@@ -342,7 +338,7 @@ def test_dto_data_with_patch_request(use_experimental_dto_backend: bool) -> None
         config = DTOConfig(partial=True)
 
     @patch(dto=PatchDTO, return_dto=None)
-    def handler(data: DTOData[User]) -> User:
+    def handler(data: JSONBody[DTOData[User]]) -> User:
         return data.update_instance(User(name="John", age=42))
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -366,7 +362,7 @@ def test_dto_openapi_with_unique_handler_names(use_experimental_dto_backend: boo
         return_dto=DataclassDTO[UniqueModelName],
         signature_namespace={"UniqueModelName": UniqueModelName},
     )
-    def handler(data: UniqueModelName) -> UniqueModelName:
+    def handler(data: JSONBody[UniqueModelName]) -> UniqueModelName:
         return data
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -390,14 +386,14 @@ def test_dto_openapi_without_unique_handler_names(use_experimental_dto_backend: 
     read_dto = DataclassDTO[SharedModelName]
 
     @post(dto=write_dto, return_dto=read_dto)
-    def handler(data: SharedModelName) -> SharedModelName:
+    def handler(data: JSONBody[SharedModelName]) -> SharedModelName:
         return data
 
     class MyController(Controller):
         path = "/sub-path"
 
         @post(dto=write_dto, return_dto=read_dto)
-        def handler(self, data: SharedModelName) -> SharedModelName:
+        def handler(self, data: JSONBody[SharedModelName]) -> SharedModelName:
             return data
 
     with create_test_client(route_handlers=[handler, MyController]) as client:
@@ -450,7 +446,7 @@ def test_dto_with_generic_sequence_annotations(use_experimental_dto_backend: boo
         dto=DataclassDTO[Annotated[User, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]],
         signature_types=[User],
     )
-    def handler(data: Sequence[User]) -> Sequence[User]:
+    def handler(data: JSONBody[Sequence[User]]) -> Sequence[User]:
         return data
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -470,7 +466,7 @@ def test_dto_private_fields(use_experimental_dto_backend: bool) -> None:
         dto=DataclassDTO[Annotated[Foo, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]],
         signature_types=[Foo],
     )
-    def handler(data: DTOData[Foo]) -> Foo:
+    def handler(data: JSONBody[DTOData[Foo]]) -> Foo:
         mock.received_data = data.as_builtins()
         return data.create_instance(_baz=42)
 
@@ -497,7 +493,7 @@ def test_dto_private_fields_disabled(use_experimental_dto_backend: bool) -> None
         ],
         signature_types=[Foo],
     )
-    def handler(data: Foo) -> Foo:
+    def handler(data: JSONBody[Foo]) -> Foo:
         return data
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -521,7 +517,7 @@ def test_dto_concrete_builtin_collection_types(use_experimental_dto_backend: boo
         ],
         signature_types=[Foo],
     )
-    def handler(data: Foo) -> Foo:
+    def handler(data: JSONBody[Foo]) -> Foo:
         return data
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -531,87 +527,9 @@ def test_dto_concrete_builtin_collection_types(use_experimental_dto_backend: boo
 
 
 @dataclass
-class PaginatedUser:
+class WrappedUser:
     name: str
     age: int
-
-
-def test_dto_classic_pagination(use_experimental_dto_backend: bool) -> None:
-    @get(
-        dto=DataclassDTO[
-            Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
-            ]
-        ]
-    )
-    def handler() -> ClassicPagination[PaginatedUser]:
-        return ClassicPagination(
-            items=[PaginatedUser(name="John", age=42), PaginatedUser(name="Jane", age=43)],
-            page_size=2,
-            current_page=1,
-            total_pages=20,
-        )
-
-    with create_test_client(handler) as client:
-        response = client.get("/")
-        assert response.json() == {
-            "items": [{"name": "John"}, {"name": "Jane"}],
-            "page_size": 2,
-            "current_page": 1,
-            "total_pages": 20,
-        }
-
-
-def test_dto_cursor_pagination(use_experimental_dto_backend: bool) -> None:
-    uuid = UUID("00000000-0000-0000-0000-000000000000")
-
-    @get(
-        dto=DataclassDTO[
-            Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
-            ]
-        ]
-    )
-    def handler() -> CursorPagination[UUID, PaginatedUser]:
-        return CursorPagination(
-            items=[PaginatedUser(name="John", age=42), PaginatedUser(name="Jane", age=43)],
-            results_per_page=2,
-            cursor=uuid,
-        )
-
-    with create_test_client(handler) as client:
-        response = client.get("/")
-        assert response.json() == {
-            "items": [{"name": "John"}, {"name": "Jane"}],
-            "results_per_page": 2,
-            "cursor": "00000000-0000-0000-0000-000000000000",
-        }
-
-
-def test_dto_offset_pagination(use_experimental_dto_backend: bool) -> None:
-    @get(
-        dto=DataclassDTO[
-            Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
-            ]
-        ]
-    )
-    def handler() -> OffsetPagination[PaginatedUser]:
-        return OffsetPagination(
-            items=[PaginatedUser(name="John", age=42), PaginatedUser(name="Jane", age=43)],
-            limit=2,
-            offset=0,
-            total=20,
-        )
-
-    with create_test_client(handler) as client:
-        response = client.get("/")
-        assert response.json() == {
-            "items": [{"name": "John"}, {"name": "Jane"}],
-            "limit": 2,
-            "offset": 0,
-            "total": 20,
-        }
 
 
 T = TypeVar("T")
@@ -626,10 +544,16 @@ class Wrapped(Generic[T, V]):
 
 
 def test_dto_generic_dataclass_wrapped_list_response(use_experimental_dto_backend: bool) -> None:
-    @get(dto=DataclassDTO[Annotated[PaginatedUser, DTOConfig(exclude={"age"})]])
-    def handler() -> Wrapped[list[PaginatedUser], int]:
+    @get(
+        dto=DataclassDTO[
+            Annotated[
+                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+            ]
+        ]
+    )
+    def handler() -> Wrapped[list[WrappedUser], int]:
         return Wrapped(
-            data=[PaginatedUser(name="John", age=42), PaginatedUser(name="Jane", age=43)],
+            data=[WrappedUser(name="John", age=42), WrappedUser(name="Jane", age=43)],
             other=2,
         )
 
@@ -638,17 +562,42 @@ def test_dto_generic_dataclass_wrapped_list_response(use_experimental_dto_backen
         assert response.json() == {"data": [{"name": "John"}, {"name": "Jane"}], "other": 2}
 
 
+@dataclass
+class WrappedWithCollection(Generic[T, V]):
+    items: list[T]
+    other: V
+
+
+def test_dto_generic_dataclass_wrapped_collection_response(use_experimental_dto_backend: bool) -> None:
+    @get(
+        dto=DataclassDTO[
+            Annotated[
+                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+            ]
+        ]
+    )
+    def handler() -> WrappedWithCollection[WrappedUser, int]:
+        return WrappedWithCollection(
+            items=[WrappedUser(name="John", age=42), WrappedUser(name="Jane", age=43)],
+            other=2,
+        )
+
+    with create_test_client(handler) as client:
+        response = client.get("/")
+        assert response.json() == {"items": [{"name": "John"}, {"name": "Jane"}], "other": 2}
+
+
 def test_dto_generic_dataclass_wrapped_scalar_response(use_experimental_dto_backend: bool) -> None:
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
             ]
         ]
     )
-    def handler() -> Wrapped[PaginatedUser, int]:
+    def handler() -> Wrapped[WrappedUser, int]:
         return Wrapped(
-            data=PaginatedUser(name="John", age=42),
+            data=WrappedUser(name="John", age=42),
             other=2,
         )
 
@@ -669,13 +618,13 @@ def test_dto_generic_dataclass_wrapped_scalar_response_with_additional_mapping_d
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
             ]
         ]
     )
-    def handler() -> WrappedWithDict[str, int, PaginatedUser]:
+    def handler() -> WrappedWithDict[str, int, WrappedUser]:
         return WrappedWithDict(
-            data=PaginatedUser(name="John", age=42),
+            data=WrappedUser(name="John", age=42),
             other={"a": 1, "b": 2},
         )
 
@@ -688,12 +637,12 @@ def test_dto_response_wrapped_scalar_return_type(use_experimental_dto_backend: b
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
             ]
         ]
     )
-    def handler() -> Response[PaginatedUser]:
-        return Response(content=PaginatedUser(name="John", age=42))
+    def handler() -> Response[WrappedUser]:
+        return Response(content=WrappedUser(name="John", age=42))
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -702,19 +651,19 @@ def test_dto_response_wrapped_scalar_return_type(use_experimental_dto_backend: b
         schema_response = client.get("/schema/openapi.json")
         schemas = list(schema_response.json()["components"]["schemas"].values())
         assert len(schemas) == 1
-        assert schemas[0]["title"] == "HandlerPaginatedUserResponseBody"
+        assert schemas[0]["title"] == "HandlerWrappedUserResponseBody"
 
 
 def test_dto_response_wrapped_collection_return_type(use_experimental_dto_backend: bool) -> None:
     @get(
         dto=DataclassDTO[
             Annotated[
-                PaginatedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
+                WrappedUser, DTOConfig(exclude={"age"}, experimental_codegen_backend=use_experimental_dto_backend)
             ]
         ]
     )
-    def handler() -> Response[list[PaginatedUser]]:
-        return Response(content=[PaginatedUser(name="John", age=42), PaginatedUser(name="Jane", age=43)])
+    def handler() -> Response[list[WrappedUser]]:
+        return Response(content=[WrappedUser(name="John", age=42), WrappedUser(name="Jane", age=43)])
 
     with create_test_client(handler) as client:
         response = client.get("/")
@@ -723,7 +672,7 @@ def test_dto_response_wrapped_collection_return_type(use_experimental_dto_backen
         schema_response = client.get("/schema/openapi.json")
         schemas = list(schema_response.json()["components"]["schemas"].values())
         assert len(schemas) == 1
-        assert schemas[0]["title"] == "HandlerPaginatedUserResponseBody"
+        assert schemas[0]["title"] == "HandlerWrappedUserResponseBody"
 
 
 def test_schema_required_fields_with_msgspec_dto(use_experimental_dto_backend: bool) -> None:
@@ -735,7 +684,7 @@ def test_schema_required_fields_with_msgspec_dto(use_experimental_dto_backend: b
         config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=UserDTO, return_dto=None, signature_types=[MsgspecUser])
-    def handler(data: MsgspecUser, request: Request) -> dict:
+    def handler(data: JSONBody[MsgspecUser], request: Request) -> dict:
         schema = request.app.openapi_schema
         return schema.to_schema()
 
@@ -761,7 +710,7 @@ def test_schema_required_fields_with_dataclass_dto(use_experimental_dto_backend:
         config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=UserDTO, return_dto=None, signature_types=[DataclassUser])
-    def handler(data: DataclassUser, request: Request) -> dict:
+    def handler(data: JSONBody[DataclassUser], request: Request) -> dict:
         schema = request.app.openapi_schema
         return schema.to_schema()
 
@@ -786,7 +735,7 @@ def test_schema_required_fields_with_msgspec_dto_and_default_fields(use_experime
         config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
 
     @post(dto=UserDTO, return_dto=None, signature_types=[MsgspecUser])
-    def handler(data: MsgspecUser, request: Request) -> dict:
+    def handler(data: JSONBody[MsgspecUser], request: Request) -> dict:
         schema = request.app.openapi_schema
         return schema.to_schema()
 
@@ -821,7 +770,7 @@ class Superuser(BoundUser[ClassicNameStyle]):
 
 def test_dto_with_msgspec_with_bound_generic_and_inherited_models(use_experimental_dto_backend: bool) -> None:
     @post(dto=MsgspecDTO[Annotated[Superuser, DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)]])
-    def handler(data: Superuser) -> Superuser:
+    def handler(data: JSONBody[Superuser]) -> Superuser:
         return data
 
     with create_test_client(handler) as client:
@@ -863,7 +812,7 @@ def test_data_dto_with_default() -> None:
         foo: str
 
     @post(path="/", dto=DataclassDTO[Foo], signature_types=[Foo])
-    def test(data: Optional[Foo] = None) -> dict:
+    def test(data: JSONBody[Optional[Foo]] = None) -> dict:
         return {"foo": data}
 
     with create_test_client([test]) as client:
@@ -898,7 +847,7 @@ def test_msgspec_dto_copies_constraints(
         dto=Annotated[MsgspecDTO[struct], DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)],  # type: ignore[arg-type, valid-type]
         signature_namespace={"struct": struct},
     )
-    def handler(data: struct) -> None:  # type: ignore[valid-type]
+    def handler(data: JSONBody[struct]) -> None:  # type: ignore[valid-type]
         pass
 
     with create_test_client([handler]) as client:
@@ -914,61 +863,11 @@ def test_msgspec_dto_dont_copy_length_constraint_for_partial_dto() -> None:
         config = DTOConfig(partial=True)
 
     @post("/", dto=FooDTO, signature_types={Foo})
-    def handler(data: Foo) -> None:
+    def handler(data: JSONBody[Foo]) -> None:
         pass
 
     with create_test_client([handler]) as client:
         assert client.post("/", json={"bar": "1", "baz": "123"}).status_code == 201
-
-
-def test_openapi_schema_for_type_with_generic_pagination_type(
-    create_module: Callable[[str], ModuleType], use_experimental_dto_backend: bool
-) -> None:
-    module = create_module(
-        """
-from dataclasses import dataclass
-
-from litestar import Litestar, get
-from litestar.dto import DataclassDTO
-from litestar.pagination import ClassicPagination
-
-@dataclass
-class Test:
-    name: str
-    age: int
-
-@get("/without-dto", sync_to_thread=False)
-def without_dto() -> ClassicPagination[Test]:
-    return ClassicPagination(
-        items=[Test("John", 25), Test("Jane", 30)],
-        page_size=1,
-        current_page=2,
-        total_pages=2,
-    )
-
-@get("/with-dto", return_dto=DataclassDTO[Test], sync_to_thread=False)
-def with_dto() -> ClassicPagination[Test]:
-    return ClassicPagination(
-        items=[Test("John", 25), Test("Jane", 30)],
-        page_size=1,
-        current_page=2,
-        total_pages=2,
-    )
-
-app = Litestar([without_dto, with_dto])
-"""
-    )
-    openapi = cast("Litestar", module.app).openapi_schema
-    paths = not_none(openapi.paths)
-    without_dto_response = not_none(not_none(paths["/without-dto"].get).responses)["200"]
-    with_dto_response = not_none(not_none(paths["/with-dto"].get).responses)["200"]
-    assert isinstance(without_dto_response, OpenAPIResponse)
-    assert isinstance(with_dto_response, OpenAPIResponse)
-    without_dto_schema = not_none(without_dto_response.content)["application/json"].schema
-    with_dto_schema = not_none(with_dto_response.content)["application/json"].schema
-    assert isinstance(without_dto_schema, Schema)
-    assert isinstance(with_dto_schema, Schema)
-    assert not_none(without_dto_schema.properties).keys() == not_none(with_dto_schema.properties).keys()
 
 
 def test_openapi_schema_for_type_with_custom_generic_type(
@@ -1131,7 +1030,7 @@ def test_forbid_unknown_fields(
     dto = DataclassDTO[Annotated[Foo, config]]
 
     @post(dto=dto, signature_types=[Foo])
-    def handler(data: Foo) -> Foo:
+    def handler(data: JSONBody[Foo]) -> Foo:
         return data
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -1167,7 +1066,7 @@ def test_forbid_unknown_fields_handler_id_does_not_depend_on_id(
         dto = DataclassDTO[Annotated[Foo, config]]
 
         @post(dto=dto, signature_types=[Foo])
-        def handler(data: Foo) -> Foo:
+        def handler(data: JSONBody[Foo]) -> Foo:
             return data
 
         return handler

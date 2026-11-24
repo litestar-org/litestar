@@ -112,10 +112,11 @@ A :class:`~.router.Router` can register :class:`Controllers <.controller.Control
     :caption: Registering a :class:`~.router.Router`
 
     from litestar import Litestar, Router, get
+    from litestar.params import FromPath
 
 
     @get("/{order_id:int}")
-    def order_handler(order_id: int) -> None: ...
+    def order_handler(order_id: FromPath[int]) -> None: ...
 
 
     order_router = Router(path="/orders", route_handlers=[order_handler])
@@ -141,6 +142,7 @@ Their purpose is to allow users to utilize Python OOP for better code organizati
         from litestar.controller import Controller
         from litestar.dto import DTOConfig, DTOData
         from litestar.handlers import get, post, patch, delete
+        from litestar.params import FromPath, JSONBody
         from pydantic import BaseModel, UUID4
 
 
@@ -157,18 +159,18 @@ Their purpose is to allow users to utilize Python OOP for better code organizati
            path = "/user-order"
 
            @post()
-           async def create_user_order(self, data: UserOrder) -> UserOrder: ...
+           async def create_user_order(self, data: JSONBody[UserOrder]) -> UserOrder: ...
 
            @get(path="/{order_id:uuid}")
-           async def retrieve_user_order(self, order_id: UUID4) -> UserOrder: ...
+           async def retrieve_user_order(self, order_id: FromPath[UUID4]) -> UserOrder: ...
 
            @patch(path="/{order_id:uuid}", dto=PartialUserOrderDTO)
            async def update_user_order(
-               self, order_id: UUID4, data: DTOData[PartialUserOrderDTO]
+               self, order_id: FromPath[UUID4], data: JSONBody[DTOData[PartialUserOrderDTO]]
            ) -> UserOrder: ...
 
            @delete(path="/{order_id:uuid}")
-           async def delete_user_order(self, order_id: UUID4) -> None: ...
+           async def delete_user_order(self, order_id: FromPath[UUID4]) -> None: ...
 
 The above is a simple example of a "CRUD" controller for a model called ``UserOrder``. You can place as
 many :doc:`route handler methods </usage/routing/handlers>` on a controller,
@@ -254,25 +256,55 @@ requests addressed to a given path.
         :language: python
         :caption: Mounting an ASGI App
 
-The handler function will receive all requests with an url that begins with ``/some/sub-path``, e.g, ``/some/sub-path``,
-``/some/sub-path/abc``, ``/some/sub-path/123/another/sub-path``, etc.
+The handler function will receive all requests for ``/some/sub-path`` and any sub path under it, e.g,
+``/some/sub-path``, ``/some/sub-path/abc``, ``/some/sub-path/123/another/sub-path``, etc. A request for a path that
+merely starts with the same characters, e.g. ``/some/sub-path-other``, is not mounted.
 
 .. admonition:: Technical Details
     :class: info
 
     If we are sending a request to the above with the url ``/some/sub-path``, the handler will be invoked and
     the value of ``scope["path"]`` will equal ``"/"``. If we send a request to ``/some/sub-path/abc``, it will also be
-    invoked,and ``scope["path"]`` will equal ``"/abc"``.
+    invoked,and ``scope["path"]`` will equal ``"/abc/"``.
+
+The mounted application receives a copy of the ASGI ``scope``, so it cannot add, replace or remove top-level scope keys
+seen by the outer application - the path rewriting described above is performed by the router and is unaffected. The copy
+is shallow, so nested values such as ``scope["state"]`` are still shared. Pass ``copy_scope=False`` if the mounted
+application is meant to communicate with the outer application through the scope, for example by writing
+``scope["user"]`` for outer middleware to read.
+
+Pass ``copy_state=True`` to give the mounted application a shallow copy of ``scope["state"]`` as well, so the host application
+does not see the values set by the mounted application.
 
 Mounting is especially useful when you need to combine components of other ASGI applications - for example, for third
 party libraries. The following example is identical in principle to the one above, but it uses
-`Starlette <https://www.starlette.io/>`_:
+`Starlette <https://starlette.dev/>`_:
 
 .. dropdown:: Click to see an example of mounting a Starlette app
 
     .. literalinclude:: /examples/routing/mounting_starlette_app.py
        :language: python
        :caption: Mounting a Starlette App
+
+Running the lifespan of a mounted app
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Setting ``lifespan=True`` on the handler will run the ASGI lifespan protocol for the mounted application, as part of
+the host application's lifespan.
+
+.. literalinclude:: /examples/routing/mounting_litestar_app.py
+    :language: python
+    :caption: Mounting a Litestar app
+
+The mounted application starts after the :paramref:`~litestar.app.Litestar.on_startup` hooks of the outer application
+and shuts down before the outer application does.
+
+Startup and shutdown failures of the mounted applications will be passed through, reporting as regular
+``lifespan.startup.failed`` / ``lifespan.shutdown.failed`` events to the server.
+
+Litestar will merge the ``state`` of the ``lifespan`` scope into the outer application's
+state. To isolate state of mounted apps, set ``copy_state=True``, which will pass state
+as a shallow copy.
 
 .. admonition:: Why Litestar uses radix based routing
 

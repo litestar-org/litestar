@@ -363,7 +363,7 @@ The channels plugin provides two different strategies for managing this :term:`b
     :caption: Backoff strategy
 
     from litestar.channels import ChannelsPlugin
-    from litestar.channels.memory import MemoryChannelsBackend
+    from litestar.channels.backends.memory import MemoryChannelsBackend
 
     channels = ChannelsPlugin(
         backend=MemoryChannelsBackend(),
@@ -375,7 +375,7 @@ The channels plugin provides two different strategies for managing this :term:`b
     :caption: :term:`Eviction <eviction>` strategy
 
     from litestar.channels import ChannelsPlugin
-    from litestar.channels.memory import MemoryChannelsBackend
+    from litestar.channels.backends.memory import MemoryChannelsBackend
 
     channels = ChannelsPlugin(
         backend=MemoryChannelsBackend(),

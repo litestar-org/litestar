@@ -5,9 +5,10 @@ import pytest
 
 from litestar import Controller, Litestar, MediaType, get, post
 from litestar.di import NamedDependency, Provide
+from litestar.di.exceptions import MissingProviderError
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import Body, FromQuery, QueryParameter, SkipValidation
-from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
+from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from litestar.testing import TestClient, create_test_client
 
 pytestmark = pytest.mark.filterwarnings("ignore::litestar.exceptions.LitestarDeprecationWarning")
@@ -52,7 +53,7 @@ def test_parsing_of_dependency_as_annotated() -> None:
 @pytest.mark.parametrize("dependency_default", [None, 13])
 def test_dependency_defaults(dependency_default: Any) -> None:
     @get("/")
-    def handler(value: Optional[int] = dependency_default) -> dict[str, Optional[int]]:
+    def handler(value: NamedDependency[Optional[int]] = dependency_default) -> dict[str, Optional[int]]:
         return {"value": value}
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -62,7 +63,7 @@ def test_dependency_defaults(dependency_default: Any) -> None:
 
 def test_dependency_non_optional_with_default() -> None:
     @get("/")
-    def handler(value: int = 13) -> dict[str, int]:
+    def handler(value: NamedDependency[int] = 13) -> dict[str, int]:
         return {"value": value}
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -72,7 +73,7 @@ def test_dependency_non_optional_with_default() -> None:
 
 def test_dependency_no_default() -> None:
     @get(dependencies={"value": Provide(lambda: 13, sync_to_thread=False)})
-    def test(value: int) -> dict[str, int]:
+    def test(value: NamedDependency[int]) -> dict[str, int]:
         return {"value": value}
 
     with create_test_client(route_handlers=[test]) as client:
@@ -85,7 +86,7 @@ def test_dependency_not_provided_and_no_default() -> None:
     def test(value: NamedDependency[int]) -> dict[str, int]:
         return {"value": value}
 
-    with pytest.raises(ImproperlyConfiguredException):
+    with pytest.raises(MissingProviderError, match="has no provider for dependency 'value'"):
         Litestar(route_handlers=[test])
 
 
@@ -99,31 +100,12 @@ def test_dependency_provided_on_controller() -> None:
         dependencies = {"value": Provide(lambda: 13, sync_to_thread=False)}
 
         @get()
-        def test(self, value: int) -> dict[str, int]:
+        def test(self, value: NamedDependency[int]) -> dict[str, int]:
             return {"value": value}
 
     with create_test_client(route_handlers=[C]) as client:
         resp = client.get("/")
     assert resp.json() == {"value": 13}
-
-
-def test_dependency_skip_validation() -> None:
-    @get("/validated")
-    def validated(value: NamedDependency[int]) -> dict[str, int]:
-        return {"value": value}
-
-    @get("/skipped")
-    def skipped(value: NamedDependency[SkipValidation[int]]) -> dict[str, int]:
-        return {"value": value}
-
-    with create_test_client(
-        route_handlers=[validated, skipped], dependencies={"value": Provide(lambda: "str", sync_to_thread=False)}
-    ) as client:
-        validated_resp = client.get("/validated")
-        assert validated_resp.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        skipped_resp = client.get("/skipped")
-        assert skipped_resp.status_code == HTTP_200_OK
-        assert skipped_resp.json() == {"value": "str"}
 
 
 def test_dependency_skip_validation_with_default() -> None:
@@ -135,6 +117,17 @@ def test_dependency_skip_validation_with_default() -> None:
         skipped_resp = client.get("/skipped")
         assert skipped_resp.status_code == HTTP_200_OK
         assert skipped_resp.json() == {"value": 1}
+
+
+def test_skip_validation_alone_is_not_a_declaration() -> None:
+    # 'SkipValidation' does not declare a parameter source, so a param annotated with
+    # only it should raise the same error as one without any marker
+    @get("/")
+    def handler(value: SkipValidation[int]) -> dict[str, int]:
+        return {"value": value}
+
+    with pytest.raises(ImproperlyConfiguredException, match="Missing declaration for parameter 'value'"):
+        Litestar(route_handlers=[handler])
 
 
 def test_dependency_default_is_not_treated_as_query_parameter() -> None:
@@ -160,7 +153,7 @@ def test_dependency_default_does_not_collide_with_query_param_of_same_name() -> 
         return value * 10
 
     @get("/", dependencies={"computed": Provide(provide_value, sync_to_thread=False)})
-    def handler(computed: int) -> dict[str, int]:
+    def handler(computed: NamedDependency[int]) -> dict[str, int]:
         return {"computed": computed}
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -178,7 +171,7 @@ def test_dependency_nested_sequence() -> None:
         return Obj(seq)
 
     @get("/obj")
-    def get_obj(obj: Obj) -> list[str]:
+    def get_obj(obj: NamedDependency[Obj]) -> list[str]:
         return obj.seq
 
     @get("/seq")

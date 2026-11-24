@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 from litestar import Controller, Litestar, Router, get, post
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig
 from litestar.dto._backend import DTOBackend
+from litestar.params import JSONBody
 from litestar.plugins import SerializationPlugin
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
@@ -14,7 +15,7 @@ from . import Model
 
 def test_dto_defined_on_handler(ModelDataDTO: type[AbstractDTO]) -> None:
     @post(dto=ModelDataDTO, signature_types=[Model])
-    def handler(data: Model) -> Model:
+    def handler(data: JSONBody[Model]) -> Model:
         assert data == Model(a=1, b="2")
         return data
 
@@ -29,7 +30,7 @@ def test_dto_defined_on_controller(ModelDataDTO: type[AbstractDTO]) -> None:
         dto = ModelDataDTO
 
         @post()
-        def handler(self, data: Model) -> Model:
+        def handler(self, data: JSONBody[Model]) -> Model:
             assert data == Model(a=1, b="2")
             return data
 
@@ -41,7 +42,7 @@ def test_dto_defined_on_controller(ModelDataDTO: type[AbstractDTO]) -> None:
 
 def test_dto_defined_on_router(ModelDataDTO: type[AbstractDTO]) -> None:
     @post()
-    def handler(data: Model) -> Model:
+    def handler(data: JSONBody[Model]) -> Model:
         assert data == Model(a=1, b="2")
         return data
 
@@ -55,7 +56,7 @@ def test_dto_defined_on_router(ModelDataDTO: type[AbstractDTO]) -> None:
 
 def test_dto_defined_on_app(ModelDataDTO: type[AbstractDTO]) -> None:
     @post()
-    def handler(data: Model) -> Model:
+    def handler(data: JSONBody[Model]) -> Model:
         assert data == Model(a=1, b="2")
         return data
 
@@ -67,7 +68,7 @@ def test_dto_defined_on_app(ModelDataDTO: type[AbstractDTO]) -> None:
 
 def test_set_dto_none_disables_inherited_dto(ModelDataDTO: type[AbstractDTO]) -> None:
     @post(dto=None, signature_namespace={"dict": dict})
-    def handler(data: dict[str, str]) -> dict[str, str]:
+    def handler(data: JSONBody[dict[str, str]]) -> dict[str, str]:
         assert data == {"hello": "world"}
         return data
 
@@ -82,7 +83,7 @@ def test_set_dto_none_disables_inherited_dto(ModelDataDTO: type[AbstractDTO]) ->
 
 def test_dto_and_return_dto(ModelDataDTO: type[AbstractDTO], ModelReturnDTO: type[AbstractDTO]) -> None:
     @post()
-    def handler(data: Model) -> Model:
+    def handler(data: JSONBody[Model]) -> Model:
         assert data == Model(a=1, b="2")
         return data
 
@@ -129,7 +130,7 @@ def test_enable_experimental_backend_override_in_dto_config(ModelDataDTO: type[A
     ModelDataDTO.config = DTOConfig(experimental_codegen_backend=False)
 
     @post(dto=ModelDataDTO, signature_types=[Model])
-    def handler(data: Model) -> Model:
+    def handler(data: JSONBody[Model]) -> Model:
         return data
 
     app = Litestar(route_handlers=[handler])
@@ -143,7 +144,7 @@ def test_use_codegen_backend_by_default(ModelDataDTO: type[AbstractDTO]) -> None
     ModelDataDTO.config = DTOConfig()
 
     @post(dto=ModelDataDTO, signature_types=[Model])
-    def handler(data: Model) -> Model:
+    def handler(data: JSONBody[Model]) -> Model:
         return data
 
     app = Litestar(route_handlers=[handler])

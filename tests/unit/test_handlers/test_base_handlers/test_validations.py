@@ -7,6 +7,7 @@ from litestar.dto import DTOData
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware import ASGIMiddleware
 from litestar.middleware.constraints import ConstraintViolationError, MiddlewareConstraints
+from litestar.params import JSONBody
 from litestar.types import ASGIApp, Receive, Scope, Send
 
 
@@ -18,7 +19,7 @@ def test_dto_data_annotation_with_no_resolved_dto() -> None:
         hello: str
 
     @post("/")
-    async def async_hello_world(data: DTOData[Model]) -> Model:
+    async def async_hello_world(data: JSONBody[DTOData[Model]]) -> Model:
         """Route Handler that outputs hello world."""
         return data.create_instance()
 

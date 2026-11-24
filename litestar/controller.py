@@ -101,7 +101,7 @@ class Controller:
     Can be overridden by route handlers.
     """
     dependencies: Dependencies | None
-    """A string keyed dictionary of dependency :class:`Provider <.di.Provide>` instances."""
+    """A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables."""
     dto: type[AbstractDTO] | None | EmptyType
     """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and validation of request data."""
     etag: ETag | None
@@ -122,7 +122,7 @@ class Controller:
     have access to :class:`Request <.connection.Request>` or :class:`ASGI Scope <.types.Scope>`.
     """
     parameters: ParametersMap | None
-    """A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application paths."""
+    """A mapping of :class:`Parameter <.params.ParameterKwarg>` definitions available to all application paths."""
     path: str
     """A path fragment for the controller.
 

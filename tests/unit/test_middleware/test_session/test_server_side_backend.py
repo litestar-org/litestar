@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from litestar import Litestar, Request, get
+from litestar import Litestar, Request, get, post
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.serialization import encode_json
@@ -165,3 +165,84 @@ def test_max_age_validation(
             ServerSideSessionConfig(key="a", max_age=max_age)
     else:
         ServerSideSessionConfig(key="a", max_age=max_age)
+
+
+@pytest.mark.parametrize("path", ["/unchanged", "/clear", "/clear-session"])
+@pytest.mark.parametrize("cookies", [{}, {"session": "null"}])
+async def test_empty_session_without_session_cookie_not_stored(
+    path: str, cookies: dict[str, str], memory_store: MemoryStore
+) -> None:
+    # https://github.com/litestar-org/litestar/issues/5172
+    @get("/unchanged")
+    def unchanged_handler(request: Request) -> dict[str, str | None]:
+        return {"session_id": request.get_session_id()}
+
+    @get("/clear")
+    def clear_handler(request: Request) -> dict[str, str | None]:
+        session_id = request.get_session_id()
+        request.session.clear()
+        return {"session_id": session_id}
+
+    @get("/clear-session")
+    def clear_session_handler(request: Request) -> dict[str, str | None]:
+        session_id = request.get_session_id()
+        request.clear_session()
+        return {"session_id": session_id}
+
+    app = Litestar(
+        [unchanged_handler, clear_handler, clear_session_handler],
+        middleware=[ServerSideSessionConfig().middleware],
+        stores={"sessions": memory_store},
+    )
+
+    with TestClient(app, cookies=cookies) as client:
+        res = client.get(path)
+        assert res.status_code == 200
+        assert "set-cookie" not in res.headers
+        assert not await memory_store.exists(res.json()["session_id"])
+
+
+@pytest.mark.parametrize("path", ["/clear", "/clear-session"])
+async def test_cleared_session_with_session_cookie_deleted(path: str, memory_store: MemoryStore) -> None:
+    # https://github.com/litestar-org/litestar/issues/5172
+    @post("/login")
+    def login_handler(request: Request) -> None:
+        request.set_session({"foo": "bar"})
+
+    @post("/clear")
+    def clear_handler(request: Request) -> None:
+        request.session.clear()
+
+    @post("/clear-session")
+    def clear_session_handler(request: Request) -> None:
+        request.clear_session()
+
+    app = Litestar(
+        [login_handler, clear_handler, clear_session_handler],
+        middleware=[ServerSideSessionConfig().middleware],
+        stores={"sessions": memory_store},
+    )
+
+    with TestClient(app) as client:
+        session_id = client.post("/login").cookies["session"]
+        assert await memory_store.exists(session_id)
+
+        res = client.post(path)
+        assert res.status_code == 201
+        assert res.headers["set-cookie"].startswith("session=null;")
+        assert not await memory_store.exists(session_id)
+
+
+async def test_empty_session_with_unknown_session_cookie_not_stored(memory_store: MemoryStore) -> None:
+    # https://github.com/litestar-org/litestar/issues/5172
+    @get("/")
+    def handler() -> None:
+        return None
+
+    app = Litestar([handler], middleware=[ServerSideSessionConfig().middleware], stores={"sessions": memory_store})
+
+    with TestClient(app, cookies={"session": "unknown"}) as client:
+        res = client.get("/")
+        assert res.status_code == 200
+        assert res.headers["set-cookie"].startswith("session=null;")
+        assert not await memory_store.exists("unknown")

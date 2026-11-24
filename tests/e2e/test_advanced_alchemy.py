@@ -1,3 +1,4 @@
+import pytest
 from advanced_alchemy.extensions.litestar.plugins import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
 from advanced_alchemy.filters import LimitOffset
 
@@ -6,6 +7,10 @@ from litestar.di import NamedDependency
 from litestar.testing import create_test_client
 
 
+# advanced-alchemy's 'db_session' provider declares 'scope: Scope'
+@pytest.mark.filterwarnings(
+    "ignore:.*Parameter 'scope' declares 'Scope':litestar.exceptions.LitestarDeprecationWarning"
+)
 def test_using_pagination() -> None:
     # https://github.com/litestar-org/litestar/issues/2358
     async def provide_limit_offset_pagination() -> LimitOffset:

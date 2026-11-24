@@ -47,7 +47,7 @@ Fields marked as ``"private"`` or ``"read-only"`` will not be parsed from client
 .. literalinclude:: /examples/data_transfer_objects/factory/marking_fields.py
     :caption: Marking fields
     :language: python
-    :emphasize-lines: 6,14,15
+    :emphasize-lines: 6,15-16
     :linenos:
 
 Note that ``id`` field is the primary key and is handled specially by the defined SQLAlchemy base.
@@ -69,7 +69,7 @@ nested models.
 .. literalinclude:: /examples/data_transfer_objects/factory/excluding_fields.py
     :caption: Excluding fields
     :language: python
-    :emphasize-lines: 6,10,37-46,49
+    :emphasize-lines: 6,10,38-47,50
     :linenos:
 
 Here, the config is created with the exclude parameter, which is a set of strings. Each string represents the path to a
@@ -107,7 +107,7 @@ Fields can be renamed using :class:`DTOConfig <litestar.dto.config.DTOConfig>`. 
 .. literalinclude:: /examples/data_transfer_objects/factory/renaming_fields.py
     :caption: Renaming fields
     :language: python
-    :emphasize-lines: 4,8,19,20,24
+    :emphasize-lines: 4,8,20-21,25
     :linenos:
 
 Fields can also be renamed using a renaming strategy that will be applied to all fields. The following example uses a pre-defined rename strategy that will convert all field names to camel case on client-side.
@@ -115,7 +115,7 @@ Fields can also be renamed using a renaming strategy that will be applied to all
 .. literalinclude:: /examples/data_transfer_objects/factory/renaming_all_fields.py
     :caption: Renaming fields
     :language: python
-    :emphasize-lines: 4,8,19,20,21,22,24
+    :emphasize-lines: 4,8,20-23,25
     :linenos:
 
 Fields that are directly renamed using `rename_fields` mapping will be excluded from `rename_strategy`.
@@ -132,7 +132,7 @@ to it, the DTO will only accept ``User`` types for "data" and return types.
 .. literalinclude:: /examples/data_transfer_objects/factory/type_checking.py
     :caption: Type checking
     :language: python
-    :emphasize-lines: 25,26,31
+    :emphasize-lines: 26-27,32
     :linenos:
 
 In the above example, the handler is declared to use ``UserDTO`` which has been type-narrowed with the ``User`` type.
@@ -154,7 +154,7 @@ of ``1`` for the return DTO.
 .. literalinclude:: /examples/data_transfer_objects/factory/related_items.py
     :caption: Type checking
     :language: python
-    :emphasize-lines: 25,35,39
+    :emphasize-lines: 26,36,40
     :linenos:
 
 When the handler receives the client data, we can see that the ``b`` field has not been parsed into the ``A`` model that
@@ -192,7 +192,7 @@ handler.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/dto_data_problem_statement.py
     :language: python
-    :emphasize-lines: 18-21,27
+    :emphasize-lines: 19-22,28
     :linenos:
 
 Notice that our `User` model has a model-level ``default_factory=uuid4``
@@ -210,7 +210,7 @@ type of the data that it will contain, and provides useful methods for interacti
 
 .. literalinclude:: /examples/data_transfer_objects/factory/dto_data_usage.py
     :language: python
-    :emphasize-lines: 5,23,25
+    :emphasize-lines: 5,24,26
     :linenos:
 
 In the above example, we've injected an instance of :class:`DTOData <litestar.dto.data_structures.DTOData>` into our handler,
@@ -232,7 +232,7 @@ nested model with excluded fields.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/providing_values_for_nested_data.py
     :language: python
-    :emphasize-lines: 9-12,20,28,34
+    :emphasize-lines: 10-13,21,29,35
     :linenos:
 
 The double-underscore syntax ``address__id`` passed as a keyword argument to the
@@ -285,7 +285,7 @@ This can be overridden by setting the
 .. literalinclude:: /examples/data_transfer_objects/factory/leading_underscore_private_override.py
     :language: python
     :linenos:
-    :emphasize-lines: 14,15
+    :emphasize-lines: 15-16
 
 Wrapping Return Data
 --------------------
@@ -363,60 +363,6 @@ Returning enveloped data is subject to the following constraints:
 #. The type returned from the handler must be a type that Litestar can natively encode.
 #. There can be multiple type arguments to the generic wrapper type, but there must be exactly one type argument to the
    generic wrapper that is a type supported by the DTO.
-
-Working with Litestar's Pagination Types
-----------------------------------------
-
-Litestar offers paginated response wrapper types, and DTO Factory types can handle this out of the box.
-
-.. literalinclude:: /examples/data_transfer_objects/factory/paginated_return_data.py
-    :caption: Paginated Return Data
-    :language: python
-    :linenos:
-
-The DTO is defined and configured, in our example, we're excluding ``password`` and ``created_at`` fields from the final
-representation of our users.
-
-.. code-block:: python
-
-   from advanced_alchemy.dto import SQLAlchemyDTO
-   from litestar.dto import DTOConfig
-
-
-   class UserDTO(SQLAlchemyDTO[User]):
-       config = DTOConfig(exclude={"password", "created_at"})
-
-The example sets up a ``/users`` endpoint, where a paginated list of ``User`` objects is returned, wrapped in
-:class:`ClassicPagination <.pagination.ClassicPagination>`.
-
-.. code-block:: python
-
-   from litestar import get
-   from litestar.pagination import ClassicPagination
-
-
-   @get("/users", dto=UserDTO, sync_to_thread=False)
-   def get_users() -> ClassicPagination[User]:
-       return ClassicPagination(
-           page_size=10,
-           total_pages=1,
-           current_page=1,
-           items=[
-               User(
-                   id=1,
-                   name="Litestar User",
-                   password="xyz",
-                   created_at=datetime.now(),
-               ),
-           ],
-       )
-
-The :class:`ClassicPagination <.pagination.ClassicPagination>` class contains ``page_size`` (number of items per page),
-``total_pages`` (total number of pages), ``current_page`` (current page number), and ``items`` (items for the current
-page).
-
-The DTO operates on the data contained in the ``items`` attribute, and the pagination wrapper is handled automatically
-by Litestar's serialization process.
 
 Using Litestar's Response Type with DTO Factory
 -----------------------------------------------

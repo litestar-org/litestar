@@ -9,13 +9,13 @@ from typing import TYPE_CHECKING, Any, Generic, TypedDict, TypeVar, Union, cast
 from urllib.parse import unquote
 
 import anyio
-from httpx import AsyncBaseTransport, BaseTransport, ByteStream, Response
+from httpx2 import AsyncBaseTransport, BaseTransport, ByteStream, Response
 
 from litestar.exceptions import LitestarWarning
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
 if TYPE_CHECKING:
-    from httpx import Request
+    from httpx2 import Request
 
     from litestar.testing.client import AsyncTestClient, TestClient
     from litestar.types import (
@@ -127,7 +127,7 @@ class TestClientTransport(AsyncBaseTransport, Generic[T]):
 
         host_header = request.headers.pop("host", host if port == default_port else f"{host}:{port}")
 
-        headers = [(k.lower().encode(), v.encode()) for k, v in (("host", host_header), *request.headers.items())]
+        headers = [(b"host", host_header.encode()), *((k.lower(), v) for k, v in request.headers.raw)]
 
         return {
             "type": "websocket" if scheme in {"ws", "wss"} else "http",

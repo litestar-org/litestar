@@ -2,7 +2,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any, Optional
 
-import httpx
+import httpx2
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
@@ -144,7 +144,7 @@ def test_handler_multi_paths() -> None:
 )
 def test_path_validation(handler_path: str, request_path: str, expected_status_code: int) -> None:
     @get(handler_path)
-    def handler_fn(**kwargs: FromQuery[Any]) -> None: ...
+    def handler_fn(path_param: FromPath[Any] = None) -> None: ...
 
     with create_test_client(handler_fn) as client:
         response = client.get(request_path)
@@ -321,12 +321,12 @@ from typing import List
 async def handler(request: Request) -> List[str]:
     return [request.scope["path"], request.scope["root_path"]]
 
-app = Litestar(route_handlers=[handler])
+app = Litestar(route_handlers=[handler], dependency_scopes=("request", "handler"))
     """
 
     run_server(app, server_command)
 
-    assert httpx.get("http://127.0.0.1:9999/handler").json() == ["/handler", "/test"]
+    assert httpx2.get("http://127.0.0.1:9999/handler").json() == ["/handler", "/test"]
 
 
 @pytest.mark.parametrize(
@@ -349,18 +349,19 @@ from pathlib import Path
 from litestar import Litestar
 from litestar.handlers import get
 from typing import Optional
+from litestar.params import FromPath
 
 @get(path=["/", "/{path:path}"])
-async def pathfinder(path: Optional[Path] = None) -> str:
+async def pathfinder(path: FromPath[Optional[Path]] = None) -> str:
     return str(path)
 
-app = Litestar(route_handlers=[pathfinder], debug=True)
+app = Litestar(route_handlers=[pathfinder], debug=True, dependency_scopes=("request", "handler"))
     """
 
     run_server(app, server_command)
 
-    assert httpx.get("http://127.0.0.1:9999/").text == "None"
-    assert httpx.get("http://127.0.0.1:9999/something").text == "/something"
+    assert httpx2.get("http://127.0.0.1:9999/").text == "None"
+    assert httpx2.get("http://127.0.0.1:9999/something").text == "/something"
 
 
 @pytest.mark.parametrize(
@@ -392,6 +393,7 @@ app = Litestar(
     route_handlers=[
         create_static_files_router(path="/static", directories=["static"]),
     ],
+    dependency_scopes=("request", "handler"),
 )
     """
 

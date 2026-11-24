@@ -1,5 +1,6 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
+import codecs
 from collections import defaultdict
 from dataclasses import asdict, dataclass
 from os import path
@@ -9,8 +10,12 @@ from typing import Annotated, Any, Optional
 
 import msgspec
 import pytest
+from httpx2 import Response
 
 from litestar import Request, post
+from litestar._multipart import get_charset_table
+from litestar.config.app import AppConfig
+from litestar.constants import DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import RequestEncodingType
 from litestar.params import Body, MultipartBody
@@ -19,7 +24,7 @@ from litestar.status_codes import (
     HTTP_400_BAD_REQUEST,
     HTTP_413_REQUEST_ENTITY_TOO_LARGE,
 )
-from litestar.testing import create_test_client
+from litestar.testing import TestClient, create_test_client
 
 from . import Form
 
@@ -273,6 +278,99 @@ def test_multipart_request_with_charset_for_filename() -> None:
                 "content_type": "text/plain",
             }
         }
+
+
+def _post_text_field(
+    client: TestClient[Any], charset: Optional[bytes], content: bytes, path: str = "/form"
+) -> Response:
+    content_type = b"text/plain" if charset is None else b"text/plain; charset=" + charset
+    return client.post(
+        path,
+        content=(
+            b"--a7f7ac8d4e2e437c877bb7b8d7cc549c\r\n"
+            b'Content-Disposition: form-data; name="field"\r\n'
+            b"Content-Type: " + content_type + b"\r\n\r\n" + content + b"\r\n"
+            b"--a7f7ac8d4e2e437c877bb7b8d7cc549c--\r\n"
+        ),
+        headers={"Content-Type": "multipart/form-data; boundary=a7f7ac8d4e2e437c877bb7b8d7cc549c"},
+    )
+
+
+@post("/data")
+async def form_data_handler(data: Annotated[dict[str, Any], Body(media_type=RequestEncodingType.MULTI_PART)]) -> Any:
+    return data
+
+
+@pytest.mark.parametrize(
+    "charset, content, expected",
+    [
+        (b"UTF8", b"\xc3\xa9", "é"),
+        (b'""', b"\xc3\xa9", "é"),
+        (b"us-ascii", b"e", "e"),
+        (b"ANSI_X3.4-1968", b"e", "e"),
+        (b"latin1", b"\xe9", "é"),
+        (b"ISO_8859-1:1987", b"\xe9", "é"),
+    ],
+)
+def test_multipart_request_field_charset(charset: bytes, content: bytes, expected: str) -> None:
+    with create_test_client(form_handler) as client:
+        assert _post_text_field(client, charset, content).json() == {"field": expected}
+
+
+@pytest.mark.parametrize(
+    "charset, content",
+    [
+        (b"punycode", b"a"),
+        (b"idna", b"a"),
+        (b"utf-7", b"a"),
+        (b"windows-1252", b"a"),
+        (b"unknown", b"a"),
+        (b"utf-8", b"\xff"),
+        (None, b"\xff"),
+    ],
+)
+def test_multipart_request_field_invalid_charset(charset: Optional[bytes], content: bytes) -> None:
+    with create_test_client(form_handler) as client:
+        assert _post_text_field(client, charset, content).status_code == HTTP_400_BAD_REQUEST
+
+
+def test_multipart_request_field_charset_does_not_reach_codec_registry() -> None:
+    seen: list[str] = []
+    search = seen.append
+    with create_test_client(form_handler) as client:
+        codecs.register(search)
+        try:
+            assert _post_text_field(client, b"unknown-charset", b"a").status_code == HTTP_400_BAD_REQUEST
+        finally:
+            codecs.unregister(search)
+    assert seen == []
+
+
+@pytest.mark.parametrize("path", ["/form", "/data"])
+def test_multipart_form_allowed_charsets(path: str) -> None:
+    with create_test_client(
+        [form_handler, form_data_handler], multipart_form_allowed_charsets=["utf-7", "shift_jis"]
+    ) as client:
+        assert _post_text_field(client, b"UTF-7", b"+AOk-", path).json() == {"field": "é"}
+        assert _post_text_field(client, b"sjis", b"\x82\xa0", path).json() == {"field": "\u3042"}
+        assert _post_text_field(client, None, b"\xc3\xa9", path).json() == {"field": "é"}
+        assert _post_text_field(client, b"utf-8", b"a", path).status_code == HTTP_400_BAD_REQUEST
+
+
+def test_multipart_form_allowed_charsets_from_on_app_init() -> None:
+    def on_app_init(config: AppConfig) -> AppConfig:
+        config.multipart_form_allowed_charsets = ["utf-7"]
+        return config
+
+    with create_test_client(form_handler, on_app_init=[on_app_init]) as client:
+        assert _post_text_field(client, b"utf-7", b"+AOk-").json() == {"field": "é"}
+
+
+def test_default_multipart_form_allowed_charsets() -> None:
+    table = get_charset_table(DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS)
+    assert set(table.values()) == set(DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS)
+    for label, charset in table.items():
+        assert codecs.lookup(label).name == codecs.lookup(charset).name
 
 
 def test_multipart_request_without_charset_for_filename() -> None:

@@ -5,7 +5,9 @@ import pytest
 from litestar import Controller, Litestar, Request, Response, Router, get, post
 from litestar.datastructures import ResponseHeader
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.types import Empty
+from litestar.handlers import HTTPRouteHandler
+from litestar.testing import create_test_client
+from litestar.types import AsyncAnyCallable, Empty
 
 
 def test_resolve_request_max_body_size() -> None:
@@ -105,6 +107,22 @@ def test_resolve_before_request() -> None:
     app = Litestar(route_handlers=[handler])
     resolved_handler = app.route_handler_method_map["/"]["GET"]
     assert resolved_handler.resolve_before_request() is resolved_handler.before_request  # type: ignore[attr-defined]
+
+
+def test_overridden_resolve_before_request_is_used() -> None:
+    async def overriding_hook(request: Request) -> dict:
+        return {"from": "override"}
+
+    class CustomHandler(HTTPRouteHandler):
+        def resolve_before_request(self) -> AsyncAnyCallable | None:
+            return overriding_hook
+
+    @get("/", handler_class=CustomHandler)
+    async def handler() -> dict:
+        return {"from": "handler"}
+
+    with create_test_client(route_handlers=[handler]) as client:
+        assert client.get("/").json() == {"from": "override"}
 
 
 def test_resolve_after_response() -> None:
