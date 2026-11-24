@@ -12,7 +12,7 @@ from litestar.connection import ASGIConnection
 from litestar.datastructures import MultiDict, State
 from litestar.di import NamedDependency, Provide
 from litestar.di.exceptions import MissingProviderError
-from litestar.dto import DataclassDTO, dto_field
+from litestar.dto import DataclassDTO, DTOData, dto_field
 from litestar.exceptions import ImproperlyConfiguredException, LitestarDeprecationWarning
 from litestar.handlers import WebsocketListenerRouteHandler
 from litestar.handlers.base import BaseRouteHandler
@@ -453,3 +453,33 @@ def test_websocket_listener_applies_guards() -> None:
 
         assert ws.receive_text() == "test"
         assert guard_called is True
+
+
+@pytest.mark.parametrize("mode", ["text", "binary"])
+def test_listener_dto_wire_results(mode: WebSocketMode) -> None:
+    user_dto = DataclassDTO[User]
+    received: list[Any] = []
+
+    @websocket_listener("/both", receive_mode=mode, send_mode=mode, dto=user_dto, return_dto=user_dto)
+    def both(data: User) -> User:
+        return User(name=data.name.upper(), hidden=data.hidden + "!")
+
+    @websocket_listener("/dto-data", receive_mode=mode, send_mode=mode, dto=user_dto, return_dto=None)
+    def dto_data(data: DTOData[User]) -> dict[str, Any]:
+        return {"builtins": data.as_builtins(), "hidden": data.create_instance().hidden}
+
+    @websocket_listener("/none", receive_mode=mode, dto=user_dto)
+    def returns_none(data: User) -> None:
+        received.append(data)
+
+    with create_test_client([both, dto_data, returns_none], openapi_config=None) as client:
+        with client.websocket_connect("/both") as ws:
+            ws.send_json({"name": "litestar user", "hidden": "whoops"}, mode=mode)
+            assert ws.receive_json(mode=mode) == {"name": "LITESTAR USER"}
+        with client.websocket_connect("/dto-data") as ws:
+            ws.send_json({"name": "litestar user", "hidden": "whoops"}, mode=mode)
+            assert ws.receive_json(mode=mode) == {"builtins": {"name": "litestar user"}, "hidden": "super secret"}
+        with client.websocket_connect("/none") as ws:
+            ws.send_json({"name": "litestar user", "hidden": "whoops"}, mode=mode)
+
+    assert received == [User(name="litestar user")]

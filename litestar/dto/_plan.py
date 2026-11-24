@@ -227,13 +227,14 @@ def _build_direction(
         token = _plan_build.set(build)
         try:
             dto.create_for_field_definition(field_definition=field, handler_id=handler.handler_id)
+        except AttributeError as exc:
+            if exc.name != "_dto_backends":
+                raise
+            raise _no_backend_error(dto, handler) from exc
         finally:
             _plan_build.reset(token)
         if build.backend is None:
-            raise DTOFactoryException(
-                f"{getattr(dto, '__qualname__', repr(dto))}.create_for_field_definition() created no backend for handler {handler}: an override "
-                "must call the base method"
-            )
+            raise _no_backend_error(dto, handler)
         backend = build.backend
 
     backend._bind_handler(type_decoders=handler.type_decoders, default_deserializer=handler.default_deserializer)
@@ -253,14 +254,21 @@ def _warn_override(dto: "type[AbstractDTO[Any]]", name: str, kind: "DeprecatedKi
     )
 
 
+def _no_backend_error(dto: "type[AbstractDTO[Any]]", handler: "BaseRouteHandler") -> DTOFactoryException:
+    return DTOFactoryException(
+        f"{getattr(dto, '__qualname__', repr(dto))}.create_for_field_definition() created no backend for handler "
+        f"{handler}: an override must call the base method"
+    )
+
+
 def get_direction_plan(
     handler: "BaseRouteHandler | None", *, is_data_field: bool, dto: "type[AbstractDTO[Any]] | None" = None
 ) -> DTODirectionPlan:
     if handler is not None:
-        if (plan := handler._dto_plan) is not None:
-            if (direction := plan.data if is_data_field else plan.return_) is not None:
-                return direction
-        elif dto is not None and (direction := _direct_direction(dto, handler.handler_id, is_data_field)):
+        plan = handler._dto_plan
+        if plan is not None and (direction := plan.data if is_data_field else plan.return_) is not None:
+            return direction
+        if dto is not None and (direction := _direct_direction(dto, handler.handler_id, is_data_field)):
             return direction
     raise DTOFactoryException(f"Handler {handler} has no {'data' if is_data_field else 'return'} DTO")
 

@@ -269,8 +269,8 @@ class AbstractDTO(Generic[T]):
         is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg) or (
             handler is not None and field_definition is handler.parsed_data_field
         )
-        if handler is not None and handler._dto_plan is not None:
-            direction = get_direction_plan(handler, is_data_field=is_data_field)
+        if handler is not None:
+            direction = get_direction_plan(handler, is_data_field=is_data_field, dto=cls)
         elif (direct := _direct_direction(cls, handler_id, is_data_field)) is not None:
             direction = direct
         else:
@@ -432,7 +432,7 @@ class AbstractDTO(Generic[T]):
 
 
 def _get_direct_backend(dto: type[AbstractDTO[Any]], handler_id: str, is_data_field: bool) -> DTOBackend | None:
-    direct_backends: dict[str, dict[bool, DTOBackend]] = getattr(dto, "_direct_backends", {})
+    direct_backends: dict[str, dict[bool, DTOBackend]] = vars(dto).get("_direct_backends", {})
     return direct_backends.get(str(handler_id), {}).get(is_data_field)
 
 

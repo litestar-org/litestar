@@ -966,3 +966,43 @@ def test_openapi_generation_calls_create_openapi_schema_override() -> None:
     assert all(call["handler_id"] == handler.handler_id for call in calls)
     assert all(call["handler_id"].handler is handler for call in calls)
     assert all(isinstance(call["schema_creator"], SchemaCreator) for call in calls)
+
+
+def test_create_for_field_definition_override_writing_dto_backends_raises() -> None:
+    class LegacyStoreDTO(DataclassDTO[Model]):
+        @classmethod
+        def create_for_field_definition(
+            cls, field_definition: FieldDefinition, handler_id: str, backend_cls: type[DTOBackend] | None = None
+        ) -> None:
+            is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg)
+            key = "data_backend" if is_data_field else "return_backend"
+            cls._dto_backends.setdefault(handler_id, {})[key] = DTOBackend(  # type: ignore[attr-defined]
+                dto_factory=cls,
+                field_definition=field_definition,
+                handler_id=handler_id,
+                is_data_field=is_data_field,
+                model_type=Model,
+                wrapper_attribute_name=None,
+            )
+
+    with pytest.raises(DTOFactoryException, match="must call the base method") as exc_info:
+        Litestar([make_rule_handler(LegacyStoreDTO, None, Model, None)])
+
+    assert isinstance(exc_info.value.__cause__, AttributeError)
+
+
+def test_unregistered_listener_without_dto_resolves_its_handlers() -> None:
+    @websocket_listener("/ws", dto=None, return_dto=None)
+    async def without_dto(data: str) -> str:
+        return data
+
+    @websocket_listener("/ws", dto=ItemDTO)
+    async def with_dto(data: Item) -> Item:
+        return data
+
+    assert callable(without_dto.resolve_receive_handler())
+    assert callable(without_dto.resolve_send_handler())
+    with pytest.raises(LitestarException):
+        with_dto.resolve_receive_handler()
+    with pytest.raises(LitestarException):
+        with_dto.resolve_send_handler()
