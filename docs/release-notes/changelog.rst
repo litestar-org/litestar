@@ -11,31 +11,17 @@
         :pr: 5253
         :issue: 4235
 
-        Fix slow application startup and high memory usage for DTOs of self-referential
-        or deeply nested models with a large ``max_nested_depth``: the generated transfer
-        code grew exponentially with the nesting depth, and now grows linearly.
-
-        A custom ``attribute_accessor`` now reads a nested model with more than one field
-        once, where it was called again for every field of that model.
+        Fix slow startup and high memory use for DTOs of self-referential or deeply nested models. A
+        custom ``attribute_accessor`` now reads a nested model once instead of once per field.
 
     .. change:: DTO: Fix the backend crashing for nested models
         :type: bugfix
         :pr: 5253
 
-        An application failed to start with a :exc:`SyntaxError` when a DTO nested models
-        more than one level deep behind an intermediate model holding a single field, or
-        behind any intermediate model when it declared a custom ``attribute_accessor``. The
-        DTO backend derived a local variable name from an access expression without
-        stripping the attribute and item access syntax from it, and raised a
-        :exc:`ValueError` instead for a field name holding a character that is not a word
-        character, such as ``a·b``.
-
-        The DTO backend also read a field with attribute syntax whatever its name. A
-        field named after a keyword, such as ``class``, raised a :exc:`SyntaxError` at
-        startup, and a field whose name Python normalises as an identifier, such as ``µ``
-        or ``ﬁeld``, returned the value of another field or made the request fail.
-        Field names are now quoted in generated code, so an excluded field whose name is
-        not a valid identifier no longer breaks application startup.
+        Fix a :exc:`SyntaxError` or :exc:`ValueError` at startup for models nested behind a
+        single-field intermediate model or a custom ``attribute_accessor``, and for field names that
+        are keywords or hold non-word characters. Fields whose names Python normalises, such as ``µ``,
+        no longer read another field's value.
 
     .. change:: Add option to run the ASGI lifespan protocol for ``asgi`` handlers
         :type: feature
