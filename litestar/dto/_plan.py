@@ -119,8 +119,6 @@ def create_backend(
     backend = backend_cls.__new__(backend_cls)
     if registry is not None:
         backend._naming = TransferModelNaming(registry, name_scope)
-    else:
-        backend._naming = TransferModelNaming(TransferModelRegistry(), handler_id)
     backend_cls.__init__(
         backend,
         dto_factory=dto,
