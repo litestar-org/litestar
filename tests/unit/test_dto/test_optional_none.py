@@ -1,9 +1,9 @@
+import functools
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
 from typing import Annotated, Any, Generic, Optional, TypeVar, cast
 
 import msgspec
-import pydantic
 import pytest
 
 from litestar import Litestar, Response, get, post, websocket_listener
@@ -12,7 +12,6 @@ from litestar.dto._backend import DTOBackend
 from litestar.dto._plan import create_backend
 from litestar.handlers import websocket_stream
 from litestar.params import JSONBody, MultipartBody, URLEncodedBody
-from litestar.plugins.pydantic import PydanticDTO
 from litestar.testing import RequestFactory, TestClient, create_test_client
 from litestar.typing import FieldDefinition
 from tests.helpers import not_none
@@ -33,12 +32,6 @@ class MSPerson(msgspec.Struct):
     secret: str = "s"
 
 
-class PYPerson(pydantic.BaseModel):
-    id: int
-    name: str
-    secret: str = "s"
-
-
 @dataclass
 class Wrapper(Generic[T]):
     data: T
@@ -46,11 +39,24 @@ class Wrapper(Generic[T]):
 
 EXCLUDE = DTOConfig(exclude={"secret"})
 JSON_BODY: Any = JSONBody
-LIBRARIES = [
-    pytest.param(DCPerson, DataclassDTO[Annotated[DCPerson, EXCLUDE]], id="dc"),
-    pytest.param(MSPerson, MsgspecDTO[Annotated[MSPerson, EXCLUDE]], id="ms"),
-    pytest.param(PYPerson, PydanticDTO[Annotated[PYPerson, EXCLUDE]], id="py"),
-]
+
+
+@functools.cache
+def _pydantic_person() -> tuple[Any, Any]:
+    pydantic = pytest.importorskip("pydantic")
+    from litestar.plugins.pydantic import PydanticDTO
+
+    person = pydantic.create_model("PYPerson", id=(int, ...), name=(str, ...), secret=(str, "s"))
+    return person, PydanticDTO[Annotated[person, EXCLUDE]]
+
+
+@pytest.fixture(params=["dc", "ms", "py"])
+def library(request: pytest.FixtureRequest) -> tuple[Any, Any]:
+    if request.param == "dc":
+        return DCPerson, DataclassDTO[Annotated[DCPerson, EXCLUDE]]
+    if request.param == "ms":
+        return MSPerson, MsgspecDTO[Annotated[MSPerson, EXCLUDE]]
+    return _pydantic_person()
 
 
 def _handler(returns: Any, value: Callable[[], Any], path: str, **options: Any) -> Any:
@@ -78,8 +84,8 @@ def _answers_equal(client: TestClient[Any]) -> Any:
     return with_dto
 
 
-@pytest.mark.parametrize(("model", "dto"), LIBRARIES)
-def test_optional_return_none_matches_handler_without_dto(model: Any, dto: Any) -> None:
+def test_optional_return_none_matches_handler_without_dto(library: tuple[Any, Any]) -> None:
+    model, dto = library
     with create_test_client(_twins(Optional[model], lambda: None, dto)) as client:
         response = _answers_equal(client)
 
@@ -87,32 +93,32 @@ def test_optional_return_none_matches_handler_without_dto(model: Any, dto: Any) 
     assert response.json() is None
 
 
-@pytest.mark.parametrize(("model", "dto"), LIBRARIES)
-def test_optional_return_value_is_still_encoded(model: Any, dto: Any) -> None:
+def test_optional_return_value_is_still_encoded(library: tuple[Any, Any]) -> None:
+    model, dto = library
     route_handler = _handler(Optional[model], lambda: model(id=1, name="a", secret="x"), "/dto", return_dto=dto)
 
     with create_test_client([route_handler]) as client:
         assert client.get("/dto").json() == {"id": 1, "name": "a"}
 
 
-@pytest.mark.parametrize(("model", "dto"), LIBRARIES)
-def test_optional_collection_return_none(model: Any, dto: Any) -> None:
+def test_optional_collection_return_none(library: tuple[Any, Any]) -> None:
+    model, dto = library
     with create_test_client(_twins(Optional[list[model]], lambda: None, dto)) as client:
         response = _answers_equal(client)
 
     assert response.json() is None
 
 
-@pytest.mark.parametrize(("model", "dto"), LIBRARIES)
-def test_response_wrapping_optional_none(model: Any, dto: Any) -> None:
+def test_response_wrapping_optional_none(library: tuple[Any, Any]) -> None:
+    model, dto = library
     with create_test_client(_twins(Response[Optional[model]], lambda: Response(None), dto)) as client:
         response = _answers_equal(client)
 
     assert response.status_code == 200
 
 
-@pytest.mark.parametrize(("model", "dto"), LIBRARIES)
-def test_optional_generic_wrapper_return_none(model: Any, dto: Any) -> None:
+def test_optional_generic_wrapper_return_none(library: tuple[Any, Any]) -> None:
+    model, dto = library
     with create_test_client(_twins(Optional[Wrapper[model]], lambda: None, dto)) as client:
         response = _answers_equal(client)
 
@@ -120,8 +126,8 @@ def test_optional_generic_wrapper_return_none(model: Any, dto: Any) -> None:
 
 
 @pytest.mark.parametrize("value", [lambda: None, lambda: Response(None)], ids=["none", "response-none"])
-@pytest.mark.parametrize(("model", "dto"), LIBRARIES)
-def test_optional_response_wrapping_optional_none(model: Any, dto: Any, value: Callable[[], Any]) -> None:
+def test_optional_response_wrapping_optional_none(library: tuple[Any, Any], value: Callable[[], Any]) -> None:
+    model, dto = library
     with create_test_client(_twins(Optional[Response[Optional[model]]], value, dto)) as client:
         response = _answers_equal(client)
 
@@ -181,8 +187,9 @@ def test_backend_built_without_create_backend_does_not_pass_none() -> None:
         backend.encode_data(None)
 
 
-@pytest.mark.parametrize(("model", "dto"), LIBRARIES)
-def test_listener_optional_return_none_sends_nothing(model: Any, dto: Any) -> None:
+def test_listener_optional_return_none_sends_nothing(library: tuple[Any, Any]) -> None:
+    model, dto = library
+
     async def listener(data: str) -> Any:
         return None if data == "none" else model(id=1, name=data, secret="x")
 
@@ -206,8 +213,8 @@ def test_stream_optional_item_none_sends_null() -> None:
         assert ws.receive_json() == {"id": 1, "name": "a"}
 
 
-@pytest.mark.parametrize(("model", "dto"), LIBRARIES)
-def test_optional_body_null_is_none(model: Any, dto: Any) -> None:
+def test_optional_body_null_is_none(library: tuple[Any, Any]) -> None:
+    model, dto = library
     received: list[Any] = []
 
     async def create(data: Any = None) -> None:
@@ -222,8 +229,8 @@ def test_optional_body_null_is_none(model: Any, dto: Any) -> None:
     assert received == [None]
 
 
-@pytest.mark.parametrize(("model", "dto"), LIBRARIES)
-def test_optional_body_empty_is_none(model: Any, dto: Any) -> None:
+def test_optional_body_empty_is_none(library: tuple[Any, Any]) -> None:
+    model, dto = library
     received: list[Any] = []
 
     async def create(data: Any = None) -> None:

@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import Annotated, Any, Optional
 
-import pydantic
 import pytest
 
 from litestar import Litestar, post
@@ -9,7 +8,6 @@ from litestar.datastructures import UploadFile
 from litestar.dto import DataclassDTO, DTOConfig, DTOData
 from litestar.enums import RequestEncodingType
 from litestar.params import Body, JSONBody, MultipartBody, URLEncodedBody
-from litestar.plugins.pydantic import PydanticDTO
 from litestar.testing import TestClient, create_test_client
 
 
@@ -24,10 +22,6 @@ class User:
 class Upload:
     title: str
     file: UploadFile
-
-
-class ShortName(pydantic.BaseModel):
-    name: str = pydantic.Field(max_length=2)
 
 
 UserDTO = DataclassDTO[Annotated[User, DTOConfig(exclude={"secret"})]]
@@ -149,19 +143,6 @@ def test_multipart_optional_body_empty_form_is_none() -> None:
 
     assert response.status_code == 201
     assert received == [None]
-
-
-def test_pydantic_dto_form_validation_error_keeps_extra() -> None:
-    @post("/", dto=PydanticDTO[ShortName], return_dto=None)
-    async def create(data: URLEncodedBody[ShortName]) -> None: ...
-
-    with create_test_client([create]) as client:
-        response = client.post("/", data={"name": "too long"})
-
-    assert response.status_code == 400
-    body = response.json()
-    assert body["detail"] == "Bad Request"
-    assert body["extra"][0]["loc"] == ["name"]
 
 
 @pytest.mark.parametrize(

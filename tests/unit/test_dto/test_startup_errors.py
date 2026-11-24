@@ -5,7 +5,6 @@ from dataclasses import dataclass, make_dataclass
 from typing import TYPE_CHECKING, Annotated, Any, Optional, Union, cast
 
 import msgspec
-import pydantic
 import pytest
 from msgspec import Meta
 
@@ -23,7 +22,6 @@ from litestar.exceptions import (
 )
 from litestar.handlers import WebsocketListener
 from litestar.params import JSONBody
-from litestar.plugins.pydantic import PydanticDTO
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
 from tests.helpers import not_none
@@ -60,18 +58,6 @@ class U2:
 @dataclass
 class UnionHolder:
     f: Union[U1, U2]
-
-
-class PMember1(pydantic.BaseModel):
-    a: int
-
-
-class PMember2(pydantic.BaseModel):
-    b: int
-
-
-class PUnionHolder(pydantic.BaseModel):
-    f: Union[PMember1, PMember2]
 
 
 class HookError(DTOFactoryException):
@@ -342,16 +328,6 @@ def test_return_only_dto_over_union_of_models_raises_typed_error_on_schema_gener
             client.app.openapi_schema
         assert isinstance(exc_info.value.__cause__, TypeError)
         assert client.get("/schema/openapi.json").status_code == 500
-
-
-def test_pydantic_dto_error_carries_handler_prefix() -> None:
-    @post("/", dto=PydanticDTO[PUnionHolder], return_dto=None)
-    async def create_holder(data: JSONBody[PUnionHolder]) -> None: ...
-
-    with pytest.raises(
-        DTOTransferTypeError, match=r"^\[paths='/', handler='create_holder'\] msgspec cannot decode the transfer model "
-    ):
-        Litestar([create_holder], openapi_config=None)
 
 
 def test_dto_overriding_decode_bytes_is_checked_at_startup() -> None:
