@@ -6,6 +6,17 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Remove ``__future__.annotations`` from core modules, handlers and types
+        :type: misc
+        :issue: 4009
+        :pr: 5013
+
+        Remove ``from __future__ import annotations`` from top-level ``litestar``
+        modules, ``litestar.handlers`` and ``litestar.types``. Annotations in these
+        modules now use runtime types and explicit quoted forward references.
+        Convert documented type aliases in ``litestar.types`` to ``TypeAliasType``
+        and update their API documentation.
+
     .. change:: Apply the DTO of a handler to a request body declared only in a dependency provider
         :type: bugfix
         :breaking:
