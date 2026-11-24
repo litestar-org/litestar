@@ -94,7 +94,7 @@ class Controller:
     Can be overridden by route handlers.
     """
     dependencies: Dependencies | None
-    """A string keyed dictionary of dependency :class:`Provider <.di.Provide>` instances."""
+    """A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables."""
     dto: type[AbstractDTO] | None | EmptyType
     """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and validation of request data."""
     etag: ETag | None

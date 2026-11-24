@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 from msgspec.json import Encoder as JsonEncoder
 
 from litestar.connection import WebSocket
-from litestar.di import NamedDependency, Provide
+from litestar.di import NamedDependency, Provider
 from litestar.serialization import decode_json
 from litestar.types import AnyCallable
 from litestar.types.builtin_types import NoneType
@@ -119,20 +119,15 @@ class ListenerHandler:
 
 
 def create_handler_signature(callback_signature: Signature) -> Signature:
-    """Creates a :class:`Signature` for the handler function for signature modelling.
-
-    This is required for two reasons:
-
-        1. the :class:`.handlers.WebsocketHandler` signature model cannot contain the ``data`` parameter, which is
-            required for :class:`.handlers.websocket_listener` handlers.
-        2. the :class;`.handlers.WebsocketHandler` signature model must include the ``socket`` parameter, which is
-            optional for :class:`.handlers.websocket_listener` handlers.
+    """Create the :class:`Signature` a listener's dependencies are read from: the callback's without
+    ``data``, with ``socket`` if the callback does not declare it, and with
+    ``connection_lifespan_dependencies``.
 
     Args:
         callback_signature: The :class:`Signature` of the listener callback.
 
     Returns:
-        The :class:`Signature` for the listener callback as required for signature modelling.
+        The :class:`Signature` of the listener's handler.
     """
     new_params = [p for p in callback_signature.parameters.values() if p.name != "data"]
     if "socket" not in callback_signature.parameters:
@@ -149,16 +144,14 @@ def create_handler_signature(callback_signature: Signature) -> Signature:
     return callback_signature.replace(parameters=new_params)
 
 
-def create_stub_dependency(src: AnyCallable | None) -> Provide:
-    """Create a stub dependency, accepting any kwargs defined in ``src``, and
-    wrap it in ``Provide``
-    """
+def create_stub_dependency(src: AnyCallable | None, key: str) -> Provider:
+    """Create a provider under ``key`` of the kwargs defined in ``src``, or of ``None`` without ``src``"""
     if src is None:
 
         async def empty_stub() -> None:
             return None
 
-        return Provide(empty_stub)
+        return Provider(empty_stub, key=key)
 
     src = unwrap_partial(src)
 
@@ -166,4 +159,4 @@ def create_stub_dependency(src: AnyCallable | None) -> Provide:
     async def stub(**kwargs: Any) -> dict[str, Any]:
         return kwargs
 
-    return Provide(stub)
+    return Provider(stub, key=key)

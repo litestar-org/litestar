@@ -115,7 +115,7 @@ def provide_limit_offset_pagination(
 class AuthorController(Controller):
     """Author CRUD"""
 
-    dependencies = {"authors_repo": Provide(provide_authors_repo, sync_to_thread=False)}
+    dependencies = {"authors_repo": Provide(provide_authors_repo)}
 
     @get(path="/authors")
     def list_authors(
@@ -149,7 +149,7 @@ class AuthorController(Controller):
     # we override the authors_repo to use the version that joins the Books in
     @get(
         path="/authors/{author_id:uuid}",
-        dependencies={"authors_repo": Provide(provide_author_details_repo, sync_to_thread=False)},
+        dependencies={"authors_repo": Provide(provide_author_details_repo)},
     )
     def get_author(
         self,
@@ -168,7 +168,7 @@ class AuthorController(Controller):
 
     @patch(
         path="/authors/{author_id:uuid}",
-        dependencies={"authors_repo": Provide(provide_author_details_repo, sync_to_thread=False)},
+        dependencies={"authors_repo": Provide(provide_author_details_repo)},
     )
     def update_author(
         self,
@@ -220,5 +220,5 @@ app = Litestar(
     route_handlers=[AuthorController],
     on_startup=[on_startup],
     plugins=[SQLAlchemyInitPlugin(config=sqlalchemy_config)],
-    dependencies={"limit_offset": Provide(provide_limit_offset_pagination)},
+    dependencies={"limit_offset": Provide(provide_limit_offset_pagination, sync_to_thread=False)},
 )

@@ -144,7 +144,7 @@ def test_handler_multi_paths() -> None:
 )
 def test_path_validation(handler_path: str, request_path: str, expected_status_code: int) -> None:
     @get(handler_path)
-    def handler_fn(**kwargs: FromQuery[Any]) -> None: ...
+    def handler_fn(path_param: FromPath[Any] = None) -> None: ...
 
     with create_test_client(handler_fn) as client:
         response = client.get(request_path)
@@ -321,7 +321,7 @@ from typing import List
 async def handler(request: Request) -> List[str]:
     return [request.scope["path"], request.scope["root_path"]]
 
-app = Litestar(route_handlers=[handler])
+app = Litestar(route_handlers=[handler], dependency_scopes=("request", "handler"))
     """
 
     run_server(app, server_command)
@@ -355,7 +355,7 @@ from litestar.params import FromPath
 async def pathfinder(path: FromPath[Optional[Path]] = None) -> str:
     return str(path)
 
-app = Litestar(route_handlers=[pathfinder], debug=True)
+app = Litestar(route_handlers=[pathfinder], debug=True, dependency_scopes=("request", "handler"))
     """
 
     run_server(app, server_command)
@@ -393,6 +393,7 @@ app = Litestar(
     route_handlers=[
         create_static_files_router(path="/static", directories=["static"]),
     ],
+    dependency_scopes=("request", "handler"),
 )
     """
 

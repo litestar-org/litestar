@@ -10,7 +10,8 @@ from litestar import Controller, Litestar, post
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.request_body import create_request_body
 from litestar.datastructures.upload_file import UploadFile
-from litestar.dto import AbstractDTO
+from litestar.di import NamedDependency, Provide
+from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, DTOData
 from litestar.handlers import BaseRouteHandler
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.spec import RequestBody
@@ -309,3 +310,28 @@ def test_nested_optional_upload_file_keeps_null_alternative() -> None:
     file_schema = form_schema["properties"]["file"]
     assert file_schema["type"] == ["string", "null"]
     assert file_schema["format"] == "binary"
+
+
+@pytest.mark.parametrize("as_dto_data", [pytest.param(False, id="model"), pytest.param(True, id="dto-data")])
+def test_body_only_provider_declares_documented_with_handler_dto(as_dto_data: bool) -> None:
+    @dataclass
+    class User:
+        name: str
+        secret: str = "default"
+
+    class UserDTO(DataclassDTO[User]):
+        config = DTOConfig(exclude={"secret"})
+
+    body_type = DTOData[User] if as_dto_data else User
+
+    async def provide_user(data: Annotated[body_type, Body()]) -> Any:  # type: ignore[valid-type]
+        return data
+
+    @post("/", dependencies={"user": Provide(provide_user)}, dto=UserDTO, return_dto=None)
+    async def handler(user: NamedDependency[Any]) -> None:
+        return None
+
+    schema = Litestar(route_handlers=[handler]).openapi_schema.to_schema()
+
+    reference = schema["paths"]["/"]["post"]["requestBody"]["content"]["application/json"]["schema"]["$ref"]
+    assert set(schema["components"]["schemas"][reference.rsplit("/", 1)[1]]["properties"]) == {"name"}

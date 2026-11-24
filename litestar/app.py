@@ -15,7 +15,7 @@ from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Self, TypedDict, cast
+from typing import TYPE_CHECKING, Any, Literal, Self, TypedDict, cast
 from uuid import UUID
 
 from litestar._asgi import ASGIRouter
@@ -32,6 +32,7 @@ from litestar.connection import Request, WebSocket
 from litestar.constants import DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS
 from litestar.datastructures import CacheControlHeader, ETag
 from litestar.datastructures.state import State
+from litestar.di import DependencyKey, DIContext, Provider, check_divergence
 from litestar.dto import AbstractDTO
 from litestar.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
 from litestar.events.listener import EventListener
@@ -132,11 +133,14 @@ class Litestar(Router):
     """
 
     __slots__ = (
+        "_builtin_provider_factory",
         "_debug",
+        "_dependency_scopes",
         "_is_using_litestar_test_client",
         "_lifespan_managers",
         "_logger_shutdown",
         "_openapi_schema",
+        "_provide_converter",
         "_server_lifespan_managers",
         "after_exception",
         "allowed_hosts",
@@ -147,6 +151,8 @@ class Litestar(Router):
         "cors_config",
         "csrf_config",
         "debugger_module",
+        "dependency_context",
+        "dependency_registry",
         "event_emitter",
         "experimental_features",
         "multipart_form_allowed_charsets",
@@ -182,6 +188,7 @@ class Litestar(Router):
         dto: type[AbstractDTO] | EmptyType | None = Empty,
         debug: bool | None = None,
         dependencies: Dependencies | None = None,
+        dependency_scopes: Sequence[str] | None = None,
         etag: ETag | None = None,
         event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -221,6 +228,8 @@ class Litestar(Router):
         pdb_on_exception: bool | None = None,
         debugger_module: Debugger = pdb,
         experimental_features: Iterable[ExperimentalFeatures] | None = None,
+        di_check_graph_divergence: Literal["warn", "raise", False] = "warn",
+        di_check_graph_divergence_ignore: Iterable["DependencyKey | Provider"] | None = None,
     ) -> None:
         """Initialize a ``Litestar`` application.
 
@@ -248,7 +257,10 @@ class Litestar(Router):
             cors_config: If set, configures CORS handling for the application.
             csrf_config: If set, enables CSRF protection.
             debug: If ``True``, app errors rendered as HTML with a stack trace.
-            dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
+            dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
+            dependency_scopes: The scopes of the app's dependencies, outermost first. Defaults to
+                ``("app", "request", "handler")``. Without ``"app"``, HTTP and websocket requests are handled
+                whether or not the lifespan is running.
             dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
                 validation of request data.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
@@ -320,7 +332,14 @@ class Litestar(Router):
             websocket_class: An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket
                 connections.
             experimental_features: An iterable of experimental features to enable
+            di_check_graph_divergence: Check the DI graph for divergences in sub-dependencies, which may result in
+                unexpected value isolation. Check :func:`~litestar.di.check_divergence` for details.
+                If ``warn``, warn about findings. If ``raise``, raise an exception instead.
+            di_check_graph_divergence_ignore: Dependency keys or provider instances to ignore when running the DI graph
+                divergence check.
         """
+
+        from litestar._layers.utils import narrow_dependencies
 
         if debug is None:
             debug = envflag("LITESTAR_DEBUG")
@@ -340,7 +359,8 @@ class Litestar(Router):
             cors_config=cors_config,
             csrf_config=csrf_config,
             debug=debug,
-            dependencies=dict(dependencies or {}),
+            dependencies=narrow_dependencies(dependencies),
+            dependency_scopes=dependency_scopes,
             dto=dto,
             etag=etag,
             event_emitter_backend=event_emitter_backend,
@@ -380,6 +400,8 @@ class Litestar(Router):
             type_decoders=type_decoders,
             websocket_class=websocket_class,
             experimental_features=list(experimental_features or []),
+            di_check_graph_divergence=di_check_graph_divergence,
+            di_check_graph_divergence_ignore=di_check_graph_divergence_ignore,
         )
 
         config.plugins.extend([OpenAPIPlugin(self), *openapi_schema_plugins])
@@ -484,14 +506,34 @@ class Litestar(Router):
 
         self.asgi_router = ASGIRouter(app=self)
 
-        self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = self._build_routes(
-            self._reduce_handlers(self.route_handlers)
-        )
+        from litestar.di import DIRegistry
+        from litestar.di._builtin_providers import BuiltinProviderFactory
+        from litestar.di._route_handler import ProvideConverter
+
+        self._builtin_provider_factory = BuiltinProviderFactory(self)
+        scopes = self._dependency_scopes = config.dependency_scopes
+        # the app's context and seeds have scope "app". without it, the request's context is the outermost
+        self.dependency_registry: DIRegistry | None = None
+        if scopes is None or "app" in scopes:
+            self.dependency_registry = DIRegistry("app", self._builtin_provider_factory.app_seeds, scopes=scopes)
+            self.dependency_registry.freeze()
+        self.dependency_context: DIContext | None = None
+        self._provide_converter = ProvideConverter(self.plugins)
+
+        self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute]
+        self.routes, all_handlers = self._build_routes(self._reduce_handlers(self.route_handlers))
         self.route_handler_method_map = self._create_route_handler_method_map(self.routes)
 
         # we have merged everything registered initially, so let's ensure we don't keep
         # unnecessary references to temporary objects around and let them be gc'ed
         self.route_handlers = ()
+
+        if config.di_check_graph_divergence:
+            check_divergence(
+                (h._injection_setup.registry for h in all_handlers if hasattr(h, "_injection_setup")),
+                raise_on_divergence=config.di_check_graph_divergence == "raise",
+                ignore=config.di_check_graph_divergence_ignore,
+            )
 
         self.asgi_router.construct_routing_trie()
 
@@ -603,7 +645,19 @@ class Litestar(Router):
         server, and exit after the ``asgi.shutdown`` message. During this period, it is
         responsible for calling the ``on_startup``, ``on_shutdown`` hooks, as well as
         custom lifespan managers.
+
+        It enters the app's dependency context, if the app has one, after the lifespan
+        managers, before the ``on_startup`` hooks, and closes it before the lifespan
+        managers exit.
+
+        Raises:
+            RuntimeError: If the lifespan of this app is already running.
         """
+        from litestar.di import DIContext
+
+        if self.dependency_context is not None:
+            raise RuntimeError(f"The lifespan of {self!r} is already running")
+
         async with AsyncExitStack() as exit_stack:
             for hook in self.on_shutdown[::-1]:
                 exit_stack.push_async_callback(partial(self._call_lifespan_hook, hook))
@@ -614,6 +668,17 @@ class Litestar(Router):
                 if not isinstance(manager, AbstractAsyncContextManager):
                     manager = manager(self)
                 await exit_stack.enter_async_context(manager)
+
+            if self.dependency_registry is not None:
+                seeds = {seed.key: self for seed in self._builtin_provider_factory.app_seeds}
+                self.dependency_context = await exit_stack.enter_async_context(
+                    DIContext(self.dependency_registry, seeds=seeds)
+                )
+
+                def reset_dependency_context() -> None:
+                    self.dependency_context = None
+
+                exit_stack.callback(reset_dependency_context)
 
             for hook in self.on_startup:
                 await self._call_lifespan_hook(hook)
@@ -666,7 +731,9 @@ class Litestar(Router):
 
         return route_map
 
-    def _build_routes(self, route_handlers: Iterable[BaseRouteHandler]) -> list[HTTPRoute | ASGIRoute | WebSocketRoute]:  # noqa: C901
+    def _build_routes(  # noqa: C901
+        self, route_handlers: Iterable[BaseRouteHandler]
+    ) -> tuple[list[HTTPRoute | ASGIRoute | WebSocketRoute], list[BaseRouteHandler]]:
         """Create routes for all the handlers"""
         routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
 
@@ -675,8 +742,10 @@ class Litestar(Router):
         # the route itself), we first group them by path and then create one route for
         # each path
         http_path_groups: dict[str, list[HTTPRouteHandler]] = collections.defaultdict(list)
+        all_handlers: list[BaseRouteHandler] = []
 
         for handler in route_handlers:
+            all_handlers.append(handler)
             if isinstance(handler, HTTPRouteHandler):
                 for path in handler.paths:
                     http_path_groups[path].append(handler)
@@ -709,7 +778,7 @@ class Litestar(Router):
             for plugin in self.plugins.receive_route:
                 plugin.receive_route(finalized_route)
 
-        return routes
+        return routes, all_handlers
 
     def _iter_handlers(
         self, handlers: Iterable[ControllerRouterHandler], bases: list[Router]
@@ -812,6 +881,11 @@ class Litestar(Router):
         )
 
     def register(self, value: ControllerRouterHandler) -> None:
+        if self.dependency_context is not None:
+            raise ImproperlyConfiguredException(
+                f"Cannot register {value!r} while the lifespan of {self!r} is running: the dependency registry "
+                "of a handler registered now would be created after the app's dependency context was entered"
+            )
         warnings.warn(
             "Registering routes after the application instance has been "
             "created is discouraged, as it might lead to unexpected behaviour "
@@ -822,7 +896,7 @@ class Litestar(Router):
             stacklevel=2,
         )
         self.routes = []
-        self.routes = self._build_routes(
+        self.routes, _ = self._build_routes(
             itertools.chain(
                 self._reduce_handlers([value]), (h for route in self.routes for h in get_route_handlers(route))
             )

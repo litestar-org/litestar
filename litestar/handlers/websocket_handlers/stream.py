@@ -158,7 +158,7 @@ def websocket_stream(
     Args:
         path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
             to ``/``
-        dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+        dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
         exception_handlers: A mapping of status codes and/or exception types to handler functions.
         guards: A sequence of :class:`Guard <.types.Guard>` callables.
         middleware: A sequence of :class:`Middleware <.types.Middleware>`.
@@ -245,34 +245,32 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
         # go away with v3.0's static handlers
         stream_fn = cast("Callable[..., AsyncGenerator[Any, Any]]", self.fn)
 
-        # construct a fake signature for the kwargs modelling, using the generator
-        # function passed to the handler as a base, to include all the dependencies,
-        # params, injection kwargs, etc. + 'socket', so DI works properly, but the
-        # signature looks to kwargs/signature modelling like a plain '@websocket'
-        # handler that returns 'None'
-        parsed_handler_signature = dataclasses.replace(
-            parsed_handler_signature, return_type=FieldDefinition.from_annotation(NoneType)
+        # the signature the handler's dependencies are read from: the generator function's, returning 'None' like
+        # a plain '@websocket' handler, with a parameter of its own for the socket the stream is sent to. the
+        # function's parameters, a socket among them, are its dependencies
+        original_parameters = list(parsed_handler_signature.original_signature.parameters.values())
+        # a keyword-only parameter must come before '**kwargs'
+        insert_at = next(
+            (i for i, p in enumerate(original_parameters) if p.kind is inspect.Parameter.VAR_KEYWORD),
+            len(original_parameters),
         )
-        receives_socket_parameter = "socket" in parsed_stream_fn_signature.parameters
-
-        if not receives_socket_parameter:
-            original_parameters = list(parsed_handler_signature.original_signature.parameters.values())
-            # a keyword-only parameter must come before '**kwargs'
-            insert_at = next(
-                (i for i, p in enumerate(original_parameters) if p.kind is inspect.Parameter.VAR_KEYWORD),
-                len(original_parameters),
-            )
-            original_parameters.insert(
-                insert_at, inspect.Parameter("socket", inspect.Parameter.KEYWORD_ONLY, annotation=self.websocket_class)
-            )
-            parsed_handler_signature = dataclasses.replace(
-                parsed_handler_signature,
-                parameters={
-                    **parsed_handler_signature.parameters,
-                    "socket": FieldDefinition.from_annotation(self.websocket_class, name="socket"),
-                },
-                original_signature=parsed_handler_signature.original_signature.replace(parameters=original_parameters),
-            )
+        original_parameters.insert(
+            insert_at,
+            inspect.Parameter(
+                "__litestar_stream_socket__", inspect.Parameter.KEYWORD_ONLY, annotation=self.websocket_class
+            ),
+        )
+        parsed_handler_signature = dataclasses.replace(
+            parsed_handler_signature,
+            return_type=FieldDefinition.from_annotation(NoneType),
+            parameters={
+                **parsed_handler_signature.parameters,
+                "__litestar_stream_socket__": FieldDefinition.from_annotation(
+                    self.websocket_class, name="__litestar_stream_socket__"
+                ),
+            },
+            original_signature=parsed_handler_signature.original_signature.replace(parameters=original_parameters),
+        )
 
         self._parsed_fn_signature = parsed_handler_signature
         self._parsed_return_field = parsed_stream_fn_signature.return_type.inner_types[0]
@@ -301,12 +299,9 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
             await socket.send_data(data=data, mode=send_mode)
 
         @functools.wraps(stream_fn)
-        async def handler_fn(*args: Any, socket: WebSocket, **kw: Any) -> None:
-            if receives_socket_parameter:
-                kw["socket"] = socket
-
+        async def handler_fn(*args: Any, __litestar_stream_socket__: WebSocket, **kw: Any) -> None:
             await send_websocket_stream(
-                socket=socket,
+                socket=__litestar_stream_socket__,
                 stream=stream_fn(*args, **kw),
                 mode=send_mode,
                 close=True,

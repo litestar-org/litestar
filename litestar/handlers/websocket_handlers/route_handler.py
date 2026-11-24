@@ -1,25 +1,23 @@
 from collections.abc import Callable, Mapping, Sequence
 from typing import TYPE_CHECKING, Any
 
+from litestar._request_parameters.validation import create_request_param_validaton_fn
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
 from litestar.router import Router
 from litestar.routes import BaseRoute
-from litestar.types import AsyncAnyCallable, Dependencies, Empty, ExceptionHandler, Guard, Middleware, ParametersMap
+from litestar.types import AsyncAnyCallable, Dependencies, ExceptionHandler, Guard, Middleware, ParametersMap
 from litestar.types.builtin_types import NoneType
 from litestar.utils import deprecated
 from litestar.utils.predicates import is_async_callable
 
 if TYPE_CHECKING:
     from litestar import Litestar
-    from litestar._kwargs import KwargsModel
-    from litestar._kwargs.cleanup import DependencyCleanupGroup
-    from litestar.types import EmptyType
 
 
 class WebsocketRouteHandler(BaseRouteHandler):
-    __slots__ = ("_kwargs_model", "_websocket_class")
+    __slots__ = ("_websocket_class",)
 
     def __init__(
         self,
@@ -45,7 +43,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
             fn: The handler function
 
                 .. versionadded:: 3.0
-            dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+            dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
             middleware: A sequence of :class:`Middleware <.types.Middleware>`.
@@ -61,7 +59,6 @@ class WebsocketRouteHandler(BaseRouteHandler):
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self._websocket_class = websocket_class
-        self._kwargs_model: KwargsModel | EmptyType = Empty
 
         super().__init__(
             fn=fn,
@@ -107,21 +104,23 @@ class WebsocketRouteHandler(BaseRouteHandler):
         if not self.parsed_fn_signature.return_type.is_subclass_of(NoneType):
             raise ImproperlyConfiguredException(f"{self}: WebSocket handlers must return 'None'")
 
-        if "socket" not in self.parsed_fn_signature.parameters:
-            raise ImproperlyConfiguredException(f"{self}: WebSocket handlers must define a 'socket' parameter")
-
-        for param in ("request", "body", "data"):
-            if param in self.parsed_fn_signature.parameters:
-                raise ImproperlyConfiguredException(
-                    f"{self}: The {param} kwarg is not supported with websocket handlers"
-                )
-
         if not is_async_callable(self.fn):
             raise ImproperlyConfiguredException(f"{self}: WebSocket handler functions must be asynchronous")
 
     def on_registration(self, route: BaseRoute, app: "Litestar") -> None:
         super().on_registration(route=route, app=app)
-        self._kwargs_model = self._create_kwargs_model(path_parameters=route.path_parameters)
+
+        from litestar.di._route_handler import create_handler_injection_setup
+
+        self._injection_setup = create_handler_injection_setup(
+            self, app, connection_class=self.websocket_class, accepts_body=False
+        )
+        definitions = self._injection_setup.request_parameter_definitions
+        self._validate_request_parameters = (
+            create_request_param_validaton_fn(definitions.values(), data_dto=None, type_decoders=self.type_decoders)
+            if definitions
+            else None
+        )
 
     async def handle(self, connection: WebSocket[Any, Any, Any]) -> None:
         """ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function.
@@ -133,31 +132,18 @@ class WebsocketRouteHandler(BaseRouteHandler):
             None
         """
 
-        handler_kwargs_model = self._kwargs_model
-        if handler_kwargs_model is Empty:
-            raise ImproperlyConfiguredException("handler parameter model not defined")
-
         if self.guards:
             await self.authorize_connection(connection=connection)
 
-        parsed_kwargs: dict[str, Any] = {}
-        cleanup_group: DependencyCleanupGroup | None = None
-
-        if handler_kwargs_model.has_kwargs:
-            parsed_kwargs = await handler_kwargs_model.to_kwargs(connection=connection)
-
-            if handler_kwargs_model.dependency_batches:
-                cleanup_group = await handler_kwargs_model.resolve_dependencies(connection, parsed_kwargs)
-
-            parsed_kwargs = self.signature_model.parse_values_from_connection_kwargs(
-                connection=connection, kwargs=parsed_kwargs
-            )
-
-        if cleanup_group:
-            async with cleanup_group:
-                await self.fn(**parsed_kwargs)
-        else:
-            await self.fn(**parsed_kwargs)
+        setup = self._injection_setup
+        validate = self._validate_request_parameters
+        seeds: dict[Any, Any] = await validate(connection) if validate else {}
+        for key in setup.connection_seed_keys:
+            seeds[key] = connection
+        kwargs = {name: seeds[key] for name, key in setup.fn_seed_parameters}
+        async with self._create_di_handler_context(connection, seeds) as handler_context:
+            kwargs.update(await handler_context.solve_arguments(setup.target, supplied=kwargs.keys()))
+            await self.fn(**kwargs)
 
 
 def websocket(
@@ -179,7 +165,7 @@ def websocket(
     Args:
         path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
             to ``/``
-        dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+        dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
         exception_handlers: A mapping of status codes and/or exception types to handler functions.
         guards: A sequence of :class:`Guard <.types.Guard>` callables.
         middleware: A sequence of :class:`Middleware <.types.Middleware>`.

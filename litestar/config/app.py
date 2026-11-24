@@ -3,7 +3,7 @@ from __future__ import annotations
 import enum
 import pdb  # noqa: T100
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.response_cache import ResponseCacheConfig
@@ -13,7 +13,7 @@ from litestar.events.emitter import SimpleEventEmitter
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Sequence
+    from collections.abc import Callable, Iterable, Sequence
     from contextlib import AbstractAsyncContextManager
 
     from litestar import Litestar, Response
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from litestar.config.csrf import CSRFConfig
     from litestar.connection import Request, WebSocket
     from litestar.datastructures import CacheControlHeader, ETag
-    from litestar.di import Provide
+    from litestar.di import DependencyKey, Provide, Provider
     from litestar.dto import AbstractDTO
     from litestar.events.emitter import BaseEventEmitterBackend
     from litestar.events.listener import EventListener
@@ -112,8 +112,12 @@ class AppConfig:
     """If set this enables the builtin CSRF middleware."""
     debug: bool = field(default=False)
     """If ``True``, app errors rendered as HTML with a stack trace."""
-    dependencies: dict[str, Provide | AnyCallable] = field(default_factory=dict)
-    """A string keyed dictionary of dependency :class:`Provider <.di.Provide>` instances."""
+    dependencies: dict[DependencyKey, Provider | Provide | AnyCallable] = field(default_factory=dict)
+    """A dictionary of names or types to :class:`Provider <.di.Provider>` instances, :class:`Provide <.di.Provide>` instances or callables."""
+    dependency_scopes: Sequence[str] | None = field(default=None)
+    """The scopes of the app's dependencies, outermost first. Defaults to ``("app", "request", "handler")``.
+    Without ``"app"``, HTTP and websocket requests are handled whether or not the lifespan is running.
+    """
     dto: type[AbstractDTO] | None | EmptyType = field(default=Empty)
     """:class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and validation of request data."""
     etag: ETag | None = field(default=None)
@@ -221,6 +225,14 @@ class AppConfig:
     """Charsets accepted for multipart/formdata text fields; others are rejected with a 400. Fields without a charset
     are decoded as UTF-8."""
     experimental_features: list[ExperimentalFeatures] | None = None
+
+    di_check_graph_divergence: Literal["warn", "raise", False] = "warn"
+    """Check the DI graph for divergences in sub-dependencies, which may result in unexpected value isolation.
+    Check :func:`~litestar.di.check_divergence` for details.  If ``warn``, warn about findings. If ``raise``,
+    raise an exception instead.
+    """
+    di_check_graph_divergence_ignore: Iterable[DependencyKey | Provider] | None = None
+    """Dependency keys or provider instances to ignore when running the DI graph divergence check"""
 
     def __post_init__(self) -> None:
         """Normalize the allowed hosts to be a config or None.

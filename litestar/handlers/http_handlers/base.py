@@ -1,15 +1,15 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
 
-import contextlib
-from collections.abc import Awaitable, Callable, Iterable, Mapping, Sequence
+from collections.abc import Awaitable, Callable, Mapping, Sequence
+from dataclasses import replace
 from enum import Enum
 from typing import TYPE_CHECKING, Any, AnyStr, TypedDict, cast
 
 from msgspec.msgpack import decode as _decode_msgpack_plain
 
-from litestar._kwargs import KwargsModel
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
+from litestar._request_parameters.validation import create_request_param_validaton_fn
 from litestar.background_tasks import BackgroundTask, BackgroundTasks
 from litestar.config.response_cache import CACHE_FOREVER
 from litestar.connection import Request
@@ -19,10 +19,8 @@ from litestar.datastructures.response_header import ResponseHeader
 from litestar.dto import AbstractDTO
 from litestar.enums import HttpMethod, MediaType
 from litestar.exceptions import (
-    ClientException,
     HTTPException,
     ImproperlyConfiguredException,
-    SerializationException,
 )
 from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.http_handlers._utils import (
@@ -35,7 +33,6 @@ from litestar.handlers.http_handlers._utils import (
 )
 from litestar.openapi.datastructures import ResponseSpec
 from litestar.openapi.spec import Operation, SecurityRequirement
-from litestar.params import RawBody
 from litestar.response import File, Response
 from litestar.response.file import ASGIFileResponse
 from litestar.router import Router
@@ -96,7 +93,6 @@ class HTTPRouteHandler(BaseRouteHandler):
     __slots__ = (
         "_default_response_handler",
         "_include_in_schema",
-        "_kwargs_models",
         "_request_class",
         "_request_max_body_size",
         "_resolved_before_request",
@@ -204,7 +200,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 :class:`CacheControlHeader <.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+            dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
             dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
                 validation of request data.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
@@ -338,7 +334,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.security = tuple(security) if security else ()
         self.responses = responses
         # memoized attributes, defaulted to Empty
-        self._kwargs_models: dict[tuple[str, ...], KwargsModel] = {}
         self._default_response_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
         self._response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
 
@@ -536,7 +531,29 @@ class HTTPRouteHandler(BaseRouteHandler):
         return value_or_default(self._request_max_body_size, None)  # pyright: ignore[reportReturnType]
 
     def on_registration(self, route: BaseRoute, app: "Litestar") -> None:
+        from litestar.di._route_handler import create_handler_injection_setup
+
+        self._injection_setup = create_handler_injection_setup(
+            self, app, connection_class=self.request_class, accepts_body="GET" not in self.http_methods
+        )
+        definitions = self._injection_setup.request_parameter_definitions
+        # there is at most one definition of the request body, since declarations of it,
+        # by the handler and its dependencies are merged into one. a DTO knows the body
+        # by the name 'data'
+        for definition in definitions.values():
+            if definition.is_body:
+                self._parsed_data_field = replace(definition.field_definition, name="data")
+                break
+
         super().on_registration(route=route, app=app)
+
+        self._validate_request_parameters = (
+            create_request_param_validaton_fn(
+                definitions.values(), data_dto=self.data_dto, type_decoders=self.type_decoders
+            )
+            if definitions
+            else None
+        )
 
         if type(self).resolve_before_request is not HTTPRouteHandler.resolve_before_request:
             self._resolved_before_request = self.resolve_before_request()
@@ -547,7 +564,6 @@ class HTTPRouteHandler(BaseRouteHandler):
                 "set 'request_max_body_size=None'"
             )
 
-        self._get_kwargs_model_for_route(route.path_parameters)
         self._default_response_handler, self._response_type_handler = self._create_response_handlers(
             media_type=self.media_type,
             response_class=self.response_class,
@@ -559,12 +575,6 @@ class HTTPRouteHandler(BaseRouteHandler):
             background=self.background,
             after_request=self.after_request,
         )
-
-    def _get_kwargs_model_for_route(self, path_parameters: Iterable[str]) -> KwargsModel:
-        key = tuple(path_parameters)
-        if (model := self._kwargs_models.get(key)) is None:
-            model = self._kwargs_models[key] = self._create_kwargs_model(path_parameters)
-        return model
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""
@@ -592,12 +602,6 @@ class HTTPRouteHandler(BaseRouteHandler):
             elif not return_type.is_subclass_of(Response):
                 self.media_type = MediaType.JSON
 
-        if "socket" in self.parsed_fn_signature.parameters:
-            raise ImproperlyConfiguredException("The 'socket' kwarg is not supported with http handlers")
-
-        if "data" in self.parsed_fn_signature.parameters and "GET" in self.http_methods:
-            raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
-
         if self.http_methods == {HttpMethod.HEAD} and not self.parsed_fn_signature.return_type.is_subclass_of(
             (
                 NoneType,
@@ -614,17 +618,6 @@ class HTTPRouteHandler(BaseRouteHandler):
                 raise ImproperlyConfiguredException(
                     f"{self}: Handlers for 'HEAD' requests must not return a value. Either return 'None' or a response type without a body."
                 )
-
-        if (
-            (body_param := self.parsed_fn_signature.parameters.get("body"))
-            and body_param.annotation is not RawBody
-            and not body_param.is_subclass_of(bytes)
-        ):
-            raise ImproperlyConfiguredException(
-                f"Invalid type annotation for 'body' parameter in route handler {self}. 'body' will always receive the "
-                f"raw request body as bytes but was annotated with '{body_param.raw!r}'. If you want to receive "
-                "processed request data, use the 'data' parameter."
-            )
 
     @staticmethod
     def _create_response_handlers(
@@ -727,38 +720,29 @@ class HTTPRouteHandler(BaseRouteHandler):
         it tries to pass it to an appropriate exception handler - if defined.
         """
         response_data: Any = None
-        parameter_model = self._get_kwargs_model_for_route(request.scope["path_params"].keys())
 
         if before_request_handler := self._resolved_before_request:
             response_data = await before_request_handler(request)
 
-        # create and enter an AsyncExit stack as we may or may not have a
-        # 'DependencyCleanupGroup' to enter and exit
-        stack = contextlib.AsyncExitStack()
+        if response_data:
+            return await self.to_response(data=response_data, request=request)
 
-        async with stack:
-            if not response_data:
-                parsed_kwargs: dict[str, Any] = {}
+        setup = self._injection_setup
+        # the seeds of the handler context, by key: the validated request parameters of the handler, its
+        # dependencies and its layers, and the request
+        validate = self._validate_request_parameters
+        seeds: dict[Any, Any] = await validate(request) if validate else {}
+        for key in setup.connection_seed_keys:
+            seeds[key] = request
+        kwargs = {name: seeds[key] for name, key in setup.fn_seed_parameters}
+        if not setup.fn_has_dependencies_to_resolve:
+            # nothing is resolved in a handler context: the function takes seeds only
+            response_data = self.fn(**kwargs) if self.has_sync_callable else await self.fn(**kwargs)
+            return await self.to_response(data=response_data, request=request)
 
-                if parameter_model.has_kwargs and self.signature_model:
-                    try:
-                        kwargs = await parameter_model.to_kwargs(connection=request)
-                    except SerializationException as e:
-                        raise ClientException(str(e)) from e
-
-                    if kwargs.get("data") is Empty:
-                        del kwargs["data"]
-
-                    if parameter_model.dependency_batches:
-                        cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
-                        await stack.enter_async_context(cleanup_group)
-
-                    parsed_kwargs = self.signature_model.parse_values_from_connection_kwargs(
-                        connection=request, kwargs=kwargs
-                    )
-
-                response_data = self.fn(**parsed_kwargs) if self.has_sync_callable else await self.fn(**parsed_kwargs)
-
+        async with self._create_di_handler_context(request, seeds) as handler_context:
+            kwargs.update(await handler_context.solve_arguments(setup.target, supplied=kwargs.keys()))
+            response_data = self.fn(**kwargs) if self.has_sync_callable else await self.fn(**kwargs)
             return await self.to_response(data=response_data, request=request)
 
     async def _get_cached_response(self, request: Request) -> ASGIApp | None:

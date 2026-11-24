@@ -4,7 +4,7 @@ from typing import Annotated, Optional, Union
 import pytest
 
 from litestar import Controller, MediaType, Request, delete, get, patch, post, put
-from litestar.datastructures import Headers, ResponseHeader, State
+from litestar.datastructures import ResponseHeader, State
 from litestar.dto import DataclassDTO, DTOConfig, DTOData
 from litestar.openapi.spec.example import Example
 from litestar.params import (
@@ -14,8 +14,6 @@ from litestar.params import (
     HeaderParameter,
     JSONBody,
     QueryParameter,
-    QueryParams,
-    RequestCookies,
 )
 from tests.models import DataclassPerson, DataclassPersonFactory, DataclassPet
 from tests.unit.test_openapi.utils import Gender, LuckyNumber, PetException
@@ -33,11 +31,8 @@ def create_person_controller() -> type[Controller]:
         def get_persons(
             self,
             # expected to be ignored
-            headers: Headers,
             request: Request,
             state: State,
-            query: QueryParams,
-            cookies: RequestCookies,
             # path parameter
             service_id: FromPath[int],
             # required query parameters below

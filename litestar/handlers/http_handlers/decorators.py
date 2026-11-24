@@ -104,7 +104,7 @@ def route(
             :class:`CacheControlHeader <.datastructures.CacheControlHeader>` that will be added to the response.
         cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
             of the cache key if caching is configured on the application level.
-        dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+        dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
         dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
@@ -275,7 +275,7 @@ def get(
             :class:`CacheControlHeader <.datastructures.CacheControlHeader>` that will be added to the response.
         cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
             of the cache key if caching is configured on the application level.
-        dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+        dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
         dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
@@ -447,7 +447,7 @@ def head(
             :class:`CacheControlHeader <.datastructures.CacheControlHeader>` that will be added to the response.
         cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
             of the cache key if caching is configured on the application level.
-        dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+        dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
         dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
@@ -616,7 +616,7 @@ def patch(
             :class:`CacheControlHeader <.datastructures.CacheControlHeader>` that will be added to the response.
         cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
             of the cache key if caching is configured on the application level.
-        dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+        dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
         dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
@@ -788,7 +788,7 @@ def post(
             :class:`CacheControlHeader <.datastructures.CacheControlHeader>` that will be added to the response.
         cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
             of the cache key if caching is configured on the application level.
-        dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+        dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
         dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
@@ -960,7 +960,7 @@ def put(
             :class:`CacheControlHeader <.datastructures.CacheControlHeader>` that will be added to the response.
         cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
             of the cache key if caching is configured on the application level.
-        dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+        dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
         dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
@@ -1132,7 +1132,7 @@ def delete(
             of the cache key if caching is configured on the application level.
         dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
             validation of request data.
-        dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+        dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
         exception_handlers: A mapping of status codes and/or exception types to handler functions.
         guards: A sequence of :class:`Guard <.types.Guard>` callables.

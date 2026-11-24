@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 import pytest
-from docs.examples.routing import mount_custom_app, mounting_starlette_app
+from docs.examples.routing import mount_custom_app, mounting_litestar_app, mounting_starlette_app
 
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import TestClient
@@ -30,3 +30,10 @@ def test_mounting_asgi_app_example(app: "Litestar") -> None:
         response = client.get("/some/sub-path/123/another/sub-path")
         assert response.status_code == HTTP_200_OK
         assert response.json() == {"forwarded_path": "/123/another/sub-path/"}
+
+
+def test_mounting_litestar_app_example() -> None:
+    with TestClient(mounting_litestar_app.app) as client:
+        response = client.get("/some/sub-path")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "Hello from the mounted app"
