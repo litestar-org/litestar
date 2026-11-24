@@ -29,8 +29,9 @@ from litestar.params import BodyKwarg, JSONBody, MultipartBody, URLEncodedBody
 from litestar.plugins import SerializationPlugin
 from litestar.serialization import encode_json
 from litestar.testing import RequestFactory, TestClient, create_test_client
-from litestar.types import Empty, Method
+from litestar.types import Empty
 from litestar.typing import FieldDefinition
+from tests.unit.test_dto import registered
 
 T = TypeVar("T")
 
@@ -101,14 +102,6 @@ def make_rule_handler(dto: Any, return_dto: Any, body: Any, returns: Any) -> HTT
 
         fn = with_body
     return post("/", dto=dto, return_dto=return_dto, signature_namespace=namespace)(fn)
-
-
-def registered(app: Litestar, path: str = "/", method: Method = "POST") -> Any:
-    return app.route_handler_method_map[path][method]
-
-
-def websocket_handler(app: Litestar, path: str) -> Any:
-    return app.route_handler_method_map[path]["websocket"]
 
 
 def test_create_backend_data_direction() -> None:
@@ -204,12 +197,12 @@ def test_build_schema_annotation_of_response_ignores_the_wrapper() -> None:
 @pytest.mark.parametrize(
     ("dto", "body", "expected", "has_data"),
     [
-        pytest.param(ModelDTO, Model, ModelDTO, True, id="D1"),
-        pytest.param(ModelDTO, None, ModelDTO, False, id="D3"),
-        pytest.param(None, PluginModel, None, False, id="D4"),
-        pytest.param(Empty, PluginModel, "plugin", True, id="D5"),
-        pytest.param(Empty, Model, None, False, id="D6"),
-        pytest.param(Empty, None, None, False, id="D7"),
+        pytest.param(ModelDTO, Model, ModelDTO, True, id="declared-dto-applies"),
+        pytest.param(ModelDTO, None, ModelDTO, False, id="declared-dto-without-body"),
+        pytest.param(None, PluginModel, None, False, id="dto-none-disables-plugin"),
+        pytest.param(Empty, PluginModel, "plugin", True, id="plugin-dto-for-body"),
+        pytest.param(Empty, Model, None, False, id="no-dto-no-plugin"),
+        pytest.param(Empty, None, None, False, id="no-dto-no-body"),
     ],
 )
 def test_data_resolution_rules(dto: Any, body: Any, expected: Any, has_data: bool) -> None:
@@ -231,7 +224,7 @@ class DataLayerController(Controller):
 
 
 @post("/", return_dto=ModelReadDTO)
-async def r6_handler(data: JSONBody[dict[str, Any]]) -> dict[str, Any]:
+async def dict_return_handler(data: JSONBody[dict[str, Any]]) -> dict[str, Any]:
     return data
 
 
@@ -247,8 +240,8 @@ class ReturnLayerController(Controller):
 @pytest.mark.parametrize(
     "route_handler",
     [
-        pytest.param(make_rule_handler(ModelDTO, None, dict[str, Any], None), id="D2-handler"),
-        pytest.param(DataLayerController, id="D2-layer"),
+        pytest.param(make_rule_handler(ModelDTO, None, dict[str, Any], None), id="handler-dto-not-applicable"),
+        pytest.param(DataLayerController, id="layer-dto-not-applicable"),
     ],
 )
 def test_data_dto_that_cannot_apply_raises(route_handler: Any) -> None:
@@ -259,12 +252,12 @@ def test_data_dto_that_cannot_apply_raises(route_handler: Any) -> None:
 @pytest.mark.parametrize(
     ("dto", "return_dto", "body", "returns", "expected"),
     [
-        pytest.param(Empty, ModelReadDTO, None, Model, ModelReadDTO, id="R1-type"),
-        pytest.param(ModelDTO, None, Model, Model, None, id="R1-none"),
-        pytest.param(ModelDTO, Empty, Model, Model, ModelDTO, id="R2"),
-        pytest.param(Empty, Empty, None, PluginModel, "plugin", id="R3"),
-        pytest.param(DataclassDTO[PluginModel], Empty, PluginModel, PluginModel, "explicit", id="R2-before-R3"),
-        pytest.param(ModelDTO, Empty, Model, OtherModel, None, id="R4"),
+        pytest.param(Empty, ModelReadDTO, None, Model, ModelReadDTO, id="declared-return-dto"),
+        pytest.param(ModelDTO, None, Model, Model, None, id="return-dto-none"),
+        pytest.param(ModelDTO, Empty, Model, Model, ModelDTO, id="data-dto-reused"),
+        pytest.param(Empty, Empty, None, PluginModel, "plugin", id="plugin-dto-for-return"),
+        pytest.param(DataclassDTO[PluginModel], Empty, PluginModel, PluginModel, "explicit", id="dto-over-plugin"),
+        pytest.param(ModelDTO, Empty, Model, OtherModel, None, id="data-dto-other-model"),
     ],
 )
 def test_return_resolution_rules(dto: Any, return_dto: Any, body: Any, returns: Any, expected: Any) -> None:
@@ -282,7 +275,7 @@ def test_return_resolution_rules(dto: Any, return_dto: Any, body: Any, returns: 
 
 
 @pytest.mark.parametrize(
-    "route_handler", [pytest.param(make_rule_handler(Empty, ModelDTO, None, tuple[Model, str]), id="R5")]
+    "route_handler", [pytest.param(make_rule_handler(Empty, ModelDTO, None, tuple[Model, str]), id="tuple-return")]
 )
 def test_return_dto_without_wrapper_match_raises(route_handler: Any) -> None:
     with pytest.raises(InvalidAnnotationException):
@@ -292,8 +285,8 @@ def test_return_dto_without_wrapper_match_raises(route_handler: Any) -> None:
 @pytest.mark.parametrize(
     "route_handler",
     [
-        pytest.param(r6_handler, id="R6-handler"),
-        pytest.param(ReturnLayerController, id="R6-layer"),
+        pytest.param(dict_return_handler, id="handler-return-dto-on-dict"),
+        pytest.param(ReturnLayerController, id="layer-return-dto-on-dict"),
     ],
 )
 def test_return_dto_that_cannot_apply_is_dropped(route_handler: Any) -> None:
@@ -454,7 +447,7 @@ def test_listener_data_field_has_no_body_marker() -> None:
         return data
 
     with create_test_client([handler]) as client:
-        listener = websocket_handler(client.app, "/ws")
+        listener = registered(client.app, "/ws", "websocket")
         assert isinstance(listener, WebsocketListenerRouteHandler)
         assert listener.parsed_data_field is not None
         assert not isinstance(listener.parsed_data_field.kwarg_definition, BodyKwarg)
@@ -540,7 +533,7 @@ def test_create_openapi_schema_for_listener_data_field() -> None:
     async def handler(data: Item) -> None:
         return None
 
-    listener = websocket_handler(Litestar([handler]), "/ws")
+    listener = registered(Litestar([handler]), "/ws", "websocket")
 
     assert openapi_ref(ItemDTO, listener.parsed_data_field, listener.handler_id).endswith("ItemRequestBody")
 
@@ -550,7 +543,7 @@ def test_create_openapi_schema_for_copy_of_listener_data_field_is_return_directi
     async def handler(data: Item) -> Item:
         return data
 
-    listener = websocket_handler(Litestar([handler]), "/ws")
+    listener = registered(Litestar([handler]), "/ws", "websocket")
     copied_field = dataclasses.replace(listener.parsed_data_field)
 
     assert openapi_ref(ItemDTO, copied_field, listener.handler_id).endswith("ItemResponseBody")
