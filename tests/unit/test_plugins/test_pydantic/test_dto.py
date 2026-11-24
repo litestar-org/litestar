@@ -15,6 +15,7 @@ from litestar import Litestar, Request, post
 from litestar.dto import DTOConfig, MsgspecDTO
 from litestar.dto._backend import DTOBackend
 from litestar.enums import RequestEncodingType
+from litestar.exceptions import DTOTransferTypeError
 from litestar.params import JSONBody, KwargDefinition, URLEncodedBody
 from litestar.plugins.pydantic import PydanticDTO, _model_dump, _model_dump_json
 from litestar.status_codes import HTTP_201_CREATED
@@ -219,12 +220,13 @@ class PUnionHolder(pydantic_v2.BaseModel):
     f: Union[PUnionMember1, PUnionMember2]
 
 
-def test_pydantic_dto_over_union_of_models_is_not_checked_at_startup() -> None:
+def test_pydantic_dto_is_checked_at_startup() -> None:
     @post("/", dto=PydanticDTO[PUnionHolder], return_dto=None)
     def create_pydantic_union_holder(data: JSONBody[PUnionHolder]) -> None:
         pass
 
-    Litestar(route_handlers=[create_pydantic_union_holder], openapi_config=None)
+    with pytest.raises(DTOTransferTypeError, match="must be tagged"):
+        Litestar(route_handlers=[create_pydantic_union_holder], openapi_config=None)
 
 
 class ShortFoo(pydantic_v2.BaseModel):

@@ -37,7 +37,7 @@ from litestar.dto._types import (
 from litestar.dto.data_structures import DTOData, DTOFieldDefinition
 from litestar.dto.field import Mark
 from litestar.enums import RequestEncodingType
-from litestar.exceptions.dto_exceptions import InvalidAnnotationException
+from litestar.exceptions.dto_exceptions import DTOTransferTypeError
 from litestar.params import KwargDefinition
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
@@ -154,7 +154,7 @@ class DTOBackend:
             try:
                 msgspec.json.Decoder(self.annotation, strict=False)
             except TypeError as exc:
-                raise InvalidAnnotationException(self._startup_error_message(exc)) from exc
+                raise DTOTransferTypeError(self._startup_error_message(exc)) from exc
 
     def _startup_error_message(self, exc: TypeError) -> str:
         prefix = "msgspec cannot decode the transfer model of"
@@ -182,7 +182,7 @@ class DTOBackend:
         self._default_deserializer = default_deserializer
 
     def _decodes_with_annotation(self) -> bool:
-        return not self.dto_factory._overrides("_wrap_decoder") and all(
+        return all(
             getattr(type(self), name) is getattr(DTOBackend, name)
             for name in ("parse_raw", "parse_builtins", "populate_data_from_raw", "populate_data_from_builtins")
         )

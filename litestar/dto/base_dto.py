@@ -155,13 +155,6 @@ class AbstractDTO(Generic[T]):
         return decoder
 
     @classmethod
-    def _overrides(cls, name: str) -> bool:
-        """Whether the class overrides the member ``name`` of :class:`AbstractDTO`."""
-        attribute = getattr(cls, name)
-        base = vars(AbstractDTO)[name]
-        return getattr(attribute, "__func__", attribute) is not getattr(base, "__func__", base)
-
-    @classmethod
     @abstractmethod
     def generate_field_definitions(cls, model_type: type[Any]) -> Generator[DTOFieldDefinition, None, None]:
         """Generate ``FieldDefinition`` instances from ``model_type``.

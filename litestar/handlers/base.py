@@ -7,10 +7,9 @@ from functools import partial
 from typing import TYPE_CHECKING, Any, NoReturn, cast
 
 from litestar._layers.utils import narrow_dependencies
-from litestar.dto import DTOData
 from litestar.dto._plan import build_dto_plan
 from litestar.dto.base_dto import register_handler_id
-from litestar.exceptions import ImproperlyConfiguredException, LitestarException
+from litestar.exceptions import LitestarException
 from litestar.middleware.constraints import check_middleware_constraints
 from litestar.serialization import default_deserializer, default_serializer
 from litestar.types import (
@@ -441,11 +440,6 @@ class BaseRouteHandler:
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once set by inspecting its return annotations."""
-        if self.parsed_data_field is not None and self.parsed_data_field.is_subclass_of(DTOData) and not self.data_dto:
-            raise ImproperlyConfiguredException(
-                f"Handler function {self.handler_name} has a data parameter that is a subclass of DTOData but no "
-                "DTO has been registered for it."
-            )
 
     def __str__(self) -> str:
         """Return a unique identifier for the route handler.
