@@ -11,13 +11,15 @@
         :breaking:
         :issue: 5102
 
-        When a model had several fields holding the same nested model, such as
-        ``first: User`` and ``second: User``, or ``Optional[User]`` and ``list[User]``, the
-        transfer model of the second field was named with the module-qualified name of
-        the handler, such as ``app.get_holderHolderUserResponseBody``. It is now named
-        after the field, such as ``GetHolderHolder_secondUserResponseBody``, which changes
-        these OpenAPI component names. The names of the other transfer models are
-        unchanged.
+        When the same nested model appeared more than once in one transfer model, such
+        as ``first: User`` and ``second: User``, ``Optional[User]`` and ``list[User]``, or
+        a self-referential model nested several levels deep, the repeated transfer models
+        were named with the module-qualified name of the handler, such as
+        ``app.get_holderHolderUserResponseBody``. They are now named after the fields that
+        lead to them, such as ``GetHolderHolder_secondUserResponseBody``, using as many
+        fields of the path from the root model as needed to be unique, and a number when
+        every such name is taken. This changes these OpenAPI component names; the names
+        of the other transfer models are unchanged.
 
     .. change:: DTO: Overrides of the deprecated DTO entry points are no longer called
         :type: misc

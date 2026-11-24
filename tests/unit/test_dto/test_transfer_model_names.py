@@ -265,6 +265,98 @@ def test_nested_models_of_one_type_under_several_fields_get_unqualified_names() 
     ]
 
 
+@dataclass
+class Cc:
+    v: int
+
+
+@dataclass
+class Bb:
+    c: Cc
+
+
+@dataclass
+class Aa:
+    x: Bb
+    y: Bb
+    z: Bb
+
+
+@dataclass
+class Node:
+    name: str
+    child: Optional[Node] = None
+    kids: Optional[list[Node]] = None
+
+
+def deep_names(model: type[Any], depth: int) -> list[list[str]]:
+    dto = DataclassDTO[Annotated[model, DTOConfig(max_nested_depth=depth)]]
+
+    async def h() -> Any: ...
+
+    h.__annotations__["return"] = model
+    return [component_names(Litestar([get("/", return_dto=dto)(h)])) for _ in range(3)]
+
+
+@pytest.mark.parametrize(
+    ("model", "depth", "expected"),
+    [
+        pytest.param(
+            Aa,
+            2,
+            [
+                "HAaBbResponseBody",
+                "HAaResponseBody",
+                "HAa_yBbResponseBody",
+                "HAa_zBbResponseBody",
+                "HBbCcResponseBody",
+                "HBb_cCcResponseBody",
+                "HBb_z_cCcResponseBody",
+            ],
+            id="repeated-model-under-repeated-model",
+        ),
+        pytest.param(
+            Node,
+            2,
+            [
+                "HNodeResponseBody",
+                "HNode_0NodeResponseBody",
+                "HNode_0_0NodeResponseBody",
+                "HNode_0_0_kidsNodeResponseBody",
+                "HNode_0_0_kids_kidsNodeResponseBody",
+                "HNode_0_childNodeResponseBody",
+                "HNode_0_kids_childNodeResponseBody",
+            ],
+            id="self-referential-depth-2",
+        ),
+        pytest.param(
+            Node,
+            3,
+            [
+                "HNodeResponseBody",
+                "HNode_0NodeResponseBody",
+                "HNode_0_0NodeResponseBody",
+                "HNode_0_0_child_kidsNodeResponseBody",
+                "HNode_0_0_kidsNodeResponseBody",
+                "HNode_0_0_kidsNode_0ResponseBody",
+                "HNode_0_0_kids_kidsNodeResponseBody",
+                "HNode_0_0_kids_kidsNode_0ResponseBody",
+                "HNode_0_0_kids_kids_kidsNodeResponseBody",
+                "HNode_0_childNodeResponseBody",
+                "HNode_0_child_childNodeResponseBody",
+                "HNode_0_kids_childNodeResponseBody",
+                "HNode_0_kids_childNode_0ResponseBody",
+                "HNode_0_kids_child_childNodeResponseBody",
+                "HNode_0_kids_kids_childNodeResponseBody",
+            ],
+            id="self-referential-depth-3",
+        ),
+    ],
+)
+def test_repeated_nested_models_get_unique_unqualified_names(model: Any, depth: int, expected: list[str]) -> None:
+    assert deep_names(model, depth) == [expected] * 3
+
+
 def test_register_keeps_existing_component_names() -> None:
     app = Litestar([ha])
     before = component_names(app)
