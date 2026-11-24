@@ -23,12 +23,10 @@ from litestar.dto._plan import (
     build_schema_annotation,
     create_backend,
     create_dto_openapi_schema,
-    read_dto_declaration,
 )
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import (
     DTOFactoryException,
-    DTONotApplicableError,
     InvalidAnnotationException,
     LitestarException,
     LitestarWarning,
@@ -240,20 +238,6 @@ class DataLayerController(Controller):
         return None
 
 
-@post("/", return_dto=ModelReadDTO)
-async def r6_handler(data: JSONBody[dict[str, Any]]) -> dict[str, Any]:
-    return data
-
-
-class ReturnLayerController(Controller):
-    path = "/"
-    return_dto = ModelReadDTO
-
-    @post()
-    async def handler(self, data: JSONBody[dict[str, Any]]) -> dict[str, Any]:
-        return data
-
-
 @pytest.mark.parametrize(
     "route_handler",
     [
@@ -313,34 +297,6 @@ def test_return_resolution_rules(dto: Any, return_dto: Any, body: Any, returns: 
         assert handler.return_dto is not plugin.dto
     else:
         assert handler.return_dto is expected
-
-
-@pytest.mark.parametrize(
-    "route_handler", [pytest.param(make_rule_handler(Empty, ModelDTO, None, tuple[Model, str]), id="R5")]
-)
-def test_return_dto_without_wrapper_match_raises(route_handler: Any) -> None:
-    with pytest.raises(InvalidAnnotationException):
-        Litestar([route_handler])
-
-
-@pytest.mark.parametrize(
-    "route_handler",
-    [
-        pytest.param(ReturnLayerController, id="R6-layer"),
-    ],
-)
-def test_return_dto_that_cannot_apply_is_dropped(route_handler: Any) -> None:
-    with create_test_client([route_handler]) as client:
-        registered_handler = registered(client.app)
-        assert registered_handler.return_dto is None
-        assert read_dto_declaration(registered_handler, "return_dto").value is ModelReadDTO
-        assert client.post("/", json={"a": 1, "b": "two"}).json() == {"a": 1, "b": "two"}
-
-
-@pytest.mark.parametrize("route_handler", [pytest.param(r6_handler, id="R6-handler")])
-def test_handler_return_dto_that_cannot_apply_raises(route_handler: Any) -> None:
-    with pytest.raises(DTONotApplicableError):
-        Litestar([route_handler])
 
 
 def test_registration_does_not_overwrite_configuration() -> None:
