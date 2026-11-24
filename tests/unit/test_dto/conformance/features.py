@@ -809,18 +809,9 @@ feature(
             201,
             {"children": [model("Child", label="l", size=1)]},
         ),
+        Req("incomplete_item", {"children": [{"size": 1}]}, 400),
     ),
     response={"name": "a", "children": [{"label": "l", "size": 1}]},
-)
-feature(
-    "partial_nested_list_incomplete_member",
-    _partial_children,
-    config={"partial": True},
-    dto_data=True,
-    receive=_builtins,
-    requests=(Req("partial_item", {"children": [{"size": 1}]}, 500),),
-    response=NA("the response is the one of partial_nested_list"),
-    na={"py": "pydantic rejects the incomplete member with a 400 response"},
 )
 
 
