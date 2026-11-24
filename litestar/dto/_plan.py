@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, TypeAlias
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias
 
 import msgspec
 
@@ -23,9 +23,11 @@ if TYPE_CHECKING:
     from litestar.handlers.base import BaseRouteHandler
     from litestar.openapi.spec import Reference, Schema
     from litestar.plugins import SerializationPlugin
+    from litestar.types.empty import EmptyType
     from litestar.types.serialization import LitestarEncodableType
 
 __all__ = (
+    "DTODeclaration",
     "DTOPlan",
     "DecodeFn",
     "EncodeFn",
@@ -34,6 +36,7 @@ __all__ = (
     "create_backend",
     "create_dto_openapi_schema",
     "dto_name",
+    "read_dto_declaration",
 )
 
 DecodeFn: TypeAlias = "Callable[[Any, ASGIConnection[Any, Any, Any, Any]], Any]"
@@ -74,6 +77,36 @@ class DTOPlan:
     """Decode builtin values, such as form data, with the data DTO. Set exactly when :attr:`data` is set"""
     encode: "EncodeFn | None"
     """Encode returned data with the return DTO. Set exactly when :attr:`return_` is set"""
+
+
+@dataclass(frozen=True, slots=True)
+class DTODeclaration:
+    """A route handler's declaration of one of its DTO options, and where it comes from."""
+
+    option: Literal["dto", "return_dto"]
+    """The option declared"""
+    value: "type[AbstractDTO[Any]] | None | EmptyType"
+    """The declared value, ``Empty`` if neither the handler nor a layer above it declares the option"""
+    source: Literal["handler", "layer"] | None
+    """``"handler"`` if the handler declares the option itself, ``"layer"`` if a layer above it does, ``None`` if
+    :attr:`value` is ``Empty``
+    """
+
+
+def read_dto_declaration(handler: "BaseRouteHandler", option: Literal["dto", "return_dto"]) -> DTODeclaration:
+    """Return the declaration of ``option`` for ``handler``: its own value if it declares one, otherwise the value
+    of the closest layer above it that declares one.
+    """
+    own, inherited = (
+        (handler._dto, handler._inherited_dto)
+        if option == "dto"
+        else (handler._return_dto, handler._inherited_return_dto)
+    )
+    if own is not Empty:
+        return DTODeclaration(option=option, value=own, source="handler")
+    if inherited is not Empty:
+        return DTODeclaration(option=option, value=inherited, source="layer")
+    return DTODeclaration(option=option, value=Empty, source=None)
 
 
 def create_backend(
@@ -203,7 +236,7 @@ def _find_serialization_plugin(app: "Litestar", field_definition: FieldDefinitio
 
 
 def _resolve_data_dto(handler: "BaseRouteHandler", app: "Litestar") -> "type[AbstractDTO[Any]] | None":
-    if (configured := handler._dto) is not Empty:
+    if (configured := read_dto_declaration(handler, "dto").value) is not Empty:
         return configured
     if (data_field := handler.parsed_data_field) and (plugin := _find_serialization_plugin(app, data_field)):
         return plugin.create_dto_for_type(data_field)
@@ -214,7 +247,7 @@ def _resolve_return_dto(
     handler: "BaseRouteHandler", app: "Litestar", data_dto: "type[AbstractDTO[Any]] | None"
 ) -> "type[AbstractDTO[Any]] | None":
     return_field = handler.parsed_return_field
-    if (configured := handler._return_dto) is not Empty:
+    if (configured := read_dto_declaration(handler, "return_dto").value) is not Empty:
         return configured
     if data_dto is not None and data_dto.is_supported_model_type_field(return_field):
         return data_dto

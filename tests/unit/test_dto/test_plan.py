@@ -10,7 +10,7 @@ from litestar._openapi.schema_generation import SchemaCreator
 from litestar.connection import ASGIConnection
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig
 from litestar.dto._backend import DTOBackend
-from litestar.dto._plan import build_dto_plan, build_schema_annotation, create_backend
+from litestar.dto._plan import build_dto_plan, build_schema_annotation, create_backend, read_dto_declaration
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import InvalidAnnotationException, LitestarException, LitestarWarning
 from litestar.handlers import HTTPRouteHandler, WebsocketListenerRouteHandler, websocket_stream
@@ -272,7 +272,7 @@ def test_return_dto_that_cannot_apply_is_dropped(route_handler: Any) -> None:
     with create_test_client([route_handler]) as client:
         registered_handler = registered(client.app)
         assert registered_handler.return_dto is None
-        assert registered_handler._return_dto is ModelReadDTO
+        assert read_dto_declaration(registered_handler, "return_dto").value is ModelReadDTO
         assert client.post("/", json={"a": 1, "b": "two"}).json() == {"a": 1, "b": "two"}
 
 
