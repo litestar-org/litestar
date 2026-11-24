@@ -297,11 +297,11 @@ def test_unrelated_type_error_in_schema_generation_is_not_converted() -> None:
 
     app = Litestar([read], openapi_config=None)
     handler = app.route_handler_method_map["/"]["GET"]
-    direction = not_none(not_none(handler._dto_plan).return_)
+    direction_plan = not_none(not_none(handler._dto_plan).return_)
     schema_creator = cast("SchemaCreator", RaisingSchemaCreator())
 
     with pytest.raises(TypeError, match="^unrelated$") as exc_info:
-        create_dto_openapi_schema(direction, handler.parsed_return_field, handler, schema_creator)
+        create_dto_openapi_schema(direction_plan, handler.parsed_return_field, handler, schema_creator)
 
     assert type(exc_info.value) is TypeError
 

@@ -765,13 +765,13 @@ def test_plan_schema_matches_create_openapi_schema(is_data_field: bool, annotati
         handler_fn = make_rule_handler(Empty, ModelDTO, None, annotation)
     handler = registered(Litestar([handler_fn]))
     plan = handler._dto_plan
-    direction = plan.data if is_data_field else plan.return_
+    direction_plan = plan.data if is_data_field else plan.return_
     field_definition = handler.parsed_data_field if is_data_field else handler.parsed_fn_signature.return_type
-    assert direction is not None
+    assert direction_plan is not None
 
     plan_creator = SchemaCreator(plugins=openapi_schema_plugins)
     shim_creator = SchemaCreator(plugins=openapi_schema_plugins)
-    from_plan = create_dto_openapi_schema(direction, field_definition, handler, plan_creator)
+    from_plan = create_dto_openapi_schema(direction_plan, field_definition, handler, plan_creator)
     from_shim = ModelDTO.create_openapi_schema(
         field_definition=field_definition, handler_id=handler.handler_id, schema_creator=shim_creator
     )

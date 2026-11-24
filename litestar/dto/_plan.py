@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import AsyncGenerator, AsyncIterator, Generator, Iterator
 from dataclasses import dataclass
 from types import NoneType
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias, cast
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias
 
 import msgspec
 
@@ -38,7 +38,6 @@ if TYPE_CHECKING:
     from litestar.types.serialization import LitestarEncodableType
 
 __all__ = (
-    "DTODeclaration",
     "DTODirectionPlan",
     "DTOPlan",
     "DTOTarget",
@@ -93,34 +92,19 @@ class DTOPlan:
     """Encode returned data with the return DTO. Set exactly when :attr:`return_` is set"""
 
 
-@dataclass(frozen=True, slots=True)
-class DTODeclaration:
-    """A route handler's declaration of one of its DTO options, and where it comes from."""
-
-    option: Literal["dto", "return_dto"]
-    """The option declared"""
-    value: type[AbstractDTO[Any]] | None | EmptyType
-    """The declared value, ``Empty`` if neither the handler nor a layer above it declares the option"""
-    source: Literal["handler", "layer"] | None
-    """``"handler"`` if the handler declares the option itself, ``"layer"`` if a layer above it does, ``None`` if
-    :attr:`value` is ``Empty``
-    """
-
-
-def read_dto_declaration(handler: BaseRouteHandler, option: Literal["dto", "return_dto"]) -> DTODeclaration:
-    """Return the declaration of ``option`` for ``handler``: its own value if it declares one, otherwise the value
-    of the closest layer above it that declares one.
+def read_dto_declaration(
+    handler: BaseRouteHandler, *, is_data_field: bool
+) -> tuple[type[AbstractDTO[Any]] | None | EmptyType, bool]:
+    """Return the declared ``dto`` if ``is_data_field``, otherwise the declared ``return_dto``, of ``handler``, and
+    whether the handler declares it itself: its own value if it declares one, otherwise the value of the closest
+    layer above it that declares one, ``Empty`` if none does.
     """
     own, inherited = (
         (handler._dto, handler._inherited_dto)
-        if option == "dto"
+        if is_data_field
         else (handler._return_dto, handler._inherited_return_dto)
     )
-    if own is not Empty:
-        return DTODeclaration(option=option, value=own, source="handler")
-    if inherited is not Empty:
-        return DTODeclaration(option=option, value=inherited, source="layer")
-    return DTODeclaration(option=option, value=Empty, source=None)
+    return (own, True) if own is not Empty else (inherited, False)
 
 
 @dataclass(frozen=True, slots=True)
@@ -165,12 +149,10 @@ def _is_form_collection(field_definition: FieldDefinition, inner: FieldDefinitio
 
 
 def resolve_dto_target(
-    dto: type[AbstractDTO[Any]],
-    field_definition: FieldDefinition | None,
-    direction: Literal["data", "return"],
+    dto: type[AbstractDTO[Any]], field_definition: FieldDefinition | None, *, is_data_field: bool
 ) -> DTOTarget | None:
-    """Return what ``dto`` applies to in ``field_definition``, the data a handler receives or returns depending on
-    ``direction``, or ``None`` if it cannot be applied to it.
+    """Return what ``dto`` applies to in ``field_definition``, the data a handler receives if ``is_data_field``,
+    otherwise the data it returns, or ``None`` if it cannot be applied to it.
 
     The DTO applies to an annotation without ``None``, or to the first member of an optional annotation that is not
     ``None``, whose model type, unwrapped from ``DTOData``, a collection, a mapping value or a variadic tuple, is a
@@ -178,18 +160,16 @@ def resolve_dto_target(
     the DTO must also support that annotation, and it applies to a model wrapped in a generic type.
     """
     if (
-        direction == "return"
+        not is_data_field
         and (inner := _without_optional(field_definition)) is not None
         and not dto.is_supported_model_type_field(inner)
     ):
         return None
-    return _match_target(dto, field_definition, direction)
+    return _match_target(dto, field_definition, is_data_field=is_data_field)
 
 
 def _match_target(
-    dto: type[AbstractDTO[Any]],
-    field_definition: FieldDefinition | None,
-    direction: Literal["data", "return"],
+    dto: type[AbstractDTO[Any]], field_definition: FieldDefinition | None, *, is_data_field: bool
 ) -> DTOTarget | None:
     if (inner := _without_optional(field_definition)) is None or field_definition is None:
         return None
@@ -202,7 +182,7 @@ def _match_target(
 
     passes_none = field_definition.is_optional
     if model_field.is_subclass_of(dto.model_type):  # pyright: ignore[reportGeneralTypeIssues]
-        if direction == "data" and model_field is not inner and _is_form_collection(field_definition, inner):
+        if is_data_field and model_field is not inner and _is_form_collection(field_definition, inner):
             return None
         return DTOTarget(
             model_field=model_field,
@@ -213,7 +193,7 @@ def _match_target(
         )
 
     if (
-        direction == "return"
+        not is_data_field
         and model_field is inner
         and not inner.is_union
         and (wrapped := dto.resolve_generic_wrapper_type(inner))
@@ -249,7 +229,7 @@ def create_backend(
         InvalidAnnotationException: If ``dto`` cannot be applied to ``field_definition``
     """
     if target is None:
-        target = resolve_dto_target(dto, field_definition, "data" if is_data_field else "return")
+        target = resolve_dto_target(dto, field_definition, is_data_field=is_data_field)
         if target is None:
             raise InvalidAnnotationException(
                 f"DTO narrowed with '{dto.model_type}', handler type is '{field_definition.annotation}'"  # pyright: ignore[reportGeneralTypeIssues]
@@ -360,19 +340,18 @@ def _find_serialization_plugin(app: Litestar, field_definition: FieldDefinition)
 def _resolve_data_dto(
     handler: BaseRouteHandler, app: Litestar, data_field: FieldDefinition | None
 ) -> tuple[type[AbstractDTO[Any]] | None, DTOTarget | None]:
-    declaration = read_dto_declaration(handler, "dto")
-    if declaration.value is None:
+    dto, declared_on_handler = read_dto_declaration(handler, is_data_field=True)
+    if dto is None:
         return None, None
-    if declaration.value is not Empty:
-        dto = declaration.value
+    if dto is not Empty:
         if data_field is None:
             return dto, None
-        if (target := resolve_dto_target(dto, data_field, "data")) is None and declaration.source == "handler":
-            raise _not_applicable(declaration, data_field)
+        if (target := resolve_dto_target(dto, data_field, is_data_field=True)) is None and declared_on_handler:
+            raise _not_applicable(dto, data_field, is_data_field=True)
         return dto, target
     if data_field is not None and (plugin := _find_serialization_plugin(app, data_field)):
         plugin_dto = plugin.create_dto_for_type(data_field)
-        if (target := resolve_dto_target(plugin_dto, data_field, "data")) is not None:
+        if (target := resolve_dto_target(plugin_dto, data_field, is_data_field=True)) is not None:
             return plugin_dto, target
     return None, None
 
@@ -383,21 +362,20 @@ def _resolve_return_dto(
     return_field: FieldDefinition,
     data_dto: type[AbstractDTO[Any]] | None,
 ) -> tuple[type[AbstractDTO[Any]], DTOTarget] | None:
-    declaration = read_dto_declaration(handler, "return_dto")
-    if declaration.value is None:
+    dto, declared_on_handler = read_dto_declaration(handler, is_data_field=False)
+    if dto is None:
         return None
-    if declaration.value is not Empty:
-        dto = declaration.value
-        if (target := resolve_dto_target(dto, return_field, "return")) is not None:
+    if dto is not Empty:
+        if (target := resolve_dto_target(dto, return_field, is_data_field=False)) is not None:
             return dto, target
-        if declaration.source == "handler":
-            raise _not_applicable(declaration, return_field)
+        if declared_on_handler:
+            raise _not_applicable(dto, return_field, is_data_field=False)
         return None
-    if data_dto is not None and (target := resolve_dto_target(data_dto, return_field, "return")) is not None:
+    if data_dto is not None and (target := resolve_dto_target(data_dto, return_field, is_data_field=False)) is not None:
         return data_dto, target
     if plugin := _find_serialization_plugin(app, return_field):
         plugin_dto = plugin.create_dto_for_type(return_field)
-        if (target := resolve_dto_target(plugin_dto, return_field, "return")) is not None:
+        if (target := resolve_dto_target(plugin_dto, return_field, is_data_field=False)) is not None:
             return plugin_dto, target
     return None
 
@@ -409,14 +387,14 @@ def _format_annotation(annotation: Any) -> str:
 
 
 def _not_applicable_reason(
-    dto: type[AbstractDTO[Any]], direction: Literal["data", "return"], field_definition: FieldDefinition
+    dto: type[AbstractDTO[Any]], field_definition: FieldDefinition, *, is_data_field: bool
 ) -> str | None:
     if (inner := _without_optional(field_definition)) is None:
         return None
-    if direction == "data":
+    if is_data_field:
         if _is_form_collection(field_definition, inner):
             return "A form body is decoded into one model, not a collection."
-        target = resolve_dto_target(dto, field_definition, "return")
+        target = resolve_dto_target(dto, field_definition, is_data_field=False)
         if target is not None and target.wrapper_attribute_name is not None:
             return "A generic wrapper is supported for return values only."
         return None
@@ -425,29 +403,30 @@ def _not_applicable_reason(
     return None
 
 
-def _not_applicable(declaration: DTODeclaration, field_definition: FieldDefinition) -> DTONotApplicableError:
-    dto = cast("type[AbstractDTO[Any]]", declaration.value)
-    direction: Literal["data", "return"] = "data" if declaration.option == "dto" else "return"
+def _not_applicable(
+    dto: type[AbstractDTO[Any]], field_definition: FieldDefinition, *, is_data_field: bool
+) -> DTONotApplicableError:
+    option: Literal["dto", "return_dto"] = "dto" if is_data_field else "return_dto"
     name = dto_name(dto)
     annotation = _format_annotation(field_definition.annotation)
-    declared = f"'{declaration.option}={name}' is declared on the handler"
-    if direction == "return" and _match_target(dto, field_definition, direction) is not None:
+    declared = f"'{option}={name}' is declared on the handler"
+    if not is_data_field and _match_target(dto, field_definition, is_data_field=False) is not None:
         message = (
             f"{declared}, but {name}.is_supported_model_type_field() declines its return value annotated "
             f"'{annotation}'."
         )
     else:
-        action = "decode its request body" if direction == "data" else "encode its return value"
+        action = "decode its request body" if is_data_field else "encode its return value"
         message = (
             f"{declared}, but cannot {action} annotated '{annotation}': the DTO handles "
             f"'{_format_key(dto.model_type)}'."  # pyright: ignore[reportGeneralTypeIssues]
         )
-        if reason := _not_applicable_reason(dto, direction, field_definition):
+        if reason := _not_applicable_reason(dto, field_definition, is_data_field=is_data_field):
             message = f"{message} {reason}"
     return DTONotApplicableError(
         message,
         dto=dto,
-        option=declaration.option,
+        option=option,
         annotation=field_definition.annotation,
     )
 
@@ -487,25 +466,25 @@ def dto_name(dto: type[AbstractDTO[Any]]) -> str:
 
 
 def create_dto_openapi_schema(
-    direction: DTODirectionPlan,
+    direction_plan: DTODirectionPlan,
     field_definition: FieldDefinition,
     handler: BaseRouteHandler,
     schema_creator: SchemaCreator,
 ) -> Reference | Schema:
-    """Return the OpenAPI schema of ``field_definition``, the handler's own field in ``direction``."""
+    """Return the OpenAPI schema of ``field_definition``, the handler's own field in ``direction_plan``."""
     try:
         return schema_creator.for_field_definition(
             FieldDefinition.from_annotation(
-                direction.schema_annotation, kwarg_definition=field_definition.kwarg_definition
+                direction_plan.schema_annotation, kwarg_definition=field_definition.kwarg_definition
             )
         )
     except TypeError as exc:
         with HandlerErrorPrefix.for_handler(handler).wrap_dto_exception():
             try:
-                msgspec.json.Decoder(direction.backend.annotation, strict=False)
+                msgspec.json.Decoder(direction_plan.backend.annotation, strict=False)
             except TypeError as decoder_exc:
                 raise DTOTransferTypeError(
-                    f"msgspec cannot describe the transfer model of {_qualified_name(direction.backend.model_type)!r}: "
+                    f"msgspec cannot describe the transfer model of {_qualified_name(direction_plan.backend.model_type)!r}: "
                     f"{exc}"
                 ) from decoder_exc
         raise
