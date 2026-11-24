@@ -84,6 +84,19 @@ def _pydantic_node() -> Any:
     return node
 
 
+def _pydantic_shout() -> Any:
+    import pydantic
+
+    class Shout(pydantic.BaseModel):
+        name: str
+
+        @pydantic.computed_field
+        def loud(self) -> str:
+            return self.name.upper()
+
+    return Shout
+
+
 class Maker:
     def __init__(self, library: Library) -> None:
         self.library: Final = library
@@ -98,11 +111,13 @@ class Maker:
 
         return PydanticDTO
 
-    @property
+    @functools.cached_property
     def shout(self) -> Any:
         if self.library == "dc":
             return DcShout
-        return MsShout
+        if self.library == "ms":
+            return MsShout
+        return _pydantic_shout()
 
     @functools.cached_property
     def node(self) -> Any:

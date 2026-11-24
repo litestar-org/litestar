@@ -703,7 +703,6 @@ feature(
         Req("property_sent", {"name": "a", "loud": "X"}, 201, model("Shout", name="a")),
     ),
     response={"name": "a", "loud": "A"},
-    na={"py": "pydantic properties are not model fields"},
 )
 
 
