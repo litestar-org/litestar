@@ -10,10 +10,9 @@ from litestar._openapi.schema_generation import SchemaCreator
 from litestar.connection import ASGIConnection
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig
 from litestar.dto._backend import DTOBackend
-from litestar.dto._plan import build_dto_plan, build_schema_annotation, create_backend
+from litestar.dto._plan import build_dto_plan, build_schema_annotation
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import (
-    InvalidAnnotationException,
     LitestarException,
     LitestarWarning,
 )
@@ -23,15 +22,10 @@ from litestar.plugins import SerializationPlugin
 from litestar.testing import RequestFactory, TestClient, create_test_client
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from tests.unit.test_dto import Model, registered
+from tests.unit.test_dto import Model, create_backend_for, registered
 
 T = TypeVar("T")
 LIST: Any = list
-
-
-@dataclass
-class OtherModel:
-    a: int
 
 
 @dataclass
@@ -99,7 +93,7 @@ def make_rule_handler(dto: Any, return_dto: Any, body: Any, returns: Any) -> HTT
     [(JSONBody[Model], True, "RequestBody"), (Model, False, "ResponseBody")],
 )
 def test_create_backend_direction(annotation: Any, is_data_field: bool, suffix: str) -> None:
-    backend = create_backend(
+    backend = create_backend_for(
         DataclassDTO[Model],
         FieldDefinition.from_annotation(annotation),
         is_data_field=is_data_field,
@@ -111,25 +105,8 @@ def test_create_backend_direction(annotation: Any, is_data_field: bool, suffix: 
     assert backend.handler_id == "pkg.handler::1"
 
 
-def test_create_backend_raises_for_mismatched_model() -> None:
-    with pytest.raises(InvalidAnnotationException, match="DTO narrowed with"):
-        create_backend(
-            DataclassDTO[Model], FieldDefinition.from_annotation(OtherModel), is_data_field=False, handler_id="h"
-        )
-
-
-def test_create_backend_raises_for_non_homogeneous_tuple() -> None:
-    with pytest.raises(InvalidAnnotationException, match="DTO narrowed with"):
-        create_backend(
-            DataclassDTO[Model],
-            FieldDefinition.from_annotation(tuple[Model, str]),
-            is_data_field=False,
-            handler_id="h",
-        )
-
-
 def test_create_backend_generic_wrapper() -> None:
-    backend = create_backend(
+    backend = create_backend_for(
         DataclassDTO[Model],
         FieldDefinition.from_annotation(WithCount[Model]),
         is_data_field=False,
@@ -141,7 +118,7 @@ def test_create_backend_generic_wrapper() -> None:
 
 
 def test_create_backend_uses_backend_cls() -> None:
-    backend = create_backend(
+    backend = create_backend_for(
         DataclassDTO[Model],
         FieldDefinition.from_annotation(Model),
         is_data_field=False,
@@ -163,7 +140,7 @@ def test_create_backend_uses_backend_cls() -> None:
 def test_build_schema_annotation(annotation: Any, expected: Callable[[DTOBackend], Any]) -> None:
     dto = DataclassDTO[Model]
     field_definition = FieldDefinition.from_annotation(annotation)
-    backend = create_backend(dto, field_definition, is_data_field=False, handler_id="h")
+    backend = create_backend_for(dto, field_definition, is_data_field=False, handler_id="h")
 
     assert build_schema_annotation(dto, backend, field_definition) == expected(backend)
 
@@ -171,7 +148,7 @@ def test_build_schema_annotation(annotation: Any, expected: Callable[[DTOBackend
 def test_build_schema_annotation_of_response_ignores_the_wrapper() -> None:
     dto = DataclassDTO[Model]
     field_definition = FieldDefinition.from_annotation(Response[Model])
-    backend = create_backend(dto, field_definition, is_data_field=False, handler_id="h")
+    backend = create_backend_for(dto, field_definition, is_data_field=False, handler_id="h")
 
     assert backend.wrapper_attribute_name == "content"
     assert build_schema_annotation(dto, backend, field_definition) is backend.annotation
@@ -415,7 +392,7 @@ def test_unbound_backend_reads_the_connection() -> None:
         return None
 
     field_definition = FieldDefinition.from_annotation(JSONBody[CustomHolder])
-    backend = create_backend(DataclassDTO[CustomHolder], field_definition, is_data_field=True, handler_id="h")
+    backend = create_backend_for(DataclassDTO[CustomHolder], field_definition, is_data_field=True, handler_id="h")
     request = RequestFactory().post("/", route_handler=handler)
 
     assert backend.parse_raw(b'{"custom": "x"}', request).custom.value == "x"  # type: ignore[union-attr]

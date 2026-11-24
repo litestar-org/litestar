@@ -8,14 +8,14 @@ import pytest
 from litestar import Controller, Litestar, Router, WebSocket, get, post, websocket, websocket_listener
 from litestar.dto import DataclassDTO, DTOConfig
 from litestar.dto._backend import DTOBackend
-from litestar.dto._plan import build_dto_plan, create_backend, handler_name_scope
+from litestar.dto._plan import build_dto_plan, handler_name_scope
 from litestar.dto._registry import TransferModelNaming, TransferModelRegistry
 from litestar.exceptions import LitestarWarning
 from litestar.handlers import HTTPRouteHandler
 from litestar.params import JSONBody
 from litestar.routes import WebSocketRoute
 from litestar.typing import FieldDefinition
-from tests.unit.test_dto import registered
+from tests.unit.test_dto import create_backend_for, registered
 from tests.unit.test_dto.schema_name_apps import APPS, describe
 
 HANDLER_ID = "app.handlers.get_user::1"
@@ -112,7 +112,7 @@ def six_keywords(handler_id: str = HANDLER_ID, is_data_field: bool = False) -> d
 
 
 def build(backend_cls: type[DTOBackend], registry: TransferModelRegistry, name_scope: str) -> Any:
-    return create_backend(
+    return create_backend_for(
         DataclassDTO[User],
         FieldDefinition.from_annotation(User),
         is_data_field=False,
@@ -345,7 +345,7 @@ def test_rebuilding_a_plan_returns_the_same_names_and_reserves_none() -> None:
 
 
 def test_backend_subclass_with_six_keyword_constructor_on_the_direct_path() -> None:
-    backend = create_backend(
+    backend = create_backend_for(
         DataclassDTO[User],
         FieldDefinition.from_annotation(User),
         is_data_field=False,
@@ -370,7 +370,7 @@ def test_backend_constructed_inside_a_constructor_is_private() -> None:
 def test_standalone_backends_do_not_share_names() -> None:
     field_definition = FieldDefinition.from_annotation(User)
     created = [
-        create_backend(DataclassDTO[User], field_definition, is_data_field=True, handler_id="test") for _ in "ab"
+        create_backend_for(DataclassDTO[User], field_definition, is_data_field=True, handler_id="test") for _ in "ab"
     ]
     direct = [DTOBackend(**six_keywords(handler_id="test", is_data_field=True)) for _ in "ab"]
 

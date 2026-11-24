@@ -12,7 +12,8 @@ from inspect import getmodule
 from typing import TYPE_CHECKING, Final, Generic, TypeVar, get_type_hints
 from weakref import WeakSet, WeakValueDictionary
 
-from litestar.dto._plan import build_schema_annotation, create_backend, dto_name
+from litestar.dto._backend import DTOBackend
+from litestar.dto._plan import build_schema_annotation, create_backend, dto_name, resolve_dto_target
 from litestar.dto.config import DTOConfig
 from litestar.dto.data_structures import DTOData
 from litestar.dto.types import RenameStrategy
@@ -32,7 +33,6 @@ if TYPE_CHECKING:
 
     from litestar._openapi.schema_generation import SchemaCreator
     from litestar.connection import ASGIConnection
-    from litestar.dto._backend import DTOBackend
     from litestar.dto.data_structures import DTOFieldDefinition
     from litestar.handlers.base import BaseRouteHandler
     from litestar.openapi.spec import Reference, Schema
@@ -223,9 +223,13 @@ class AbstractDTO(Generic[T]):
             "yet.",
         )
         is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg)
+        if (target := resolve_dto_target(cls, field_definition, is_data_field=is_data_field)) is None:
+            raise InvalidAnnotationException(
+                f"DTO narrowed with '{cls.model_type}', handler type is '{field_definition.annotation}'"
+            )
         try:
             backend = create_backend(
-                cls, field_definition, is_data_field=is_data_field, handler_id=handler_id, backend_cls=backend_cls
+                cls, target, is_data_field=is_data_field, handler_id=handler_id, backend_cls=backend_cls or DTOBackend
             )
         except DTOTransferTypeError as exc:
             exc.detail = f"{exc.detail} (handler {str(handler_id)!r})"

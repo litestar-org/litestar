@@ -13,11 +13,11 @@ from litestar._openapi.plugin import OpenAPIPlugin
 from litestar.di._route_handler import HandlerInjectionSetup, create_handler_injection_setup
 from litestar.dto import DataclassDTO
 from litestar.dto._backend import DTOBackend
-from litestar.dto._plan import create_backend
 from litestar.handlers import HTTPRouteHandler
 from litestar.openapi.config import OpenAPIConfig
 from litestar.params import FromPath, FromQuery
 from litestar.typing import FieldDefinition
+from tests.unit.test_dto import create_backend_for
 
 pytestmark = pytest.mark.benchmark
 
@@ -103,7 +103,7 @@ def test_dto_backend_create(benchmark: BenchmarkFixture) -> None:
     field_definition = FieldDefinition.from_annotation(list[Person])
 
     def create() -> DTOBackend:
-        return create_backend(PersonDTO, field_definition, is_data_field=False, handler_id="bench")
+        return create_backend_for(PersonDTO, field_definition, is_data_field=False, handler_id="bench")
 
     backend = benchmark(create)
     assert type(backend) is DTOBackend
