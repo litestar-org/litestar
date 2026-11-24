@@ -33,8 +33,10 @@
         :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema`: a route handler
         decodes, encodes and documents its data with the backends of its DTO plan. A DTO
         over a type msgspec cannot decode now fails at startup even when the class
-        overrides ``decode_bytes`` or ``decode_builtins``. Instantiating a DTO class
-        emits a deprecation warning.
+        overrides ``decode_bytes`` or ``decode_builtins``. A DTO class that still
+        overrides one of them emits a deprecation warning per method, once, when a
+        route handler using it is registered, and instantiating a DTO class emits a
+        deprecation warning.
 
     .. change:: DTO: A ``return_dto`` declared on a route handler must apply
         :type: feature
