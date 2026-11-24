@@ -41,11 +41,6 @@ class Model:
 
 
 @dataclass
-class OtherModel:
-    a: int
-
-
-@dataclass
 class WithCount(Generic[T]):
     count: int
     data: list[T]
@@ -504,40 +499,13 @@ def test_type_decoders_are_bound_at_build() -> None:
     assert plan.decode_builtins({"custom": "z"}, connection_of_other_handler).custom.value == "z"
 
 
-class OwnInitBackend(DTOBackend):
-    __slots__ = ()
-
-    def __init__(
-        self,
-        dto_factory: type[AbstractDTO[Any]],
-        field_definition: FieldDefinition,
-        handler_id: str,
-        is_data_field: bool,
-        model_type: type[Any],
-        wrapper_attribute_name: str | None,
-    ) -> None:
-        self.annotation = CustomHolder
-
-
-@pytest.mark.parametrize("backend_kind", ["base-init", "own-init"])
-def test_unbound_backend_reads_the_connection(backend_kind: str) -> None:
+def test_unbound_backend_reads_the_connection() -> None:
     @post("/", type_decoders=CUSTOM_DECODERS)
     async def handler(data: JSONBody[CustomHolder]) -> None:
         return None
 
-    dto = DataclassDTO[CustomHolder]
     field_definition = FieldDefinition.from_annotation(JSONBody[CustomHolder])
-    if backend_kind == "base-init":
-        backend = create_backend_for(dto, field_definition, is_data_field=True, handler_id="h")
-    else:
-        backend = OwnInitBackend(
-            dto_factory=dto,
-            field_definition=field_definition,
-            handler_id="h",
-            is_data_field=True,
-            model_type=CustomHolder,
-            wrapper_attribute_name=None,
-        )
+    backend = create_backend_for(DataclassDTO[CustomHolder], field_definition, is_data_field=True, handler_id="h")
     request = RequestFactory().post("/", route_handler=handler)
 
     assert backend.parse_raw(b'{"custom": "x"}', request).custom.value == "x"  # type: ignore[union-attr]

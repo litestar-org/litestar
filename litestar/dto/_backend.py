@@ -81,7 +81,6 @@ class DTOBackend:
         "_transfer_to_dict",
         "_transfer_to_model_type",
         "_type_decoders",
-        "_wrapped_passes_none",
         "annotation",
         "attribute_accessor",
         "dto_data_type",
@@ -104,6 +103,8 @@ class DTOBackend:
         is_data_field: bool,
         model_type: type[Any],
         wrapper_attribute_name: str | None,
+        *,
+        naming: TransferModelNaming | None = None,
     ) -> None:
         """Create dto backend instance.
 
@@ -115,11 +116,12 @@ class DTOBackend:
             model_type: Model type.
             wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure,
                 this is the name of the attribute that the data is stored in.
+            naming: Names the transfer models; without it, they are named in a registry of the backend's own.
         """
+        self._naming = naming or TransferModelNaming(TransferModelRegistry(), handler_id)
         self._type_decoders: TypeDecodersSequence | None = None
         self._default_deserializer: Callable[[Any, Any], Any] | None = None
         self._passes_none = False
-        self._wrapped_passes_none = False
         self._nested_model_names: set[str] = set()
         self.dto_factory: Final[type[AbstractDTO]] = dto_factory
         self.field_definition: Final[FieldDefinition] = field_definition
@@ -249,10 +251,7 @@ class DTOBackend:
 
         name_suffix = "RequestBody" if self.is_data_field else "ResponseBody"
 
-        naming: TransferModelNaming | None = getattr(self, "_naming", None)
-        if naming is None:
-            naming = self._naming = TransferModelNaming(TransferModelRegistry(), self.handler_id)
-        return naming.name_for(
+        return self._naming.name_for(
             is_data_field=self.is_data_field,
             model_name=model_name,
             preferred=f"{short_name_prefix}{model_name}{name_suffix}",
@@ -309,7 +308,7 @@ class DTOBackend:
         if (content_type := getattr(asgi_connection, "content_type", None)) and (media_type := content_type[0]):
             request_encoding = media_type
 
-        if (type_decoders := getattr(self, "_type_decoders", None)) is None:
+        if (type_decoders := self._type_decoders) is None:
             type_decoders = asgi_connection.route_handler.type_decoders
 
         if request_encoding == RequestEncodingType.MESSAGEPACK:
@@ -329,7 +328,7 @@ class DTOBackend:
         Returns:
             The builtin type parsed into transfer model type.
         """
-        if (dec_hook := getattr(self, "_default_deserializer", None)) is None:
+        if (dec_hook := self._default_deserializer) is None:
             dec_hook = asgi_connection.route_handler.default_deserializer
         try:
             return convert(
@@ -397,7 +396,7 @@ class DTOBackend:
             return None
         if self.wrapper_attribute_name:
             wrapped = getattr(data, self.wrapper_attribute_name)
-            if wrapped is None and self._wrapped_passes_none:
+            if wrapped is None and self.field_definition.is_optional:
                 return cast("LitestarEncodableType", data)
             setattr(data, self.wrapper_attribute_name, self._encode_data(wrapped))
             return cast("LitestarEncodableType", data)

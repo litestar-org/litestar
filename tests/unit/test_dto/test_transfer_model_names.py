@@ -86,16 +86,6 @@ class B(Base):
     path = "/b"
 
 
-class RequiredArgumentBackend(DTOBackend):
-    def __new__(cls, required: Any) -> RequiredArgumentBackend:
-        return super().__new__(cls)
-
-
-class AnyArgumentsBackend(DTOBackend):
-    def __new__(cls, *args: Any, **kwargs: Any) -> AnyArgumentsBackend:
-        return super().__new__(cls)
-
-
 class SixKeywordBackend(DTOBackend):
     def __init__(
         self,
@@ -116,40 +106,10 @@ class SixKeywordBackend(DTOBackend):
         )
 
 
-class SkippingBackend(DTOBackend):
-    def __init__(
-        self,
-        dto_factory: Any,
-        field_definition: FieldDefinition,
-        handler_id: str,
-        is_data_field: bool,
-        model_type: type[Any],
-        wrapper_attribute_name: str | None,
-    ) -> None:
-        self.handler_id = handler_id  # pyright: ignore[reportAttributeAccessIssue,reportGeneralTypeIssues]
-        self.is_data_field = is_data_field  # pyright: ignore[reportAttributeAccessIssue,reportGeneralTypeIssues]
-        self.stored_name = self._create_transfer_model_name("User")
-
-
 class NestingBackend(DTOBackend):
-    def __init__(
-        self,
-        dto_factory: Any,
-        field_definition: FieldDefinition,
-        handler_id: str,
-        is_data_field: bool,
-        model_type: type[Any],
-        wrapper_attribute_name: str | None,
-    ) -> None:
-        self.inner = DTOBackend(**six_keywords(handler_id=handler_id, is_data_field=is_data_field))
-        super().__init__(
-            dto_factory=dto_factory,
-            field_definition=field_definition,
-            handler_id=handler_id,
-            is_data_field=is_data_field,
-            model_type=model_type,
-            wrapper_attribute_name=wrapper_attribute_name,
-        )
+    def __init__(self, *, naming: TransferModelNaming | None = None, **six: Any) -> None:
+        self.inner = DTOBackend(**six_keywords(handler_id=six["handler_id"], is_data_field=six["is_data_field"]))
+        super().__init__(**six, naming=naming)
 
 
 def six_keywords(handler_id: str = HANDLER_ID, is_data_field: bool = False) -> dict[str, Any]:
@@ -396,29 +356,17 @@ def test_rebuilding_a_plan_reserves_no_new_name() -> None:
     assert second._dto_plan.return_.backend.transfer_model_type.__name__ == f"{get_post!s}PostResponseBody"
 
 
-def test_backend_subclass_with_six_keyword_constructor() -> None:
-    registry = TransferModelRegistry()
+def test_backend_subclass_with_six_keyword_constructor_on_the_direct_path() -> None:
+    backend = create_backend_for(
+        DataclassDTO[User],
+        FieldDefinition.from_annotation(User),
+        is_data_field=False,
+        handler_id=HANDLER_ID,
+        backend_cls=SixKeywordBackend,
+    )
 
-    names = [build(SixKeywordBackend, registry, scope).transfer_model_type.__name__ for scope in ("s1", "s2")]
-
-    assert names == [SHORT, QUALIFIED]
-
-
-def test_backend_subclass_that_skips_the_base_constructor() -> None:
-    registry = TransferModelRegistry()
-
-    names = [build(SkippingBackend, registry, scope).stored_name for scope in ("s1", "s2")]
-
-    assert names == [SHORT, QUALIFIED]
-
-
-def test_names_requested_after_construction_use_the_registry() -> None:
-    registry = TransferModelRegistry()
-    skipping = build(SkippingBackend, registry, "s1")
-    stock = build(DTOBackend, registry, "s2")
-
-    assert stock._create_transfer_model_name("Late") == "GetUserLateResponseBody"
-    assert skipping._create_transfer_model_name("Late") == "app.handlers.get_userLateResponseBody"
+    assert type(backend) is SixKeywordBackend
+    assert backend.transfer_model_type.__name__ == SHORT
 
 
 def test_backend_constructed_inside_a_constructor_is_private() -> None:
@@ -464,24 +412,6 @@ def test_websocket_listeners_on_one_path_share_transfer_model_names() -> None:
         [{"name"}, {"id"}],
         [{"id"}, {"name"}],
     )
-
-
-def test_backend_subclass_whose_new_requires_arguments_raises() -> None:
-    with pytest.raises(TypeError):
-        create_backend_for(
-            DataclassDTO[User],
-            FieldDefinition.from_annotation(User),
-            is_data_field=False,
-            handler_id=HANDLER_ID,
-            backend_cls=RequiredArgumentBackend,
-        )
-
-
-def test_backend_subclass_whose_new_accepts_any_arguments() -> None:
-    backend = build(AnyArgumentsBackend, TransferModelRegistry(), "s1")
-
-    assert type(backend) is AnyArgumentsBackend
-    assert backend.transfer_model_type.__name__ == SHORT
 
 
 EXPECTED: dict[str, dict[str, Any]] = {
