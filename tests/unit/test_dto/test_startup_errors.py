@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import copy
+import pickle
 import re
 import traceback
 from collections.abc import Callable, Generator
@@ -16,6 +18,7 @@ from litestar.dto import DataclassDTO, DTOConfig, DTOData, DTOFieldDefinition, M
 from litestar.dto._plan import create_dto_openapi_schema
 from litestar.exceptions import (
     DTOFactoryException,
+    DTONotApplicableError,
     DTOTransferTypeError,
     ImproperlyConfiguredException,
     InvalidAnnotationException,
@@ -96,6 +99,33 @@ def test_missing_dto_error_bases() -> None:
     assert isinstance(error, ValueError)
     assert error.annotation == DTOData[User]
     assert issubclass(DTOTransferTypeError, InvalidAnnotationException)
+
+
+class PicklableUserDTO(DataclassDTO[User]):
+    pass
+
+
+@pytest.mark.parametrize(
+    "duplicate", [copy.copy, lambda error: pickle.loads(pickle.dumps(error))], ids=["copy", "pickle"]
+)
+@pytest.mark.parametrize(
+    "error",
+    [
+        pytest.param(MissingDTOError("[paths='/'] no DTO", annotation=DTOData[User]), id="missing-dto"),
+        pytest.param(
+            DTONotApplicableError("[paths='/'] bad", dto=PicklableUserDTO, option="dto", annotation=User),
+            id="not-applicable",
+        ),
+    ],
+)
+def test_typed_dto_errors_survive_copy_and_pickle(error: DTOFactoryException, duplicate: Callable[[Any], Any]) -> None:
+    duplicated = duplicate(error)
+
+    assert type(duplicated) is type(error)
+    assert str(duplicated) == str(error)
+    assert {k: v for k, v in vars(duplicated).items() if k != "args"} == {
+        k: v for k, v in vars(error).items() if k != "args"
+    }
 
 
 def test_dto_data_without_dto_raises_missing_dto_error_with_prefix() -> None:

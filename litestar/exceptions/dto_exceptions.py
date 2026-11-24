@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import partial
 from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.exceptions import LitestarException
@@ -56,6 +57,9 @@ class DTONotApplicableError(InvalidAnnotationException):
         self.option = option
         self.annotation = annotation
 
+    def __reduce__(self) -> tuple[Any, tuple[str]]:
+        return partial(type(self), dto=self.dto, option=self.option, annotation=self.annotation), (self.detail,)
+
 
 class DTOTransferTypeError(InvalidAnnotationException):
     """msgspec rejects the model, or the type a DTO transfers for it."""
@@ -83,3 +87,6 @@ class MissingDTOError(DTOFactoryException, ImproperlyConfiguredException):
 
     def __str__(self) -> str:
         return self.detail
+
+    def __reduce__(self) -> tuple[Any, tuple[str]]:
+        return partial(type(self), annotation=self.annotation), (self.detail,)
