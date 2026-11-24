@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pytest
 from advanced_alchemy.extensions.litestar import SQLAlchemyDTO, SQLAlchemyDTOConfig
 from advanced_alchemy.extensions.litestar.plugins import (
@@ -6,7 +8,8 @@ from advanced_alchemy.extensions.litestar.plugins import (
     SQLAlchemySyncConfig,
 )
 from advanced_alchemy.filters import LimitOffset
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 from litestar import get, post
 from litestar.di import NamedDependency
@@ -78,3 +81,35 @@ def test_sqlalchemy_dto_explicit_and_plugin_round_trip() -> None:
     assert len(dto_components) == 4
     assert sum(name.endswith("SmokeUserRequestBody") for name in dto_components) == 2
     assert sum(name.endswith("SmokeUserResponseBody") for name in dto_components) == 2
+
+
+class SmokeAddress(SmokeBase):
+    __tablename__ = "dto_smoke_address"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    street: Mapped[str]
+    city: Mapped[str]
+
+
+class SmokePerson(SmokeBase):
+    __tablename__ = "dto_smoke_person"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    address_id: Mapped[Optional[int]] = mapped_column(ForeignKey("dto_smoke_address.id"))
+    address: Mapped[Optional[SmokeAddress]] = relationship()
+
+
+def test_sqlalchemy_dto_exclude_reaches_through_optional_relationship() -> None:
+    class PersonDTO(SQLAlchemyDTO[SmokePerson]):
+        config = SQLAlchemyDTOConfig(exclude={"address_id", "address.street"})
+
+    @get("/", return_dto=PersonDTO, sync_to_thread=False)
+    def read_person() -> SmokePerson:
+        return SmokePerson(id=1, address=SmokeAddress(id=2, street="s", city="c"))
+
+    with create_test_client(route_handlers=[read_person]) as client:
+        response = client.get("/").json()
+        schemas = client.get("/schema/openapi.json").json()["components"]["schemas"]
+
+    assert response == {"id": 1, "address": {"id": 2, "city": "c"}}
+    assert [sorted(schema["properties"]) for name, schema in schemas.items() if "SmokeAddress" in name] == [
+        ["city", "id"]
+    ]

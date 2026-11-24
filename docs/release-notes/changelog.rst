@@ -184,6 +184,16 @@
         :meth:`~litestar.dto.msgspec_dto.MsgspecDTO.generate_field_definitions` keeps the
         ``kwarg_definition`` parsed from the annotation instead of one built from ``msgspec.Meta``.
 
+    .. change:: DTO: Field paths reach through an optional field without an index
+        :type: bugfix
+        :breaking:
+        :pr: 5260
+
+        An ``exclude``, ``include`` or ``rename_fields`` entry such as ``"address.street"`` for a field
+        ``address: Optional[Address]`` was ignored unless written with the member index, such as
+        ``"address.0.street"``. It now applies to request data, responses and the OpenAPI schema: an
+        excluded field disappears, an included field can appear, and a renamed field changes its name.
+
     .. change:: DTO: Apply field filtering to nested models in fixed-length tuples
         :type: bugfix
         :breaking:

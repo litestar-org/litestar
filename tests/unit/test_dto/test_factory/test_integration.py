@@ -314,6 +314,75 @@ def test_dto_fixed_length_tuple_inside_union_and_list(value: Holder2, expected: 
 
 
 @dataclass
+class PathAddress:
+    street: str
+    city: str
+
+
+@dataclass
+class OptionalPathPerson:
+    work: Optional[PathAddress] = None
+    home: None | PathAddress = None
+    homes: Optional[list[PathAddress]] = None
+    either: Union[PathAddress, int, None] = None
+
+
+@pytest.mark.parametrize(
+    "config, work, home, homes, either",
+    [
+        pytest.param(
+            {"exclude": {"work.street", "home.street"}}, {"city": "c"}, {"city": "c"}, None, None, id="exclude"
+        ),
+        pytest.param({"exclude": {"homes.0.street"}}, None, None, [{"city": "c"}], None, id="exclude-optional-list"),
+        pytest.param(
+            {"exclude": {"work.0.street", "homes.0.0.street"}}, {"city": "c"}, None, [{"city": "c"}], None, id="index"
+        ),
+        pytest.param(
+            {"include": {"work.city", "home", "homes", "either"}}, {"city": "c"}, None, None, None, id="include"
+        ),
+        pytest.param(
+            {"rename_fields": {"work.street": "road"}}, {"road": "s", "city": "c"}, None, None, None, id="rename"
+        ),
+        pytest.param(
+            {"exclude": {"either.street", "either.0.city"}}, None, None, None, {"street": "s"}, id="multi-member-union"
+        ),
+    ],
+)
+def test_dto_config_paths_reach_through_optional(
+    config: dict[str, Any], work: Any, home: Any, homes: Any, either: Any
+) -> None:
+    full = {"street": "s", "city": "c"}
+    expected = {"work": work or full, "home": home or full, "homes": homes or [full], "either": either or full}
+
+    @get("/", return_dto=DataclassDTO[Annotated[OptionalPathPerson, DTOConfig(**config)]])
+    def read_person() -> OptionalPathPerson:
+        address = PathAddress(street="s", city="c")
+        return OptionalPathPerson(work=address, home=address, homes=[address], either=address)
+
+    with create_test_client(route_handlers=[read_person]) as client:
+        response = client.get("/").json()
+        schemas = client.get("/schema/openapi.json").json()["components"]["schemas"]
+
+    assert response == expected
+    documented = sorted(sorted(schema["properties"]) for name, schema in schemas.items() if "PathAddress" in name)
+    sent = [response["work"], response["home"], response["homes"][0], response["either"]]
+    assert documented == sorted(sorted(value) for value in sent)
+
+
+def test_dto_rename_through_optional_applies_to_request_data() -> None:
+    dto = DataclassDTO[Annotated[OptionalPathPerson, DTOConfig(rename_fields={"work.street": "st"})]]
+
+    @post("/", dto=dto, return_dto=None, sync_to_thread=False)
+    def create_person(data: JSONBody[OptionalPathPerson]) -> str:
+        return not_none(data.work).street
+
+    with create_test_client(route_handlers=[create_person]) as client:
+        response = client.post("/", json={"work": {"st": "s", "city": "c"}})
+
+    assert (response.status_code, response.text) == (201, "s")
+
+
+@dataclass
 class A:
     x: int
 
