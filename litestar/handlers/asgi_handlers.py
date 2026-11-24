@@ -19,8 +19,11 @@ __all__ = ("ASGIRouteHandler", "asgi")
 
 class ASGIRouteHandler(BaseRouteHandler):
     __slots__ = (
+        "_lifespan_state",
         "copy_scope",
+        "copy_state",
         "is_mount",
+        "lifespan",
     )
 
     def __init__(
@@ -36,6 +39,8 @@ class ASGIRouteHandler(BaseRouteHandler):
         signature_namespace: Mapping[str, Any] | None = None,
         copy_scope: bool = True,
         parameters: ParametersMap | None = None,
+        lifespan: bool = False,
+        copy_state: bool = False,
         **kwargs: Any,
     ) -> None:
         """Route handler for ASGI routes.
@@ -59,13 +64,26 @@ class ASGIRouteHandler(BaseRouteHandler):
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             copy_scope: Copy the ASGI 'scope' before calling the wrapped ASGI application. The copy is shallow, so
-                nested values such as 'scope["state"]' remain shared. Set to 'False' if the wrapped application is
-                meant to communicate with the outer application through the scope
+                nested values such as 'scope["state"]' remain shared, unless 'copy_state' is set. Set to 'False' if
+                the wrapped application is meant to communicate with the outer application through the scope
             parameters: A mapping of :func:`Parameter <.params.ParameterKwarg>` definitions
+            lifespan: Run the ASGI lifespan of the wrapped ASGI application during the lifespan of the Litestar
+                application the handler is registered on
+            copy_state: Copy 'scope["state"]' before calling the wrapped ASGI application. The copy is shallow.
+                Requires 'copy_scope'
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
+
+        Raises:
+            ImproperlyConfiguredException: If ``copy_state`` is set and ``copy_scope`` is not.
         """
+        if copy_state and not copy_scope:
+            raise ImproperlyConfiguredException("'copy_state=True' requires 'copy_scope=True'")
+
         self.is_mount = is_mount
         self.copy_scope = copy_scope
+        self.copy_state = copy_state
+        self.lifespan = lifespan
+        self._lifespan_state: dict[str, Any] = {}
 
         super().__init__(
             path,
@@ -83,6 +101,8 @@ class ASGIRouteHandler(BaseRouteHandler):
         merge_opts = super()._get_merge_opts(others)
         merge_opts["is_mount"] = self.is_mount
         merge_opts["copy_scope"] = self.copy_scope
+        merge_opts["copy_state"] = self.copy_state
+        merge_opts["lifespan"] = self.lifespan
         return merge_opts
 
     def _validate_handler_function(self) -> None:
@@ -114,6 +134,9 @@ class ASGIRouteHandler(BaseRouteHandler):
         if self.guards:
             await self.authorize_connection(connection=connection)
 
+        if self._lifespan_state:
+            connection.scope["state"].update(self._lifespan_state)
+
         await self.fn(scope=connection.scope, receive=connection.receive, send=connection.send)
 
 
@@ -128,6 +151,8 @@ def asgi(
     signature_namespace: Mapping[str, Any] | None = None,
     copy_scope: bool = True,
     handler_class: type[ASGIRouteHandler] = ASGIRouteHandler,
+    lifespan: bool = False,
+    copy_state: bool = False,
     **kwargs: Any,
 ) -> Callable[[AsyncAnyCallable], ASGIRouteHandler]:
     """Create an :class:`ASGIRouteHandler`.
@@ -148,9 +173,13 @@ def asgi(
             accept requests for ``/some-path/`` and any sub path under this, e.g. ``/some-path/sub-path/`` etc., but
             not ``/some-path-other/``.
         copy_scope: Copy the ASGI 'scope' before calling the wrapped ASGI application. The copy is shallow, so
-            nested values such as 'scope["state"]' remain shared. Set to 'False' if the wrapped application is
-            meant to communicate with the outer application through the scope
+            nested values such as 'scope["state"]' remain shared, unless 'copy_state' is set. Set to 'False' if the
+            wrapped application is meant to communicate with the outer application through the scope
         handler_class: Route handler class instantiated by the decorator
+        lifespan: Run the ASGI lifespan of the wrapped ASGI application during the lifespan of the Litestar
+            application the handler is registered on
+        copy_state: Copy 'scope["state"]' before calling the wrapped ASGI application. The copy is shallow.
+            Requires 'copy_scope'
         **kwargs: Any additional kwarg - will be set in the opt dictionary.
     """
 
@@ -165,6 +194,8 @@ def asgi(
             is_mount=is_mount,
             signature_namespace=signature_namespace,
             copy_scope=copy_scope,
+            lifespan=lifespan,
+            copy_state=copy_state,
             **kwargs,
         )
 

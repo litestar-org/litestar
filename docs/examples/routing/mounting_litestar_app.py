@@ -8,7 +8,4 @@ async def index() -> str:
 
 mounted_app = Litestar(route_handlers=[index])
 
-app = Litestar(
-    route_handlers=[asgi(path="/some/sub-path", is_mount=True)(mounted_app)],
-    lifespan=[lambda _: mounted_app.lifespan()],
-)
+app = Litestar(route_handlers=[asgi(path="/some/sub-path", is_mount=True, lifespan=True)(mounted_app)])

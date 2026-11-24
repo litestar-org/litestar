@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator, Callable, Coroutine, Mapping, Sequence
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
+from dataclasses import replace
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -13,6 +14,7 @@ from litestar.connection import WebSocket
 from litestar.di import NamedDependency
 from litestar.dto import AbstractDTO
 from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
+from litestar.params import BodyKwarg
 from litestar.router import Router
 from litestar.routes import BaseRoute
 from litestar.types import (
@@ -251,7 +253,8 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         # we are manipulating the signature of the decorated function below, so we must store the original values for
         # use elsewhere.
         self._parsed_return_field = parsed_signature.return_type
-        self._parsed_data_field = parsed_signature.parameters.get("data")
+        # a DTO takes a field declared as a body to be the data a handler receives
+        self._parsed_data_field = replace(parsed_signature.parameters["data"], kwarg_definition=BodyKwarg())
         self._parsed_fn_signature = ParsedSignature.from_signature(
             create_handler_signature(parsed_signature.original_signature),
             fn_type_hints={

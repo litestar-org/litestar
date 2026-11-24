@@ -431,8 +431,10 @@ Built-in middleware migrated to ``ASGIMiddleware``
 
 Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
-``CORSMiddleware``, ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have made this
-move. ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved into
+``CORSMiddleware``, ``ResponseCacheMiddleware``, ``CSRFMiddleware``,
+``CompressionMiddleware``, ``AllowedHostsMiddleware``, ``RateLimitMiddleware``,
+``PrometheusMiddleware`` and ``SessionMiddleware`` have made this move.
+``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved into
 ``litestar.middleware._internal``, removing them from the public API; for CSRF this
 includes the ``litestar.middleware.csrf`` module and its ``generate_csrf_token`` /
 ``generate_csrf_hash`` helpers.
@@ -442,14 +444,34 @@ CSRF, via a ``from_config`` classmethod on the middleware), so applications that
 configure them - for CORS, via
 :class:`~litestar.config.cors.CORSConfig`, for response caching, via
 :class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
-``cache`` argument, and for CSRF, via :class:`~litestar.config.csrf.CSRFConfig` - are
-unaffected, with one exception: :attr:`~litestar.config.csrf.CSRFConfig.exclude`
-patterns are now matched against the **handler's path template**
-(e.g. ``/user/{user_id:int}``) at startup, instead of the request path
-(e.g. ``/user/1``) at runtime. Patterns targeting literal paths keep working; patterns
-written to match expanded path parameters must be rewritten against the template.
+``cache`` argument, for CSRF, via :class:`~litestar.config.csrf.CSRFConfig`, for
+compression, via :class:`~litestar.config.compression.CompressionConfig`, and for
+allowed hosts, via :class:`~litestar.config.allowed_hosts.AllowedHostsConfig` - are
+unaffected. Their ``exclude`` patterns are still matched against the request path;
+``CSRFConfig``, ``CompressionConfig`` and ``AllowedHostsConfig`` additionally accept
+``exclude_path_pattern``, which is matched against the handler's path (e.g.
+``/user/{user_id:int}``) at startup,
+as described in :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
 
-Code that composed one of them directly into an ASGI stack must drop the ``app``
+``CompressionMiddleware`` keeps its ``CompressionConfig``-based constructor (minus the
+``app`` argument), since the config remains part of the public ``CompressionFacade``
+protocol, which is unchanged. Subclasses set via
+:attr:`~litestar.config.compression.CompressionConfig.middleware_class` must rename
+``__call__`` to ``handle``, which receives the next ASGI app as an additional
+``next_app`` argument in place of ``self.app``.
+
+``SessionMiddleware`` keeps its backend-based constructor (minus the ``app`` argument),
+since the session backends remain a public extension point that receives the
+configuration unchanged. The ``middleware`` property of the session configurations now
+returns a ``SessionMiddleware`` instance instead of a ``DefineMiddleware``, so
+``middleware=[session_config.middleware]`` keeps working, while code reaching into
+``session_config.middleware.kwargs["backend"]`` must use
+``session_config.middleware.backend`` instead. The ``exclude`` patterns of the session
+configurations are still matched against the request path; the new
+``exclude_path_pattern`` option matches against the handler's path (e.g.
+``/user/{user_id:int}``) at startup.
+
+Code that composed one of the others directly into an ASGI stack must drop the ``app``
 argument, pass the settings as keyword arguments rather than a configuration object, and
 apply the instance to the next ASGI app:
 
@@ -479,6 +501,17 @@ attribute of each layer.
 
 Subclasses must also rename ``__call__`` to ``handle``, which receives the next ASGI app
 as an additional ``next_app`` argument in place of ``self.app``.
+
+For rate limiting and Prometheus metrics,
+:class:`~litestar.middleware.rate_limit.RateLimitMiddleware` and
+:class:`~litestar.plugins.prometheus.PrometheusMiddleware` are now directly
+constructible, making the :class:`~litestar.middleware.rate_limit.RateLimitConfig` and
+:class:`~litestar.plugins.prometheus.PrometheusConfig` objects obsolete: their
+``middleware`` properties are deprecated and will be removed in ``4.0``. Pass a
+configured middleware instance to the middleware list instead, e.g.
+``middleware=[RateLimitMiddleware(rate_limit=("minute", 10))]``. The ``exclude``
+patterns are still matched against the request path; the new ``exclude_path_pattern``
+argument matches against the handler's path (e.g. ``/user/{user_id:int}``) at startup.
 
 .. seealso::
     :ref:`asgi-middleware-migration`

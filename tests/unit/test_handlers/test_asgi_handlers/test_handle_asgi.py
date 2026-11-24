@@ -5,6 +5,7 @@ import pytest
 
 from litestar import Controller, Litestar, MediaType, asgi
 from litestar.enums import ScopeType
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import ASGIRouteHandler
 from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_200_OK
@@ -120,6 +121,58 @@ def test_copy_scope_isolates_top_level_keys_only() -> None:
         client.get("/")
 
     mock.assert_called_once_with(None, "nested")
+
+
+@pytest.mark.parametrize("is_mount", [pytest.param(True, id="mount"), pytest.param(False, id="non-mount")])
+def test_copy_state(is_mount: bool) -> None:
+    mock = MagicMock()
+
+    def middleware_factory(app: Litestar) -> ASGIApp:
+        async def middleware(scope: "Scope", receive: "Receive", send: "Send") -> None:
+            await app(scope, receive, send)
+            mock(scope["state"].get("foo"))
+
+        return middleware
+
+    @asgi(is_mount=is_mount, copy_state=True)
+    async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
+        scope["state"]["foo"] = "foo"
+        await ASGIResponse()(scope, receive, send)
+
+    with create_test_client([handler], middleware=[middleware_factory]) as client:
+        client.get("/")
+
+    mock.assert_called_once_with(None)
+
+
+def test_copy_state_isolates_top_level_keys_only() -> None:
+    mock = MagicMock()
+
+    def middleware_factory(app: Litestar) -> ASGIApp:
+        async def middleware(scope: "Scope", receive: "Receive", send: "Send") -> None:
+            scope["state"]["nested"] = {}
+            await app(scope, receive, send)
+            mock(scope["state"].get("foo"), scope["state"]["nested"].get("injected"))
+
+        return middleware
+
+    @asgi(is_mount=True, copy_state=True)
+    async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
+        scope["state"]["foo"] = "foo"
+        scope["state"]["nested"]["injected"] = "nested"
+        await ASGIResponse()(scope, receive, send)
+
+    with create_test_client([handler], middleware=[middleware_factory]) as client:
+        client.get("/")
+
+    mock.assert_called_once_with(None, "nested")
+
+
+def test_copy_state_without_copy_scope_raises() -> None:
+    async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None: ...
+
+    with pytest.raises(ImproperlyConfiguredException, match="'copy_state=True' requires 'copy_scope=True'"):
+        asgi(copy_scope=False, copy_state=True)(handler)
 
 
 def test_copy_scope_default_on_handler_class() -> None:

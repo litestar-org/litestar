@@ -14,6 +14,7 @@ from litestar.data_extractors import (
 )
 from litestar.enums import ScopeType
 from litestar.exceptions import HTTPException
+from litestar.middleware._utils import build_exclude_bypass
 from litestar.middleware.base import ASGIMiddleware
 from litestar.serialization import encode_json
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
@@ -50,6 +51,7 @@ class LoggingMiddleware(ASGIMiddleware):
         logger: logging.Logger | Logger | str | Callable[[], Logger],
         *,
         exclude: str | list[str] | None = None,
+        exclude_path_pattern: str | list[str] | None = None,
         exclude_opt_key: str | None = None,
         include_compressed_body: bool = False,
         request_cookies_to_obfuscate: Iterable[str] = ("session",),
@@ -71,7 +73,12 @@ class LoggingMiddleware(ASGIMiddleware):
         log_structured: bool = False,
     ) -> None:
         self.exclude_opt_key = exclude_opt_key
-        self.exclude_path_pattern = tuple(exclude) if isinstance(exclude, list) else exclude
+        self.exclude_path_pattern = (
+            tuple(exclude_path_pattern) if isinstance(exclude_path_pattern, list) else exclude_path_pattern
+        )
+        self.should_bypass_for_scope = build_exclude_bypass(
+            exclude, middleware_cls=type(self), also=self.should_bypass_for_scope
+        )
         self.include_compressed_body = include_compressed_body
         self.request_cookies_to_obfuscate = frozenset(request_cookies_to_obfuscate)
         self.request_headers_to_obfuscate = frozenset(request_headers_to_obfuscate)

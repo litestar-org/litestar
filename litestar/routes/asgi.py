@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class ASGIRoute(BaseRoute[Scope]):
     """An ASGI route, handling a single ``ASGIRouteHandler``"""
 
-    __slots__ = ("_copy_scope", "route_handler")
+    __slots__ = ("_copy_scope", "_copy_state", "route_handler")
 
     def __init__(
         self,
@@ -30,6 +30,7 @@ class ASGIRoute(BaseRoute[Scope]):
         """
         self.route_handler = route_handler
         self._copy_scope = route_handler.copy_scope
+        self._copy_state = route_handler.copy_state
         super().__init__(path=path)
 
     async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
@@ -44,9 +45,10 @@ class ASGIRoute(BaseRoute[Scope]):
             None
         """
 
-        connection = ASGIConnection["ASGIRouteHandler", Any, Any, Any](
-            scope=scope.copy() if self._copy_scope else scope,
-            receive=receive,
-            send=send,
-        )
+        if self._copy_scope:
+            scope = scope.copy()
+        if self._copy_state:
+            scope["state"] = scope["state"].copy()
+
+        connection = ASGIConnection["ASGIRouteHandler", Any, Any, Any](scope=scope, receive=receive, send=send)
         await self.route_handler.handle(connection=connection)

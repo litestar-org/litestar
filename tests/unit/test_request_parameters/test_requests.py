@@ -140,8 +140,8 @@ def test_layer_parameter_without_annotation_takes_type_of_handler_and_keeps_cons
     async def handler(limit: FromQuery[int]) -> dict:
         return {"limit": limit}
 
-    app = Litestar([handler], parameters={"limit": QueryParameter(gt=0)}, openapi_config=None)
-    with TestClient(app) as client:
+    router = Router("/", route_handlers=[handler], parameters={"limit": QueryParameter(gt=0)})
+    with TestClient(Litestar([router], openapi_config=None)) as client:
         assert client.get("/?limit=5").json() == {"limit": 5}
         wrong_type = client.get("/?limit=x")
         violated = client.get("/?limit=0")
@@ -150,12 +150,43 @@ def test_layer_parameter_without_annotation_takes_type_of_handler_and_keeps_cons
     assert violated.json()["extra"] == [{"message": "Expected `int` >= 1", "key": "limit", "source": "query"}]
 
 
+def test_documentation_only_layer_parameter_constraint_not_applied() -> None:
+    @get("/")
+    async def handler() -> None: ...
+
+    layer_parameters = {"limit": QueryParameter(annotation=int, gt=3, documentation_only=True)}
+    with TestClient(Litestar([handler], parameters=layer_parameters, openapi_config=None)) as client:
+        assert client.get("/?limit=2").status_code == 200
+
+
+def test_documentation_only_layer_parameter_bound_by_handler_constraint_not_applied() -> None:
+    @get("/")
+    async def handler(limit: FromQuery[int]) -> int:
+        return limit
+
+    router = Router("/", route_handlers=[handler], parameters={"limit": QueryParameter(gt=3, documentation_only=True)})
+    with TestClient(Litestar([router], openapi_config=None)) as client:
+        assert client.get("/?limit=2").json() == 2
+        wrong_type = client.get("/?limit=x")
+
+    assert wrong_type.json()["extra"] == [{"message": "Expected `int`, got `str`", "key": "limit", "source": "query"}]
+
+
+def test_documentation_only_handler_parameter_constraint_not_applied() -> None:
+    @get("/")
+    async def handler(limit: Annotated[int, QueryParameter(gt=3, documentation_only=True)]) -> int:
+        return limit
+
+    with TestClient(Litestar([handler], openapi_config=None)) as client:
+        assert client.get("/?limit=2").json() == 2
+
+
 def test_only_bare_marker_of_layer_parameter_type_binds_it() -> None:
     @get("/")
     async def handler(limit: FromQuery[int], header: FromHeader[str]) -> dict:
         return {"limit": limit, "header": header}
 
-    layer_parameters = {"limit": QueryParameter(gt=0), "header": QueryParameter(annotation=str)}
+    layer_parameters = {"limit": QueryParameter(annotation=int, gt=0), "header": QueryParameter(annotation=str)}
     with TestClient(Litestar([handler], parameters=layer_parameters, openapi_config=None)) as client:
         complete = client.get("/?limit=1&header=q", headers={"header": "h"})
         without_query_header = client.get("/?limit=1", headers={"header": "h"})
@@ -176,7 +207,7 @@ def test_provider_bare_marker_merged_with_layer_parameter() -> None:
     async def handler(provided: NamedDependency[int]) -> int:
         return provided
 
-    layer_parameters = {"limit": QueryParameter(name="page-limit", gt=0)}
+    layer_parameters = {"limit": QueryParameter(annotation=int, name="page-limit", gt=0)}
     with TestClient(Litestar([handler], parameters=layer_parameters, openapi_config=None)) as client:
         assert client.get("/?page-limit=5").json() == 5
         violated = client.get("/?page-limit=0")

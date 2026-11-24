@@ -20,7 +20,7 @@ from sqlalchemy.orm import Mapped, declarative_mixin, mapped_column
 from sqlalchemy.types import String
 
 from litestar import Litestar, get, post
-from litestar.di import NamedDependency, Provide
+from litestar.di import NamedDependency, TypeDependency
 from litestar.params import FromPath, JSONBody
 
 if TYPE_CHECKING:
@@ -150,7 +150,7 @@ async def on_startup() -> None:
 
 @get(path="/")
 async def get_blogs(
-    blog_post_repo: NamedDependency[BlogPostRepository],
+    blog_post_repo: TypeDependency[BlogPostRepository],
 ) -> list[BlogPostDTO]:
     """Interact with SQLAlchemy engine and session."""
     objs = await blog_post_repo.list()
@@ -161,7 +161,7 @@ async def get_blogs(
 @get(path="/{post_slug:str}")
 async def get_blog_details(
     post_slug: FromPath[str],
-    blog_post_repo: NamedDependency[BlogPostRepository],
+    blog_post_repo: TypeDependency[BlogPostRepository],
 ) -> BlogPostDTO:
     """Interact with SQLAlchemy engine and session."""
     obj = await blog_post_repo.get_one(slug=post_slug)
@@ -170,7 +170,7 @@ async def get_blog_details(
 
 @post(path="/")
 async def create_blog(
-    blog_post_repo: NamedDependency[BlogPostRepository],
+    blog_post_repo: TypeDependency[BlogPostRepository],
     data: JSONBody[BlogPostCreate],
 ) -> BlogPostDTO:
     """Create a new blog post."""
@@ -183,7 +183,7 @@ async def create_blog(
 
 app = Litestar(
     route_handlers=[create_blog, get_blogs, get_blog_details],
-    dependencies={"blog_post_repo": Provide(provide_blog_post_repo)},
+    dependencies={BlogPostRepository: provide_blog_post_repo},
     on_startup=[on_startup],
     plugins=[SQLAlchemyInitPlugin(config=sqlalchemy_config)],
 )

@@ -538,11 +538,10 @@ class HTTPRouteHandler(BaseRouteHandler):
         )
         definitions = self._injection_setup.request_parameter_definitions
         # there is at most one definition of the request body, since declarations of it,
-        # by the handler and its dependencies are merged into one. a DTO knows the body
-        # by the name 'data'
+        # by the handler and its dependencies are merged into one
         for definition in definitions.values():
             if definition.is_body:
-                self._parsed_data_field = replace(definition.field_definition, name="data")
+                self._parsed_data_field = definition.field_definition
                 break
 
         super().on_registration(route=route, app=app)

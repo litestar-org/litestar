@@ -37,6 +37,9 @@ class RequestParameter:
     field_definition: FieldDefinition
     """The parameter's declaration. Its ``kwarg_definition`` is the marker"""
 
+    marker: ParameterKwarg | BodyKwarg
+    """The parameter marker or body marker declaring the parameter"""
+
     @property
     def is_body(self) -> bool:
         """Whether a body marker declares the parameter"""
@@ -73,10 +76,14 @@ def _request_parameter_for(name: str, field: FieldDefinition) -> RequestParamete
     kwarg = field.kwarg_definition
     if isinstance(kwarg, ParameterKwarg):
         return RequestParameter(
-            parameter_name=name, param_type=kwarg.param_type, name=kwarg.name or name, field_definition=field
+            parameter_name=name,
+            param_type=kwarg.param_type,
+            name=kwarg.name or name,
+            field_definition=field,
+            marker=kwarg,
         )
     if isinstance(kwarg, BodyKwarg):
-        return RequestParameter(parameter_name=name, param_type=None, name="", field_definition=field)
+        return RequestParameter(parameter_name=name, param_type=None, name="", field_definition=field, marker=kwarg)
     return None
 
 

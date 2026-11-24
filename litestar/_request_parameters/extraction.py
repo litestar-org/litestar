@@ -180,25 +180,22 @@ async def _extract_multipart(
 
 
 def create_multipart_extractor(
-    field_definition: FieldDefinition, is_data_optional: bool, data_dto: type[AbstractDTO] | None
+    field_definition: FieldDefinition, body_kwarg: BodyKwarg, is_data_optional: bool, data_dto: type[AbstractDTO] | None
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create a multipart form-data extractor.
 
     Args:
         field_definition: A FieldDefinition instance.
+        body_kwarg: The body marker.
         is_data_optional: Boolean dictating whether the field is optional.
         data_dto: A data DTO type, if configured for handler.
 
     Returns:
         An extractor function.
     """
-    body_kwarg_multipart_form_part_limit: int | None = None
-    if field_definition.kwarg_definition and isinstance(field_definition.kwarg_definition, BodyKwarg):
-        body_kwarg_multipart_form_part_limit = field_definition.kwarg_definition.multipart_form_part_limit
-
     extract_multipart = partial(
         _extract_multipart,
-        body_kwarg_multipart_form_part_limit=body_kwarg_multipart_form_part_limit,
+        body_kwarg_multipart_form_part_limit=body_kwarg.multipart_form_part_limit,
         is_data_optional=is_data_optional,
         data_dto=data_dto,
         field_definition=field_definition,
@@ -242,25 +239,28 @@ def create_url_encoded_data_extractor(
 
 
 def create_request_body_extractor(
-    field_definition: FieldDefinition, is_data_optional: bool, data_dto: type[AbstractDTO] | None
+    field_definition: FieldDefinition, body_kwarg: BodyKwarg, is_data_optional: bool, data_dto: type[AbstractDTO] | None
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create an extractor decoding a request's body by the media type of its body marker, or
     with its DTO.
 
     Args:
         field_definition: The declaration of the body.
+        body_kwarg: The body marker.
         is_data_optional: Boolean dictating whether the field is optional.
         data_dto: A data DTO type, if configured for handler.
 
     Returns:
         An extractor function.
     """
-    kwarg_definition = field_definition.kwarg_definition
-    media_type = kwarg_definition.media_type if isinstance(kwarg_definition, BodyKwarg) else RequestEncodingType.JSON
+    media_type = body_kwarg.media_type
 
     if media_type == RequestEncodingType.MULTI_PART:
         return create_multipart_extractor(
-            field_definition=field_definition, is_data_optional=is_data_optional, data_dto=data_dto
+            field_definition=field_definition,
+            body_kwarg=body_kwarg,
+            is_data_optional=is_data_optional,
+            data_dto=data_dto,
         )
     if media_type == RequestEncodingType.URL_ENCODED:
         return create_url_encoded_data_extractor(is_data_optional=is_data_optional, data_dto=data_dto)
@@ -307,21 +307,23 @@ class RequestParameterExtractor:
         self._body: tuple[str, Callable[[ASGIConnection], Coroutine[Any, Any, Any]]] | None = None
         sequence_query_parameter_names: set[str] = set()
         for definition in definitions:
-            if definition.param_type is None:
+            marker = definition.marker
+            if isinstance(marker, BodyKwarg):
                 field_definition = definition.field_definition
                 self._body = (
                     definition.key,
                     create_request_body_extractor(
                         field_definition=field_definition,
+                        body_kwarg=marker,
                         is_data_optional=field_definition.is_optional,
                         data_dto=data_dto,
                     ),
                 )
                 continue
             # headers are looked up case-insensitively
-            name = definition.name.lower() if definition.param_type is ParamType.HEADER else definition.name
-            self._names_by_param_type.setdefault(definition.param_type, []).append((definition.key, name))
-            if definition.param_type is ParamType.QUERY and definition.field_definition.is_non_string_sequence:
+            name = definition.name.lower() if marker.param_type is ParamType.HEADER else definition.name
+            self._names_by_param_type.setdefault(marker.param_type, []).append((definition.key, name))
+            if marker.param_type is ParamType.QUERY and definition.field_definition.is_non_string_sequence:
                 sequence_query_parameter_names.add(definition.name)
         self._sequence_query_parameter_names = frozenset(sequence_query_parameter_names)
 

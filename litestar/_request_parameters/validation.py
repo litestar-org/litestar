@@ -17,7 +17,7 @@ from litestar.datastructures.url import URL
 from litestar.dto import DTOData
 from litestar.enums import ParamType, ScopeType
 from litestar.exceptions import ClientException, SerializationException, ValidationException
-from litestar.params import SkipValidationMarker
+from litestar.params import ParameterKwarg, SkipValidationMarker
 from litestar.serialization import default_deserializer
 from litestar.utils import get_origin_or_inner_type, is_class_and_subclass
 from litestar.utils.dataclass import simple_asdict
@@ -163,10 +163,12 @@ class RequestParameterValidationError(Exception):
 
 
 def _annotation_for(field_definition: FieldDefinition) -> Any:
+    kwarg_definition = field_definition.kwarg_definition
+    documentation_only = isinstance(kwarg_definition, ParameterKwarg) and kwarg_definition.documentation_only
     return _create_annotation(
         # the name of a declaring parameter must not decide how the value is validated
         field_definition=dataclasses.replace(field_definition, name=""),
-        meta_data=_create_meta(field_definition.kwarg_definition) if field_definition.kwarg_definition else None,
+        meta_data=_create_meta(kwarg_definition) if kwarg_definition and not documentation_only else None,
     )
 
 

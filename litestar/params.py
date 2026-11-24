@@ -191,6 +191,12 @@ class ParameterKwarg(KwargDefinition, ParameterMarker):
     If set to False, a function parameter receiving it must declare a default, which it receives when the
     parameter is missing from the request. Defaults to True.
     """
+    documentation_only: bool = False
+    """A boolean flag dictating whether the constraints are only documented in the OpenAPI schema, without being
+    applied to the value of the request.
+
+    .. versionadded:: 3.0
+    """
 
     def __hash__(self) -> int:  # pragma: no cover
         """Hash the dataclass in a safe way.
