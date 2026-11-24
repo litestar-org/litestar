@@ -149,6 +149,11 @@ class DTOBackend:
         if field_definition.is_subclass_of(DTOData):
             self.dto_data_type = field_definition.annotation
             field_definition = self.field_definition.inner_types[0]
+        elif field_definition.is_optional and (
+            dto_data := next((inner for inner in field_definition.inner_types if inner.is_subclass_of(DTOData)), None)
+        ):
+            self.dto_data_type = dto_data.annotation
+            field_definition = FieldDefinition.from_annotation(dto_data.inner_types[0].annotation | None)
 
         self.annotation = build_annotation_for_backend(model_type, field_definition, self.transfer_model_type)
         self._transfer_function_cache: TransferFunctionCache = {}

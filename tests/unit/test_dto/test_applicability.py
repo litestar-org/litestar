@@ -852,3 +852,49 @@ def test_bare_collection_annotation_is_not_applicable(
     plan = registered(app, method)._dto_plan
     assert plan.data is None
     assert plan.return_ is None
+
+
+class BaseUserListener(WebsocketListener):
+    return_dto = UserDTO
+
+    async def on_receive(self, data: str) -> Any:
+        return None
+
+
+class InheritingTextListener(BaseUserListener):
+    path = "/ws"
+
+    async def on_receive(self, data: str) -> str:
+        return data
+
+
+class InheritingUserListener(BaseUserListener):
+    path = "/ws"
+
+    async def on_receive(self, data: str) -> User:
+        return USER
+
+
+class OwnTextListener(BaseUserListener):
+    path = "/ws"
+    return_dto = UserDTO
+
+    async def on_receive(self, data: str) -> str:
+        return data
+
+
+def test_listener_return_dto_inherited_from_base_class_is_skipped_where_it_does_not_apply() -> None:
+    with create_test_client([InheritingTextListener]) as client, client.websocket_connect("/ws") as ws:
+        ws.send_text("text")
+        assert ws.receive_text() == "text"
+
+
+def test_listener_return_dto_inherited_from_base_class_applies() -> None:
+    with create_test_client([InheritingUserListener]) as client, client.websocket_connect("/ws") as ws:
+        ws.send_text("text")
+        assert ws.receive_json() == USER_ENCODED
+
+
+def test_listener_return_dto_in_own_class_body_must_apply() -> None:
+    with pytest.raises(DTONotApplicableError, match=r"cannot encode its return value annotated 'str'"):
+        Litestar([OwnTextListener], openapi_config=None)

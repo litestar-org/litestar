@@ -1,6 +1,6 @@
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
-from typing import Annotated, Any, Generic, Optional, TypeVar
+from typing import Annotated, Any, Generic, Optional, TypeVar, cast
 
 import msgspec
 import pydantic
@@ -11,7 +11,7 @@ from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, DTOData, MsgspecD
 from litestar.dto._backend import DTOBackend
 from litestar.dto._plan import create_backend
 from litestar.handlers import websocket_stream
-from litestar.params import JSONBody, URLEncodedBody
+from litestar.params import JSONBody, MultipartBody, URLEncodedBody
 from litestar.plugins.pydantic import PydanticDTO
 from litestar.testing import RequestFactory, TestClient, create_test_client
 from litestar.typing import FieldDefinition
@@ -288,3 +288,70 @@ def test_builtins_decoder_returns_none_for_optional_annotation() -> None:
     backend = not_none(not_none(app.route_handler_method_map["/"]["POST"]._dto_plan).data).backend
 
     assert backend.populate_data_from_builtins(None, RequestFactory().get()) is None
+
+
+def test_listener_non_optional_return_none_fails_as_before() -> None:
+    @websocket_listener("/ws", return_dto=DataclassDTO[Annotated[DCPerson, EXCLUDE]])
+    async def listener(data: str) -> DCPerson:
+        return None  # type: ignore[return-value]
+
+    with create_test_client([listener]) as client, pytest.raises(BaseException) as exc_info:
+        with client.websocket_connect("/ws") as ws:
+            ws.send_text("a")
+            ws.receive()
+
+    assert exc_info.group_contains(TypeError)
+
+
+def test_listener_without_dto_returning_none_sends_nothing() -> None:
+    @websocket_listener("/ws")
+    async def listener(data: str) -> Optional[DCPerson]:
+        return None if data == "none" else DCPerson(id=1, name=data)
+
+    with create_test_client([listener]) as client, client.websocket_connect("/ws") as ws:
+        ws.send_text("none")
+        ws.send_text("a")
+        assert ws.receive_json() == {"id": 1, "name": "a", "secret": "s"}
+
+
+@pytest.mark.parametrize("body", ["json", "urlencoded", "multipart"])
+def test_optional_dto_data_body_with_value_is_decoded(body: str) -> None:
+    received: list[Any] = []
+    marker = {"json": JSONBody, "urlencoded": URLEncodedBody, "multipart": MultipartBody}[body]
+
+    async def create(data: Any = None) -> None:
+        received.append(data.create_instance())
+
+    create.__annotations__ = {"data": cast("Any", marker)[Optional[DTOData[DCPerson]]], "return": None}
+
+    with create_test_client([post("/", dto=DataclassDTO[Annotated[DCPerson, EXCLUDE]])(create)]) as client:
+        payload = {"id": 1, "name": "a", "secret": "x"}
+        if body == "json":
+            response = client.post("/", json=payload)
+        elif body == "urlencoded":
+            response = client.post("/", data={key: str(value) for key, value in payload.items()})
+        else:
+            response = client.post("/", files={key: (None, str(value)) for key, value in payload.items()})
+
+    assert response.status_code == 201
+    assert received == [DCPerson(id=1, name="a", secret="s")]
+
+
+@pytest.mark.parametrize("body", ["urlencoded", "multipart"])
+def test_optional_model_form_body_with_value_is_decoded(body: str) -> None:
+    received: list[Any] = []
+    marker = {"urlencoded": URLEncodedBody, "multipart": MultipartBody}[body]
+
+    async def create(data: Any = None) -> None:
+        received.append(data)
+
+    create.__annotations__ = {"data": cast("Any", marker)[Optional[DCPerson]], "return": None}
+
+    with create_test_client([post("/", dto=DataclassDTO[Annotated[DCPerson, EXCLUDE]])(create)]) as client:
+        if body == "urlencoded":
+            response = client.post("/", data={"id": "1", "name": "a"})
+        else:
+            response = client.post("/", files={"id": (None, "1"), "name": (None, "a")})
+
+    assert response.status_code == 201
+    assert received == [DCPerson(id=1, name="a")]
