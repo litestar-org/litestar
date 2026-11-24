@@ -6,7 +6,7 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
-    .. change:: Remove the non-codegen DTO backend
+    .. change:: DTO: Remove the non-codegen backend
         :type: feature
         :breaking:
         :pr: 5255
