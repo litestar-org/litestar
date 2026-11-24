@@ -20,6 +20,7 @@ from litestar.response import ServerSentEvent, Stream
 from litestar.testing import TestClient, create_test_client
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
+from tests.unit.test_dto import registered
 
 T = TypeVar("T")
 
@@ -131,10 +132,6 @@ def build_app(
     return Litestar(route_handlers, plugins=list(plugins), openapi_config=None, **options)
 
 
-def registered(app: Litestar, method: Any = "POST") -> Any:
-    return app.route_handler_method_map["/"][method]
-
-
 def describe(data: Any) -> dict[str, Any]:
     return {"type": type(data).__name__, "data": data}
 
@@ -217,10 +214,26 @@ DATA_ROWS = [
         USER_IN,
         (),
         {"type": "User", "data": {"id": 1, "name": "a", "secret": "s"}},
-        id="AD1",
+        id="handler-dto-applies",
     ),
-    pytest.param("handler", {"dto": UserDTO}, JSONBody[Other], None, (), DTONotApplicableError, id="AD2"),
-    pytest.param("handler", {"dto": UserDTO}, NO_BODY, None, (), {"type": "NoneType", "data": None}, id="AD3"),
+    pytest.param(
+        "handler",
+        {"dto": UserDTO},
+        JSONBody[Other],
+        None,
+        (),
+        DTONotApplicableError,
+        id="handler-dto-for-other-model-raises",
+    ),
+    pytest.param(
+        "handler",
+        {"dto": UserDTO},
+        NO_BODY,
+        None,
+        (),
+        {"type": "NoneType", "data": None},
+        id="handler-dto-without-body",
+    ),
     pytest.param(
         "app",
         {"dto": UserDTO},
@@ -228,7 +241,7 @@ DATA_ROWS = [
         USER_IN,
         (),
         {"type": "User", "data": {"id": 1, "name": "a", "secret": "s"}},
-        id="AD4",
+        id="layer-dto-applies",
     ),
     pytest.param(
         "app",
@@ -237,9 +250,11 @@ DATA_ROWS = [
         {"a": 1, "hidden": "x"},
         (),
         {"type": "Other", "data": {"a": 1, "hidden": "x"}},
-        id="AD5",
+        id="layer-dto-skipped-for-other-model",
     ),
-    pytest.param("app", {"dto": UserDTO}, NO_BODY, None, (), {"type": "NoneType", "data": None}, id="AD6"),
+    pytest.param(
+        "app", {"dto": UserDTO}, NO_BODY, None, (), {"type": "NoneType", "data": None}, id="layer-dto-without-body"
+    ),
     pytest.param(
         "router",
         {"dto": None},
@@ -247,7 +262,7 @@ DATA_ROWS = [
         USER_IN,
         (ModelPlugin(User, UserDTO),),
         {"type": "User", "data": USER_IN},
-        id="AD7",
+        id="layer-none-disables-plugin",
     ),
     pytest.param(
         "app",
@@ -256,7 +271,7 @@ DATA_ROWS = [
         USER_IN,
         (ModelPlugin(User, UserDTO),),
         {"type": "User", "data": {"id": 1, "name": "a", "secret": "s"}},
-        id="AD8",
+        id="plugin-dto-applies",
     ),
     pytest.param(
         "app",
@@ -265,12 +280,18 @@ DATA_ROWS = [
         [USER_IN, 2],
         (ModelPlugin(User, UserDTO),),
         {"type": "tuple", "data": [USER_IN, 2]},
-        id="AD9",
+        id="plugin-dto-skipped-for-tuple",
     ),
-    pytest.param("app", {}, JSONBody[User], USER_IN, (), {"type": "User", "data": USER_IN}, id="AD10"),
-    pytest.param("app", {}, JSONBody[DTOData[User]], None, (), MissingDTOError, id="AD11"),
+    pytest.param("app", {}, JSONBody[User], USER_IN, (), {"type": "User", "data": USER_IN}, id="no-dto"),
+    pytest.param("app", {}, JSONBody[DTOData[User]], None, (), MissingDTOError, id="dto-data-without-dto-raises"),
     pytest.param(
-        "controller", {"dto": UserDTO}, JSONBody[DTOData[Other]], None, (), MissingDTOError, id="AD11-skipped"
+        "controller",
+        {"dto": UserDTO},
+        JSONBody[DTOData[Other]],
+        None,
+        (),
+        MissingDTOError,
+        id="dto-data-under-skipped-layer-dto-raises",
     ),
 ]
 
@@ -326,11 +347,29 @@ OTHER_FULL = {"a": 1, "hidden": "x"}
 TUPLE_FULL = [USER_FULL, 2]
 
 RETURN_ROWS = [
-    pytest.param("handler", {"return_dto": UserDTO}, {}, User, respond_user, (), USER_ENCODED, id="AR1"),
     pytest.param(
-        "handler", {"return_dto": UserDTO}, {}, tuple[User, int], respond_tuple, (), DTONotApplicableError, id="AR2"
+        "handler", {"return_dto": UserDTO}, {}, User, respond_user, (), USER_ENCODED, id="handler-return-dto-applies"
     ),
-    pytest.param("handler", {"return_dto": UserDTO}, {}, Other, respond_other, (), DTONotApplicableError, id="AR3"),
+    pytest.param(
+        "handler",
+        {"return_dto": UserDTO},
+        {},
+        tuple[User, int],
+        respond_tuple,
+        (),
+        DTONotApplicableError,
+        id="handler-return-dto-for-tuple-raises",
+    ),
+    pytest.param(
+        "handler",
+        {"return_dto": UserDTO},
+        {},
+        Other,
+        respond_other,
+        (),
+        DTONotApplicableError,
+        id="handler-return-dto-for-other-model-raises",
+    ),
     pytest.param(
         "handler",
         {"return_dto": UserDTO},
@@ -339,7 +378,7 @@ RETURN_ROWS = [
         lambda data: ServerSentEvent("x"),
         (),
         DTONotApplicableError,
-        id="AR3-sse",
+        id="handler-return-dto-for-sse-raises",
     ),
     pytest.param(
         "handler",
@@ -349,11 +388,20 @@ RETURN_ROWS = [
         lambda data: Stream(iter([b"x"])),
         (),
         DTONotApplicableError,
-        id="AR3-stream",
+        id="handler-return-dto-for-stream-raises",
     ),
-    pytest.param("app", {"return_dto": UserDTO}, {}, User, respond_user, (), USER_ENCODED, id="AR4"),
     pytest.param(
-        "app", {"return_dto": UserDTO}, {}, tuple[User, int], respond_tuple, (), DTONotApplicableError, id="AR5"
+        "app", {"return_dto": UserDTO}, {}, User, respond_user, (), USER_ENCODED, id="layer-return-dto-applies"
+    ),
+    pytest.param(
+        "app",
+        {"return_dto": UserDTO},
+        {},
+        tuple[User, int],
+        respond_tuple,
+        (),
+        DTONotApplicableError,
+        id="layer-return-dto-for-tuple-raises",
     ),
     pytest.param(
         "app",
@@ -363,14 +411,45 @@ RETURN_ROWS = [
         respond_other,
         (ModelPlugin(Other, OtherPluginDTO),),
         OTHER_FULL,
-        id="AR6",
+        id="layer-return-dto-skipped-before-data-dto-and-plugin",
     ),
-    pytest.param("router", {"return_dto": None}, {"dto": UserDTO}, User, respond_user, (), USER_FULL, id="AR7"),
-    pytest.param("handler", {"dto": UserDTO}, {}, User, respond_user, (), USER_ENCODED, id="AR8"),
-    pytest.param("handler", {"dto": UserDTO}, {}, tuple[User, int], respond_tuple, (), TUPLE_FULL, id="AR9"),
-    pytest.param("app", {}, {}, Other, respond_other, (ModelPlugin(Other, OtherDTO),), {"a": 1}, id="AR10"),
-    pytest.param("app", {}, {}, tuple[User, int], respond_tuple, (ModelPlugin(User, UserDTO),), TUPLE_FULL, id="AR11"),
-    pytest.param("app", {}, {}, User, respond_user, (), USER_FULL, id="AR12"),
+    pytest.param(
+        "router",
+        {"return_dto": None},
+        {"dto": UserDTO},
+        User,
+        respond_user,
+        (),
+        USER_FULL,
+        id="layer-none-disables-data-dto-for-return",
+    ),
+    pytest.param(
+        "handler", {"dto": UserDTO}, {}, User, respond_user, (), USER_ENCODED, id="data-dto-reused-for-return"
+    ),
+    pytest.param(
+        "handler",
+        {"dto": UserDTO},
+        {},
+        tuple[User, int],
+        respond_tuple,
+        (),
+        TUPLE_FULL,
+        id="data-dto-skipped-for-return-tuple",
+    ),
+    pytest.param(
+        "app", {}, {}, Other, respond_other, (ModelPlugin(Other, OtherDTO),), {"a": 1}, id="plugin-dto-for-return"
+    ),
+    pytest.param(
+        "app",
+        {},
+        {},
+        tuple[User, int],
+        respond_tuple,
+        (ModelPlugin(User, UserDTO),),
+        TUPLE_FULL,
+        id="plugin-dto-skipped-for-return-tuple",
+    ),
+    pytest.param("app", {}, {}, User, respond_user, (), USER_FULL, id="no-return-dto"),
 ]
 
 
@@ -501,7 +580,7 @@ def test_declared_dto_beats_serialization_plugin_for_return(placement: Placement
         response = client.request(method, "/", json={"a": 1} if body is not NO_BODY else None)
 
     assert response.json() == {"a": 1}
-    assert registered(app, method).return_dto is OtherDTO
+    assert registered(app, method=method).return_dto is OtherDTO
 
 
 def test_none_declarations_with_plugin() -> None:
@@ -549,14 +628,14 @@ def test_async_generator_return(placement: Placement, options: dict[str, Any]) -
         assert "Streamed items are not transferred by a DTO." in str(exc_info.value)
         return
 
-    assert registered(build(), "GET").return_dto is None
+    assert registered(build(), method="GET").return_dto is None
 
 
 @pytest.mark.parametrize("returns", [ServerSentEvent, Stream])
 def test_server_sent_event_and_stream_returns_start_without_layer_dto(returns: Any) -> None:
     app = build_app("app", method="GET", returns=returns, return_dto=UserDTO)
 
-    assert registered(app, "GET").return_dto is None
+    assert registered(app, method="GET").return_dto is None
 
 
 def test_websocket_stream_items_are_encoded() -> None:
@@ -590,9 +669,7 @@ def test_optional_generic_wrapper_return_is_encoded(returns: Any, respond: Calla
         pytest.param("app", Other | User | None, DTONotApplicableError, id="other-first-layer"),
     ],
 )
-def test_optional_union_resolves_to_first_member_like_baseline(
-    placement: Placement, returns: Any, expected: Any
-) -> None:
+def test_optional_union_resolves_to_first_member(placement: Placement, returns: Any, expected: Any) -> None:
     if expected is DTONotApplicableError:
         with pytest.raises(DTONotApplicableError):
             build_app(placement, method="GET", returns=returns, respond=respond_user, return_dto=UserDTO)
@@ -674,7 +751,7 @@ def test_layer_return_dto_skipped_for_annotation_without_its_model(
     with TestClient(app) as client:
         response = client.get("/")
 
-    assert registered(app, "GET").return_dto is None
+    assert registered(app, method="GET").return_dto is None
     assert response.content == expected
 
 
@@ -769,7 +846,7 @@ def test_is_supported_override_vetoes_return_dto(placement: Placement) -> None:
     app = build()
     with TestClient(app) as client:
         assert client.get("/").json() == USER_FULL
-    assert registered(app, "GET").return_dto is None
+    assert registered(app, method="GET").return_dto is None
 
 
 @pytest.mark.parametrize(
@@ -867,7 +944,7 @@ def test_handler_dto_without_request_data_under_layer_return_dto_starts() -> Non
 
     with TestClient(app) as client:
         assert client.get("/").json() == {"id": 1}
-    assert registered(app, "GET").return_dto is UserReadDTO
+    assert registered(app, method="GET").return_dto is UserReadDTO
 
 
 def test_generated_options_handler_starts_with_app_level_dtos() -> None:
@@ -929,7 +1006,7 @@ def test_bare_collection_annotation_is_not_applicable(
         return
 
     app = build()
-    plan = registered(app, method)._dto_plan
+    plan = registered(app, method=method)._dto_plan
     assert plan.data is None
     assert plan.return_ is None
 

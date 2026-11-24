@@ -15,8 +15,9 @@ from litestar.dto._registry import TransferModelNaming, TransferModelRegistry
 from litestar.exceptions import LitestarWarning
 from litestar.handlers import HTTPRouteHandler
 from litestar.params import JSONBody
-from litestar.routes import HTTPRoute, WebSocketRoute
+from litestar.routes import WebSocketRoute
 from litestar.typing import FieldDefinition
+from tests.unit.test_dto import registered
 from tests.unit.test_dto.schema_name_apps import APPS, describe
 
 HANDLER_ID = "app.handlers.get_user::1"
@@ -198,11 +199,6 @@ def plan_names(handler: HTTPRouteHandler, app: Litestar) -> list[str]:
     return struct_names(plan.return_.backend.transfer_model_type)
 
 
-def registered_handler(app: Litestar, path: str) -> HTTPRouteHandler:
-    route = next(route for route in app.routes if isinstance(route, HTTPRoute) and route.path == path)
-    return route.route_handler_map["GET"]
-
-
 def test_component_names_are_stable_across_app_instances() -> None:
     first = Litestar([handler])
     second = Litestar([handler])
@@ -283,26 +279,26 @@ def test_register_keeps_existing_component_names() -> None:
 
 def test_rebuilding_a_plan_returns_the_same_names() -> None:
     app = Litestar([Router("/r", route_handlers=[get_post])])
-    registered = registered_handler(app, "/r/posts")
-    assert registered._dto_plan is not None
-    assert registered._dto_plan.return_ is not None
-    original = struct_names(registered._dto_plan.return_.backend.transfer_model_type)
+    route_handler = registered(app, "/r/posts", "GET")
+    assert route_handler._dto_plan is not None
+    assert route_handler._dto_plan.return_ is not None
+    original = struct_names(route_handler._dto_plan.return_.backend.transfer_model_type)
 
-    assert plan_names(registered, app) == original
-    assert plan_names(registered.merge(), app) == original
+    assert plan_names(route_handler, app) == original
+    assert plan_names(route_handler.merge(), app) == original
     assert original == ["GetPostPostResponseBody", "GetPostPostUserResponseBody", "GetPostPost_editorUserResponseBody"]
 
 
 def test_rebuilding_a_plan_reserves_no_new_name() -> None:
     app = Litestar([Router("/r", route_handlers=[get_post])])
-    registered = registered_handler(app, "/r/posts")
-    plan_names(registered, app)
-    plan_names(registered.merge(), app)
+    route_handler = registered(app, "/r/posts", "GET")
+    plan_names(route_handler, app)
+    plan_names(route_handler.merge(), app)
 
     with pytest.warns(LitestarWarning):
         app.register(Router("/second", route_handlers=[get_post]))
 
-    second = registered_handler(app, "/second/posts")
+    second = registered(app, "/second/posts", "GET")
     assert second._dto_plan is not None
     assert second._dto_plan.return_ is not None
     assert second._dto_plan.return_.backend.transfer_model_type.__name__ == f"{get_post!s}PostResponseBody"

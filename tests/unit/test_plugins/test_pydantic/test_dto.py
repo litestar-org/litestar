@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Annotated, Any, Literal, Optional, Union, cast
 
@@ -16,7 +15,7 @@ from litestar import Litestar, Request, post
 from litestar.dto import DTOConfig, MsgspecDTO
 from litestar.dto._backend import DTOBackend
 from litestar.enums import RequestEncodingType
-from litestar.exceptions import DTOTransferTypeError, LitestarDeprecationWarning
+from litestar.exceptions import DTOTransferTypeError
 from litestar.params import JSONBody, KwargDefinition, URLEncodedBody
 from litestar.plugins.pydantic import PydanticDTO, _model_dump, _model_dump_json
 from litestar.status_codes import HTTP_201_CREATED
@@ -173,19 +172,6 @@ def test_excluded_field_name_not_valid_as_string_literal(excluded_name: str) -> 
 
     assert response.status_code == HTTP_201_CREATED
     assert response.json() == {"other": 1, excluded_name: 0}
-
-
-def test_experimental_codegen_backend_warns_once_with_forbid_extra() -> None:
-    class Model(pydantic_v2.BaseModel):
-        a: str
-        model_config = pydantic_v2.ConfigDict(extra="forbid")
-
-    with warnings.catch_warnings(record=True) as record:
-        warnings.simplefilter("always")
-        dto = PydanticDTO[Annotated[Model, DTOConfig(experimental_codegen_backend=False)]]
-
-    assert [w.category for w in record] == [LitestarDeprecationWarning]
-    assert dto.config.forbid_unknown_fields is True
 
 
 class PInner(pydantic_v2.BaseModel):

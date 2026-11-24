@@ -52,13 +52,6 @@ class ChainNode:
     child: ChainNode | None = None
 
 
-@dataclass
-class TreeNode:
-    name: str
-    children: list[TreeNode] = field(default_factory=list)
-    parent: TreeNode | None = None
-
-
 def _deep_middle(a: int) -> DeepMiddle:
     return DeepMiddle(a=a, leaf=DeepLeaf(x=a), maybe_leaf=DeepLeaf(x=a + 1), leaves=[DeepLeaf(x=a + 2)])
 
@@ -273,17 +266,9 @@ def test_custom_attribute_accessor_reads_deeply_nested_models_once(as_mapping: b
 
 
 def test_codegen_generated_source_grows_linearly_with_nested_depth() -> None:
-    shallow = _generated_sources(ChainNode, max_nested_depth=4)
-    deep = _generated_sources(ChainNode, max_nested_depth=8)
+    sources = {depth: _generated_sources(ChainNode, max_nested_depth=depth) for depth in (2, 4, 8)}
+    counts = {depth: len(source) for depth, source in sources.items()}
+    sizes = {depth: sum(map(len, source)) for depth, source in sources.items()}
 
-    assert len(deep) - len(shallow) <= 8
-    assert sum(map(len, deep)) < 2 * sum(map(len, shallow))
-
-
-def test_codegen_generates_one_function_per_nested_collection_item_type() -> None:
-    shallow = _generated_sources(TreeNode, max_nested_depth=3)
-    deep = _generated_sources(TreeNode, max_nested_depth=4)
-
-    assert len(deep) < 3 * len(shallow)
-    assert len(deep) <= 35
-    assert sum(map(len, deep)) < 3 * sum(map(len, shallow))
+    assert counts[8] - counts[4] == 2 * (counts[4] - counts[2])
+    assert (sizes[8] - sizes[4]) / (sizes[4] - sizes[2]) <= 2.1

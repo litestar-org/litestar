@@ -17,6 +17,7 @@ from litestar.openapi.spec import Reference
 from litestar.params import JSONBody, URLEncodedBody
 from litestar.testing import RequestFactory, TestClient
 from litestar.typing import FieldDefinition
+from tests.unit.test_dto import registered
 
 
 @dataclass
@@ -37,17 +38,17 @@ def make_handler(dto: Any = DataclassDTO[Model], return_dto: Any = DataclassDTO[
 
 
 @pytest.fixture
-def registered() -> tuple[HTTPRouteHandler, Request[Any, Any, Any]]:
+def handler_and_request() -> tuple[HTTPRouteHandler, Request[Any, Any, Any]]:
     app = Litestar([make_handler()])
-    handler = app.route_handler_method_map["/"]["POST"]
-    return handler, RequestFactory(app=app).post("/", route_handler=handler)  # type: ignore[return-value]
+    handler = registered(app)
+    return handler, RequestFactory(app=app).post("/", route_handler=handler)
 
 
 @pytest.mark.parametrize("name", ["decode_bytes", "decode_builtins", "data_to_encodable_type"])
 def test_instance_method_called_directly_warns(
-    name: str, registered: tuple[HTTPRouteHandler, Request[Any, Any, Any]]
+    name: str, handler_and_request: tuple[HTTPRouteHandler, Request[Any, Any, Any]]
 ) -> None:
-    handler, request = registered
+    handler, request = handler_and_request
     assert handler.data_dto is not None
     assert handler._dto_plan is not None and handler._dto_plan.encode is not None
     with pytest.warns(LitestarDeprecationWarning, match="AbstractDTO.__init__") as init_record:
@@ -126,8 +127,10 @@ def test_direct_create_for_field_definition_keeps_shims_working() -> None:
     assert list(vars(DirectDTO)["_direct_backends"]) == [str(handler.handler_id)]
 
 
-def test_create_openapi_schema_does_not_warn(registered: tuple[HTTPRouteHandler, Request[Any, Any, Any]]) -> None:
-    handler, _ = registered
+def test_create_openapi_schema_does_not_warn(
+    handler_and_request: tuple[HTTPRouteHandler, Request[Any, Any, Any]],
+) -> None:
+    handler, _ = handler_and_request
     assert handler.data_dto is not None
     assert handler.parsed_data_field is not None
 
@@ -144,7 +147,7 @@ def test_create_openapi_schema_does_not_warn(registered: tuple[HTTPRouteHandler,
 
 def test_instance_method_on_registered_handler_without_dto_for_direction_raises() -> None:
     app = Litestar([make_handler(DataclassDTO[Model], None)])
-    handler: HTTPRouteHandler = app.route_handler_method_map["/"]["POST"]  # type: ignore[assignment]
+    handler: HTTPRouteHandler = registered(app)
     request = RequestFactory(app=app).post("/", route_handler=handler)
 
     with pytest.warns(LitestarDeprecationWarning), pytest.raises(DTOFactoryException) as exc_info:
@@ -199,7 +202,7 @@ class OtherDTO(DataclassDTO[Model]):
 
 def test_direct_create_for_field_definition_serves_direction_the_plan_lacks() -> None:
     app = Litestar([make_handler(DataclassDTO[Model], None)])
-    handler: HTTPRouteHandler = app.route_handler_method_map["/"]["POST"]  # type: ignore[assignment]
+    handler: HTTPRouteHandler = registered(app)
     request = RequestFactory(app=app).post("/", route_handler=handler)
     return_field = FieldDefinition.from_annotation(Model)
 

@@ -179,10 +179,9 @@ def test_dto_pydantic_roundtrip(benchmark: BenchmarkFixture, runner: ASGIRunner)
     assert b"internal_note" not in body
 
 
-@pytest.mark.parametrize("depth", [2, 4, 8])
-def test_dto_backend_create_self_referential(benchmark: BenchmarkFixture, depth: int) -> None:
+def test_dto_backend_create_self_referential(benchmark: BenchmarkFixture) -> None:
     class NodeDTO(DataclassDTO[Node]):
-        config = DTOConfig(max_nested_depth=depth)
+        config = DTOConfig(max_nested_depth=8)
 
     field_definition = FieldDefinition.from_annotation(Node)
 

@@ -14,6 +14,7 @@ from litestar.exceptions import LitestarException
 from litestar.handlers import HTTPRouteHandler, WebsocketListener, asgi, websocket_stream
 from litestar.params import JSONBody
 from litestar.types import Empty, Receive, Scope, Send
+from tests.unit.test_dto import registered
 
 Option = Literal["dto", "return_dto"]
 
@@ -44,20 +45,16 @@ def _handler(**options: Any) -> HTTPRouteHandler:
     return handler
 
 
-def _http(app: Litestar, path: str = "/", method: Any = "GET") -> Any:
-    return app.route_handler_method_map[path][method]
-
-
 def _on_handler(option: Option) -> Any:
-    return _http(Litestar([_handler(**_set(option, UserDTO))]))
+    return registered(Litestar([_handler(**_set(option, UserDTO))]), method="GET")
 
 
 def _on_app(option: Option) -> Any:
-    return _http(Litestar([_handler()], **_set(option, UserDTO)))
+    return registered(Litestar([_handler()], **_set(option, UserDTO)), method="GET")
 
 
 def _on_router(option: Option) -> Any:
-    return _http(Litestar([Router("/", route_handlers=[_handler()], **_set(option, UserDTO))]))
+    return registered(Litestar([Router("/", route_handlers=[_handler()], **_set(option, UserDTO))]), method="GET")
 
 
 def _controller(option: Option, value: Any, **method_options: Any) -> type[Controller]:
@@ -73,24 +70,24 @@ def _controller(option: Option, value: Any, **method_options: Any) -> type[Contr
 
 
 def _on_controller(option: Option) -> Any:
-    return _http(Litestar([_controller(option, UserDTO)]))
+    return registered(Litestar([_controller(option, UserDTO)]), method="GET")
 
 
 def _controller_and_method(option: Option) -> Any:
-    return _http(Litestar([_controller(option, UserDTO, **_set(option, UserReadDTO))]))
+    return registered(Litestar([_controller(option, UserDTO, **_set(option, UserReadDTO))]), method="GET")
 
 
 def _controller_and_method_none(option: Option) -> Any:
-    return _http(Litestar([_controller(option, UserDTO, **_set(option, None))]))
+    return registered(Litestar([_controller(option, UserDTO, **_set(option, None))]), method="GET")
 
 
 def _router_none_in_app(option: Option) -> Any:
     router = Router("/", route_handlers=[_handler()], **_set(option, None))
-    return _http(Litestar([router], **_set(option, UserDTO)))
+    return registered(Litestar([router], **_set(option, UserDTO)), method="GET")
 
 
 def _nothing(option: Option) -> Any:
-    return _http(Litestar([_handler()]))
+    return registered(Litestar([_handler()]), method="GET")
 
 
 def _listener_class(option: Option) -> Any:
@@ -101,7 +98,7 @@ def _listener_class(option: Option) -> Any:
             return data
 
     setattr(Listener, option, UserDTO)
-    return Litestar([Listener]).route_handler_method_map["/ws"]["websocket"]
+    return registered(Litestar([Listener]), "/ws", "websocket")
 
 
 def _websocket_stream(option: Option) -> Any:
@@ -109,7 +106,7 @@ def _websocket_stream(option: Option) -> Any:
     async def stream() -> AsyncGenerator[User, None]:
         yield User(id=1, name="a")
 
-    return Litestar([stream]).route_handler_method_map["/ws"]["websocket"]
+    return registered(Litestar([stream]), "/ws", "websocket")
 
 
 def _asgi_under_router(option: Option) -> Any:
@@ -118,7 +115,7 @@ def _asgi_under_router(option: Option) -> Any:
         return None
 
     app = Litestar([Router("/", route_handlers=[asgi_app], **_set(option, UserDTO))])
-    return app.route_handler_method_map["/asgi"]["asgi"]
+    return registered(app, "/asgi", "asgi")
 
 
 @pytest.mark.parametrize("option", ["dto", "return_dto"])
@@ -150,13 +147,13 @@ def test_handler_registered_on_two_routers_has_independent_inherited_values(opti
 
     app = Litestar([first, second])
 
-    assert declared(_http(app, "/first"), option) == (UserDTO, False)
-    assert declared(_http(app, "/second"), option) == (UserReadDTO, False)
+    assert declared(registered(app, "/first", "GET"), option) == (UserDTO, False)
+    assert declared(registered(app, "/second", "GET"), option) == (UserReadDTO, False)
 
 
 def test_generated_options_handler_inherits_app_dtos_as_layer() -> None:
     app = Litestar([_handler()], dto=UserDTO, return_dto=UserReadDTO)
-    options_handler = _http(app, method="OPTIONS")
+    options_handler = registered(app, "/", "OPTIONS")
 
     assert declared(options_handler, "dto") == (UserDTO, False)
     assert declared(options_handler, "return_dto") == (UserReadDTO, False)
@@ -172,7 +169,7 @@ def test_merge_twice_keeps_closest_layer(option: Option) -> None:
     assert declared(merged, option) == (UserDTO, False)
 
 
-@pytest.mark.parametrize("own", [Empty, UserReadDTO])
+@pytest.mark.parametrize("own", [Empty, UserReadDTO], ids=["inherited-only", "own-and-inherited"])
 @pytest.mark.parametrize("option", ["dto", "return_dto"])
 def test_with_changes_preserves_declarations(option: Option, own: Any) -> None:
     handler = _handler() if own is Empty else _handler(**_set(option, own))
@@ -186,7 +183,7 @@ def test_with_changes_preserves_declarations(option: Option, own: Any) -> None:
 
 def test_app_register_keeps_declarations_of_registered_handlers() -> None:
     app = Litestar([_handler()], dto=UserDTO)
-    registered = _http(app)
+    route_handler = registered(app, "/", "GET")
 
     @post("/other", dto=UserReadDTO)
     async def other(data: JSONBody[User]) -> User:
@@ -194,8 +191,8 @@ def test_app_register_keeps_declarations_of_registered_handlers() -> None:
 
     app.register(other)
 
-    assert declared(registered, "dto") == (UserDTO, False)
-    assert declared(_http(app, "/other", "POST"), "dto") == (UserReadDTO, True)
+    assert declared(route_handler, "dto") == (UserDTO, False)
+    assert declared(registered(app, "/other", "POST"), "dto") == (UserReadDTO, True)
 
 
 def test_user_held_handler_is_not_mutated() -> None:
@@ -212,7 +209,7 @@ def test_user_held_handler_is_not_mutated() -> None:
 
 def test_inherited_keywords_do_not_leak_into_opt() -> None:
     app = Litestar([Router("/", route_handlers=[_handler()], dto=UserDTO, return_dto=UserReadDTO)])
-    handler = _http(app)
+    handler = registered(app, "/", "GET")
 
     assert "inherited_dto" not in handler.opt
     assert "inherited_return_dto" not in handler.opt
@@ -242,4 +239,4 @@ def test_handler_subclass_with_strict_signature_keeps_layer_dto() -> None:
 
     app = Litestar([Router("/", route_handlers=[route_handler], dto=UserDTO)])
 
-    assert declared(_http(app), "dto") == (UserDTO, False)
+    assert declared(registered(app, "/", "GET"), "dto") == (UserDTO, False)

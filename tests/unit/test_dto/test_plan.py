@@ -36,8 +36,9 @@ from litestar.params import BodyKwarg, JSONBody, MultipartBody, URLEncodedBody
 from litestar.plugins import SerializationPlugin
 from litestar.serialization import encode_json
 from litestar.testing import RequestFactory, TestClient, create_test_client
-from litestar.types import Empty, Method
+from litestar.types import Empty
 from litestar.typing import FieldDefinition
+from tests.unit.test_dto import registered
 
 T = TypeVar("T")
 
@@ -108,14 +109,6 @@ def make_rule_handler(dto: Any, return_dto: Any, body: Any, returns: Any) -> HTT
 
         fn = with_body
     return post("/", dto=dto, return_dto=return_dto, signature_namespace=namespace)(fn)
-
-
-def registered(app: Litestar, path: str = "/", method: Method = "POST") -> Any:
-    return app.route_handler_method_map[path][method]
-
-
-def websocket_handler(app: Litestar, path: str) -> Any:
-    return app.route_handler_method_map[path]["websocket"]
 
 
 def test_create_backend_data_direction() -> None:
@@ -358,7 +351,7 @@ def test_listener_data_field_has_no_body_marker() -> None:
         return data
 
     with create_test_client([handler]) as client:
-        listener = websocket_handler(client.app, "/ws")
+        listener = registered(client.app, "/ws", "websocket")
         assert isinstance(listener, WebsocketListenerRouteHandler)
         assert listener.parsed_data_field is not None
         assert not isinstance(listener.parsed_data_field.kwarg_definition, BodyKwarg)
@@ -444,7 +437,7 @@ def test_create_openapi_schema_for_listener_data_field() -> None:
     async def handler(data: Item) -> None:
         return None
 
-    listener = websocket_handler(Litestar([handler]), "/ws")
+    listener = registered(Litestar([handler]), "/ws", "websocket")
 
     assert openapi_ref(ItemDTO, listener.parsed_data_field, listener.handler_id).endswith("ItemRequestBody")
 
@@ -454,7 +447,7 @@ def test_create_openapi_schema_for_copy_of_listener_data_field_is_return_directi
     async def handler(data: Item) -> Item:
         return data
 
-    listener = websocket_handler(Litestar([handler]), "/ws")
+    listener = registered(Litestar([handler]), "/ws", "websocket")
     copied_field = dataclasses.replace(listener.parsed_data_field)
 
     assert openapi_ref(ItemDTO, copied_field, listener.handler_id).endswith("ItemResponseBody")
