@@ -6,6 +6,13 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: Faster startup and responses
+        :type: misc
+        :pr: 5262
+
+        Applications with many DTO handlers start faster and use less memory, and DTO handlers decode
+        request bodies and encode responses faster, most of all lists of flat models.
+
     .. change:: DTO: Unique names for nested models of one type under several fields
         :type: bugfix
         :breaking:
