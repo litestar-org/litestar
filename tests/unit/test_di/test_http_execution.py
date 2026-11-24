@@ -12,9 +12,9 @@ from litestar.datastructures import UploadFile
 from litestar.di import DIContext, NamedDependency, PreparedDIContext, Provide
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, DTOData
 from litestar.exceptions import (
+    DTONotApplicableError,
     HTTPException,
     ImproperlyConfiguredException,
-    InvalidAnnotationException,
     ValidationException,
 )
 from litestar.params import Body, FromQuery, JSONBody, MultipartBody, QueryParameter
@@ -408,7 +408,7 @@ def test_dto_not_supporting_body_declared_only_by_dependency_raises() -> None:
     async def handler(value: NamedDependency[int]) -> int:
         return value
 
-    with pytest.raises(InvalidAnnotationException, match="DTO narrowed with"):
+    with pytest.raises(DTONotApplicableError, match="cannot decode its request body"):
         Litestar([handler], openapi_config=None)
 
 

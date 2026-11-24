@@ -9,6 +9,7 @@ import pytest
 
 from litestar import Litestar, Response, get, patch, post
 from litestar.dto import DataclassDTO, DTOConfig, DTOData, DTOField, Mark
+from litestar.exceptions import DTONotApplicableError
 from litestar.params import JSONBody
 from litestar.testing import TestClient
 
@@ -257,7 +258,7 @@ def test_generic_wrapper_encoding_replaces_the_wrapped_attribute(distinct: Disti
     assert msgspec.to_builtins(replaced) == {"name": "a"}
 
 
-def test_generic_wrapper_as_data_decodes_the_inner_model(distinct: Distinct) -> None:
+def test_generic_wrapper_as_data_is_not_applicable(distinct: Distinct) -> None:
     dto = DataclassDTO[Annotated[User, DTOConfig(exclude={"age"})]]
 
     @post("/", dto=dto, return_dto=None, sync_to_thread=False)
@@ -265,12 +266,8 @@ def test_generic_wrapper_as_data_decodes_the_inner_model(distinct: Distinct) -> 
     def create(data: JSONBody[Envelope[User]]) -> str:
         return type(data).__name__
 
-    with client(create) as test_client:
-        wrapped = test_client.post("/", json={"data": {"name": "a"}, "count": 1})
-        bare = test_client.post("/", json={"name": "a"})
-
-    assert wrapped.status_code == 400
-    assert (bare.status_code, bare.text) == (201, "User")
+    with pytest.raises(DTONotApplicableError, match="A generic wrapper is supported for return values only"):
+        Litestar([create])
 
 
 def test_response_wrapper_keeps_status_and_headers(distinct: Distinct) -> None:
