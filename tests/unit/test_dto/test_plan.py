@@ -13,6 +13,7 @@ from litestar.dto._backend import DTOBackend
 from litestar.dto._plan import build_dto_plan, build_schema_annotation
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import (
+    DTOFactoryException,
     LitestarException,
     LitestarWarning,
 )
@@ -158,6 +159,27 @@ def test_build_schema_annotation(annotation: Any, expected: Callable[[DTOBackend
     backend = create_backend_for(dto, field_definition, is_data_field=False, handler_id="h")
 
     assert build_schema_annotation(dto, backend, field_definition) == expected(backend)
+
+
+@pytest.mark.parametrize(
+    ("is_data_field", "use", "created_for"),
+    [
+        pytest.param(True, lambda backend: backend.encode_data(Model(a=1, b="b")), "request", id="encode-with-data"),
+        pytest.param(
+            False, lambda backend: backend.transfer_data_from_builtins({"a": 1}), "return", id="decode-with-return"
+        ),
+    ],
+)
+def test_backend_used_in_the_other_direction_raises(
+    is_data_field: bool, use: Callable[[DTOBackend], Any], created_for: str
+) -> None:
+    field_definition = FieldDefinition.from_kwarg(
+        annotation=Model, name="data", kwarg_definition=BodyKwarg() if is_data_field else None
+    )
+    backend = create_backend_for(DataclassDTO[Model], field_definition, is_data_field=is_data_field, handler_id="h")
+
+    with pytest.raises(DTOFactoryException, match=rf"^This DTO backend was created for {created_for} data "):
+        use(backend)
 
 
 def test_build_schema_annotation_of_response_ignores_the_wrapper() -> None:
