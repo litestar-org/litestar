@@ -339,6 +339,8 @@ Whether a DTO is used now follows :ref:`usage/dto/0-basic-use:When a DTO applies
   :class:`~litestar.plugins.pydantic.PydanticDTO` is covered by the startup check.
 - ``JSONBody[Wrapper[User]]`` and form bodies annotated with a collection, such as
   ``MultipartBody[list[User]]``, are no longer handled by a DTO and raise.
+- An optional union of several types, such as ``User | int | None``, is no longer handled through
+  its first member that is not ``None`` and raises.
 - The return DTO now applies to ``-> Optional[Wrapper[User]]`` and ``-> Optional[Response[User]]``;
   declare ``return_dto=None`` to keep the previous output.
 - ``None`` passes through a DTO for an optional annotation, and a websocket listener with a return

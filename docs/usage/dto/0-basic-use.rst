@@ -80,7 +80,8 @@ When a DTO applies
 A DTO narrowed with ``User`` handles ``User`` and collections or mappings of ``User`` such as ``list[User]``,
 ``dict[str, User]`` or ``tuple[User, ...]``, optional or not. For request data it also handles ``DTOData[User]``; for a
 return value, one generic wrapper around these, such as ``Response[User]`` or a generic dataclass holding the data in
-an attribute typed with its type variable. In an optional union, only the first member that is not ``None`` counts.
+an attribute typed with its type variable. An optional annotation is handled through its only member that is not
+``None``; a union of several types, such as ``User | int | None``, is not handled.
 
 When a DTO cannot handle the annotation, the outcome depends on where it is declared:
 

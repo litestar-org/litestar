@@ -156,8 +156,9 @@ NOT_APPLICABLE: Any = object()
         pytest.param(tuple[User, ...], PLAIN, PLAIN, id="variadic-tuple"),
         pytest.param(Optional[User], OPTIONAL, OPTIONAL, id="optional"),
         pytest.param(Optional[list[User]], OPTIONAL, OPTIONAL, id="optional-list"),
-        pytest.param(User | Other | None, OPTIONAL, OPTIONAL, id="optional-union-model-first"),
+        pytest.param(User | Other | None, None, None, id="optional-union-model-first"),
         pytest.param(Other | User | None, None, None, id="optional-union-other-first"),
+        pytest.param(list[User | int | None], None, None, id="list-of-optional-union"),
         pytest.param(DTOData[User], PLAIN, PLAIN, id="dto-data"),
         pytest.param(Optional[DTOData[User]], OPTIONAL, OPTIONAL, id="optional-dto-data"),
         pytest.param(Wrapper[User], None, ("data", False, False), id="wrapper"),
@@ -611,25 +612,24 @@ def test_optional_generic_wrapper_return_is_encoded(returns: Any, respond: Calla
         assert client.get("/").json() == expected
 
 
+@pytest.mark.parametrize("option", ["dto", "return_dto"])
 @pytest.mark.parametrize(
-    ("placement", "returns", "expected"),
+    "annotation",
     [
-        pytest.param("app", User | Other | None, USER_ENCODED, id="model-first-layer"),
-        pytest.param("handler", User | Other | None, USER_ENCODED, id="model-first-handler"),
-        pytest.param("app", Other | User | None, DTONotApplicableError, id="other-first-layer"),
+        pytest.param(User | Other | None, id="model-first"),
+        pytest.param(int | User | None, id="model-second"),
+        pytest.param(User | int | None, id="model-and-builtin"),
+        pytest.param(list[User | Other | None], id="list-of-optional-union"),
     ],
 )
-def test_optional_union_resolves_to_first_member(placement: Placement, returns: Any, expected: Any) -> None:
-    def build() -> Litestar:
-        return build_app(placement, method="GET", returns=returns, respond=respond_user, return_dto=UserDTO)
+def test_optional_union_of_several_types_is_not_applicable(annotation: Any, option: str) -> None:
+    with pytest.raises(DTONotApplicableError) as exc_info:
+        if option == "dto":
+            build_app("app", body=JSON_BODY[annotation], dto=UserDTO, handler_options={"return_dto": None})
+        else:
+            build_app("app", method="GET", returns=annotation, return_dto=UserDTO)
 
-    if expected is DTONotApplicableError:
-        with pytest.raises(DTONotApplicableError):
-            build()
-        return
-
-    with TestClient(build()) as client:
-        assert client.get("/").json() == expected
+    assert (exc_info.value.option, exc_info.value.annotation) == (option, annotation)
 
 
 def test_generic_wrapper_is_not_a_data_shape() -> None:

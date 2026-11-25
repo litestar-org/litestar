@@ -397,9 +397,8 @@ class AbstractDTO(Generic[T]):
             A :class:`FieldDefinition <.typing.FieldDefinition>` that represents the data model type.
         """
         if field_definition.is_optional:
-            return cls.resolve_model_type(
-                next(t for t in field_definition.inner_types if not t.is_subclass_of(NoneType))
-            )
+            non_none = [t for t in field_definition.inner_types if not t.is_subclass_of(NoneType)]
+            return cls.resolve_model_type(non_none[0]) if len(non_none) == 1 else field_definition
 
         if not field_definition.inner_types:
             return field_definition

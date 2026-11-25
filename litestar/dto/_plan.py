@@ -132,7 +132,8 @@ def _without_optional(field_definition: FieldDefinition | None) -> FieldDefiniti
     if annotation is Empty or annotation is None or annotation is NoneType:
         return None
     if field_definition.is_optional:
-        return next(inner for inner in field_definition.inner_types if not inner.is_subclass_of(NoneType))
+        non_none = [inner for inner in field_definition.inner_types if not inner.is_subclass_of(NoneType)]
+        return non_none[0] if len(non_none) == 1 else field_definition
     return field_definition
 
 
@@ -156,7 +157,7 @@ def resolve_dto_target(
     """Return what ``dto`` applies to in ``field_definition``, the data a handler receives if ``is_data_field``,
     otherwise the data it returns, or ``None`` if it cannot be applied to it.
 
-    The DTO applies to an annotation without ``None``, or to the first member of an optional annotation that is not
+    The DTO applies to an annotation without ``None``, or to the only member of an optional annotation that is not
     ``None``, whose model type, unwrapped from ``DTOData``, a collection, a mapping value or a variadic tuple, is a
     subclass of the DTO's model type, except for a collection or mapping on a form body. In the return direction
     the DTO must also support that annotation, and it applies to a model wrapped in a generic type.

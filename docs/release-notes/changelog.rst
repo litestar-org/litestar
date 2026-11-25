@@ -73,6 +73,15 @@
         :exc:`~litestar.exceptions.DTONotApplicableError` at startup instead of being skipped. Declare
         ``return_dto=None`` on the handler to opt out.
 
+    .. change:: DTO: An optional union of several types is not handled
+        :type: feature
+        :breaking:
+        :pr: 5259
+
+        A DTO no longer handles an optional union of several types, such as ``User | int | None``,
+        through its first member that is not ``None``; such an annotation now fails at startup with
+        ``DTONotApplicableError``.
+
     .. change:: DTO: Pass ``None`` through an optional annotation
         :type: bugfix
         :pr: 5259
