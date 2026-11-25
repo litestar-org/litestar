@@ -1,4 +1,5 @@
 import dataclasses
+import sys
 import warnings
 
 import pytest
@@ -39,3 +40,17 @@ def test_experimental_codegen_backend_is_deprecated_and_ignored(value: bool) -> 
     assert config.experimental_codegen_backend is None
     assert replaced == config == DTOConfig(exclude={"a"})
     assert all(round_trip.exclude == {"a"} for round_trip in round_trips)
+
+
+@dataclasses.dataclass(frozen=True)
+class PostInitConfig(DTOConfig):
+    def __post_init__(self) -> None:
+        super().__post_init__()
+
+
+def test_experimental_codegen_backend_warning_names_the_caller_of_a_subclass() -> None:
+    with pytest.warns(LitestarDeprecationWarning) as record:
+        line = sys._getframe().f_lineno + 1
+        PostInitConfig(experimental_codegen_backend=True)
+
+    assert [(warning.filename, warning.lineno) for warning in record] == [(__file__, line)]

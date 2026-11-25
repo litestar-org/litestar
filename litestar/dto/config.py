@@ -73,10 +73,12 @@ class DTOConfig:
                 "'include' and 'exclude' are mutually exclusive options, please use one of them"
             )
         if self.experimental_codegen_backend is not None:
-            stacklevel = 4
-            caller = sys._getframe(2)
-            while caller.f_back is not None and caller.f_code.co_filename == dataclasses.__file__:
-                caller = caller.f_back
+            stacklevel = 2
+            frame = sys._getframe()
+            while frame.f_back is not None and (
+                frame.f_locals.get("self") is self or frame.f_code.co_filename == dataclasses.__file__
+            ):
+                frame = frame.f_back
                 stacklevel += 1
             warn_deprecation(
                 version="3.0",
