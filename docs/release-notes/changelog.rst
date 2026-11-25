@@ -49,9 +49,9 @@
         ``MissingDTOError`` subclasses :exc:`~litestar.exceptions.DTOFactoryException` and
         :exc:`~litestar.exceptions.ImproperlyConfiguredException`, the exceptions raised before. A data
         DTO over a type msgspec rejects raises ``DTOTransferTypeError`` at startup. A return DTO over such
-        a type still starts and encodes; generating the OpenAPI schema raises ``DTOTransferTypeError``
-        instead of a ``TypeError``. Errors and ``litestar routes`` name a websocket listener by its
-        function or class instead of ``ListenerHandler``. See
+        a type still starts and encodes; if the OpenAPI schema cannot be generated for it, that raises
+        ``DTOTransferTypeError`` instead of a ``TypeError``. Errors and ``litestar routes`` name a
+        websocket listener by its function or class instead of ``ListenerHandler``. See
         :ref:`release-notes/whats-new-3:DTO applicability and startup errors`.
 
     .. change:: DTO: Explicit applicability rules
@@ -83,6 +83,16 @@
         several types holding its model, such as ``User | int | None``, through its first member: it
         fails at startup with ``DTONotApplicableError``. A return value annotated with a union of generic
         wrappers holding the model in one attribute, such as ``Page[User] | Cursor[User]``, is handled.
+
+    .. change:: DTO: The schema of optional and nested generic wrappers shows the filtered model
+        :type: bugfix
+        :breaking:
+        :pr: 5259
+
+        The OpenAPI schema of a return value annotated ``Optional[Wrapper[User]]``,
+        ``Optional[Response[User]]``, ``Wrapper[list[User]]``, ``Wrapper[Optional[User]]`` or
+        ``Wrapper[dict[str, User]]`` now shows the model filtered by the DTO, as the response does. This
+        changes these OpenAPI component names.
 
     .. change:: DTO: Pass ``None`` through an optional annotation
         :type: bugfix
