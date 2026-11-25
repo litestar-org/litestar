@@ -79,10 +79,10 @@
         :breaking:
         :pr: 5259
 
-        A DTO no longer handles an optional union of several types, such as ``User | int | None``,
-        through its first member; such an annotation fails at startup with ``DTONotApplicableError``.
-        A return value annotated with a union of generic wrappers holding the model in one attribute,
-        such as ``CursorPagination[User] | OffsetPagination[User]``, is handled.
+        A DTO from any source, a serialization plugin included, no longer handles an optional union of
+        several types holding its model, such as ``User | int | None``, through its first member: it
+        fails at startup with ``DTONotApplicableError``. A return value annotated with a union of generic
+        wrappers holding the model in one attribute, such as ``Page[User] | Cursor[User]``, is handled.
 
     .. change:: DTO: Pass ``None`` through an optional annotation
         :type: bugfix

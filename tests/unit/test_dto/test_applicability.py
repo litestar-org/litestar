@@ -440,6 +440,16 @@ RETURN_ROWS = [
         TUPLE_FULL,
         id="plugin-dto-skipped-for-return-tuple",
     ),
+    pytest.param(
+        "app",
+        {},
+        {},
+        Union[User, Other],
+        respond_user,
+        (ModelPlugin(User, UserDTO),),
+        USER_FULL,
+        id="plugin-dto-skipped-for-return-union-without-none",
+    ),
     pytest.param("app", {}, {}, User, respond_user, (), USER_FULL, id="no-return-dto"),
 ]
 
@@ -661,24 +671,40 @@ def test_optional_generic_wrapper_schema_omits_the_excluded_field() -> None:
     assert all("secret" not in component.get("properties", {}) for component in components.values())
 
 
-@pytest.mark.parametrize("option", ["dto", "return_dto"])
+OPTIONAL_UNIONS = {
+    "model-first": User | Other | None,
+    "model-second": int | User | None,
+    "model-and-builtin": User | int | None,
+    "list-of-optional-union": list[User | Other | None],
+}
+
+
 @pytest.mark.parametrize(
-    "annotation",
+    ("annotation", "option", "source"),
     [
-        pytest.param(User | Other | None, id="model-first"),
-        pytest.param(int | User | None, id="model-second"),
-        pytest.param(User | int | None, id="model-and-builtin"),
-        pytest.param(list[User | Other | None], id="list-of-optional-union"),
+        *(
+            pytest.param(annotation, option, source, id=f"{source}-{option}-{name}")
+            for name, annotation in OPTIONAL_UNIONS.items()
+            for option in ("dto", "return_dto")
+            for source in ("layer", "plugin")
+        ),
+        pytest.param(list[User] | int | None, "dto", "plugin", id="plugin-dto-list-member"),
+        pytest.param(list[User] | int | None, "return_dto", "plugin", id="plugin-return_dto-list-member"),
+        pytest.param(Wrapper[User] | int | None, "return_dto", "plugin", id="plugin-return_dto-wrapper-member"),
     ],
 )
-def test_optional_union_of_several_types_is_not_applicable(annotation: Any, option: str) -> None:
+def test_optional_union_of_several_types_is_not_applicable(annotation: Any, option: str, source: str) -> None:
+    options: dict[str, Any] = {option: UserDTO} if source == "layer" else {"plugins": (ModelPlugin(User, UserDTO),)}
     with pytest.raises(DTONotApplicableError) as exc_info:
         if option == "dto":
-            build_app("app", body=JSON_BODY[annotation], dto=UserDTO, handler_options={"return_dto": None})
+            build_app("app", body=JSON_BODY[annotation], handler_options={"return_dto": None}, **options)
         else:
-            build_app("app", method="GET", returns=annotation, return_dto=UserDTO)
+            build_app("app", method="GET", returns=annotation, **options)
 
     assert (exc_info.value.option, exc_info.value.annotation) == (option, annotation)
+    if source == "plugin":
+        assert "is created by a serialization plugin" in str(exc_info.value)
+        assert str(exc_info.value).endswith(f"Declare '{option}=None' on the handler to opt out.")
 
 
 def test_generic_wrapper_is_not_a_data_shape() -> None:

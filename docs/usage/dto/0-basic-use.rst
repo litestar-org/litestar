@@ -82,8 +82,7 @@ A DTO narrowed with ``User`` handles ``User`` and collections or mappings of ``U
 return value, one generic wrapper around these, such as ``Response[User]`` or a generic dataclass holding the data in
 an attribute typed with its type variable. An optional annotation is handled through its only member that is not
 ``None``; a union of several types, such as ``User | int | None``, is not handled, except for a return value that is a
-union of generic wrappers holding the model in the same attribute, such as
-``CursorPagination[User] | OffsetPagination[User]``.
+union of generic wrappers holding the model in the same attribute, such as ``Page[User] | Cursor[User]``.
 
 When a DTO cannot handle the annotation, the outcome depends on where it is declared:
 
@@ -103,7 +102,8 @@ When a DTO cannot handle the annotation, the outcome depends on where it is decl
         ``tuple[User, int]`` or ``Union[User, Other]``; skipped otherwise
     * - Implicit: a DTO created by a serialization plugin
       - Used
-      - Skipped
+      - Error when the application is created for an optional union of several types holding the DTO's model,
+        such as ``User | int | None``; skipped otherwise
 
 The decorator of a controller method declares on the handler, and the controller's class attributes on a layer. For a
 :class:`~litestar.handlers.WebsocketListener` class, attributes defined in the class body are declared on the handler,

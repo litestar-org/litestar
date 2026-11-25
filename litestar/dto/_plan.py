@@ -369,6 +369,10 @@ def _plugin_dto(
         plugin_dto = plugin.create_dto_for_type(field_definition)
         if (target := resolve_dto_target(plugin_dto, field_definition, is_data_field=is_data_field)) is not None:
             return plugin_dto, target
+        if _optional_union_holds_model(field_definition, plugin_dto):
+            raise _not_applicable(
+                plugin_dto, field_definition, is_data_field=is_data_field, declared_on_handler=False, from_plugin=True
+            )
     return None
 
 
@@ -447,6 +451,16 @@ def _mentions_model(field_definition: FieldDefinition, dto: "type[AbstractDTO[An
     )
 
 
+def _optional_union_holds_model(field_definition: FieldDefinition, dto: "type[AbstractDTO[Any]]") -> bool:
+    def predicate(field: FieldDefinition) -> bool:
+        if not field.is_optional:
+            return False
+        members = [inner for inner in field.inner_types if not inner.is_subclass_of(NoneType)]
+        return len(members) > 1 and _mentions_model(field, dto)
+
+    return field_definition.match_predicate_recursively(predicate)
+
+
 def _not_applicable(
     dto: "type[AbstractDTO[Any]]",
     field_definition: FieldDefinition,
@@ -454,11 +468,16 @@ def _not_applicable(
     is_data_field: bool,
     declared_on_handler: bool,
     reused: bool = False,
+    from_plugin: bool = False,
 ) -> DTONotApplicableError:
     option: Literal["dto", "return_dto"] = "dto" if is_data_field or reused else "return_dto"
     name = dto_name(dto)
     annotation = _format_annotation(field_definition.annotation)
-    declared = f"'{option}={name}' is declared on {'the handler' if declared_on_handler else 'a layer'}"
+    declared = (
+        f"{name} is created by a serialization plugin"
+        if from_plugin
+        else f"'{option}={name}' is declared on {'the handler' if declared_on_handler else 'a layer'}"
+    )
     if not is_data_field and _match_target(dto, field_definition, is_data_field=False) is not None:
         message = (
             f"{declared}, but {name}.is_supported_model_type_field() declines its return value annotated "
