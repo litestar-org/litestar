@@ -33,6 +33,8 @@ from tests.unit.test_dto import registered
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
 
+JSON_BODY: Any = JSONBody
+
 
 @dataclass
 class User:
@@ -210,21 +212,22 @@ def test_rejected_transfer_type_raises_dto_transfer_type_error(dto: Any, is_data
 
         async def create(data: Any) -> None: ...
 
-        create.__annotations__["data"] = JSONBody[dto.model_type]
+        create.__annotations__["data"] = JSON_BODY[dto.model_type]
         handler = post("/", dto=dto, return_dto=None)(create)
     else:
 
-        async def create() -> Any: ...
+        async def read() -> Any: ...
 
-        create.__annotations__["return"] = dto.model_type
-        handler = get("/", return_dto=dto)(create)
+        read.__annotations__["return"] = dto.model_type
+        handler = get("/", return_dto=dto)(read)
 
-    with pytest.raises(DTOTransferTypeError, match=rf"^\[paths='/', handler='create'\] {match}") as exc_info:
+    name = handler.handler_name
+    with pytest.raises(DTOTransferTypeError, match=rf"^\[paths='/', handler='{name}'\] {match}") as exc_info:
         Litestar([handler], openapi_config=None)
 
     assert isinstance(exc_info.value.__cause__, TypeError)
     assert "(handler " not in str(exc_info.value)
-    assert str(exc_info.value).count("create") == 1
+    assert str(exc_info.value).count(f"'{name}'") == 1
 
 
 @dataclass
@@ -284,7 +287,7 @@ def test_startup_error_names_the_rejected_field_and_a_hint(
 ) -> None:
     async def create(data: Any) -> None: ...
 
-    create.__annotations__ = {"data": JSONBody[model], "return": None}
+    create.__annotations__ = {"data": JSON_BODY[model], "return": None}
     handler = post("/", dto=DataclassDTO[Annotated[model, DTOConfig(partial=partial)]], return_dto=None)(create)
 
     with pytest.raises(DTOTransferTypeError) as exc_info:
@@ -292,8 +295,8 @@ def test_startup_error_names_the_rejected_field_and_a_hint(
 
     assert re.fullmatch(
         re.escape(
-            f"[paths='/', handler='create'] msgspec cannot decode the transfer model of '{__name__}.{model.__name__}': "
-            f"field '{field_name}' of '{__name__}.{owner}', annotated {annotation!r}, is rejected by msgspec ("
+            f"[paths='/', handler='create'] msgspec cannot decode the transfer model of '{model.__module__}.{model.__name__}': "
+            f"field '{field_name}' of '{model.__module__}.{owner}', annotated {annotation!r}, is rejected by msgspec ("
         )
         + r"[^;]+"
         + re.escape(f"); {hint}"),

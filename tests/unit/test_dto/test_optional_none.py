@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 import functools
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
@@ -47,7 +49,8 @@ def _pydantic_person() -> tuple[Any, Any]:
     from litestar.plugins.pydantic import PydanticDTO
 
     person = pydantic.create_model("PYPerson", id=(int, ...), name=(str, ...), secret=(str, "s"))
-    return person, PydanticDTO[Annotated[person, EXCLUDE]]
+    pydantic_dto: Any = PydanticDTO
+    return person, pydantic_dto[Annotated[person, EXCLUDE]]
 
 
 @pytest.fixture(params=["dc", "ms", "py"])
@@ -79,11 +82,11 @@ def _twins(returns: Any, value: Callable[[], Any], dto: type[AbstractDTO[Any]]) 
     ("annotation", "value"),
     [
         pytest.param(lambda m: Optional[m], lambda: None, id="optional"),
-        pytest.param(lambda m: Optional[list[m]], lambda: None, id="optional-collection"),
-        pytest.param(lambda m: Response[Optional[m]], lambda: Response(None), id="response-optional"),
-        pytest.param(lambda m: Optional[Wrapper[m]], lambda: None, id="optional-wrapper"),
-        pytest.param(lambda m: Optional[Response[Optional[m]]], lambda: None, id="optional-response"),
-        pytest.param(lambda m: Optional[Response[Optional[m]]], lambda: Response(None), id="optional-response-none"),
+        pytest.param(lambda m: Optional[list[m]], lambda: None, id="optional-collection"),  # type: ignore[valid-type]
+        pytest.param(lambda m: Response[Optional[m]], lambda: Response(None), id="response-optional"),  # type: ignore[valid-type]
+        pytest.param(lambda m: Optional[Wrapper[m]], lambda: None, id="optional-wrapper"),  # type: ignore[valid-type]
+        pytest.param(lambda m: Optional[Response[Optional[m]]], lambda: None, id="optional-response"),  # type: ignore[valid-type]
+        pytest.param(lambda m: Optional[Response[Optional[m]]], lambda: Response(None), id="optional-response-none"),  # type: ignore[valid-type]
     ],
 )
 def test_none_return_matches_handler_without_dto(

@@ -23,6 +23,7 @@ T = TypeVar("T")
 
 Placement = Literal["handler", "controller", "router", "app"]
 NO_BODY: Any = object()
+JSON_BODY: Any = JSONBody
 
 
 @dataclass
@@ -672,7 +673,7 @@ def test_layer_dto_raises_for_annotation_containing_its_model(
 ) -> None:
     with pytest.raises(DTONotApplicableError) as exc_info:
         if option == "dto":
-            build_app(placement, body=JSONBody[annotation], dto=UserDTO, handler_options={"return_dto": None})
+            build_app(placement, body=JSON_BODY[annotation], dto=UserDTO, handler_options={"return_dto": None})
         else:
             build_app(placement, method="GET", returns=annotation, return_dto=UserDTO)
 
