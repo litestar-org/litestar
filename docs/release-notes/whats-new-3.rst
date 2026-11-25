@@ -234,13 +234,13 @@ After:
         id: Annotated[int, DTOField(mark="read-only")]
 
 
-Removal of the non-codegen DTO backend
---------------------------------------
+The codegen DTO backend is the only DTO backend
+-----------------------------------------------
 
-The DTO backend selected with ``DTOConfig(experimental_codegen_backend=False)`` is removed; transfer
-functions are always generated, the default since ``2.8.0``. The option is deprecated, has no
-effect, warns and will be removed in 4.0; remove it. Unlike the removed backend, a field typed as a
-union of a nested model and more than one collection type, such as
+DTOs always transfer data through generated transfer functions, the default since ``2.8.0``. The
+backend selected with ``DTOConfig(experimental_codegen_backend=False)`` is removed. The option is
+deprecated, has no effect, warns and will be removed in 4.0; remove it. Unlike the removed
+backend, a field typed as a union of a nested model and more than one collection type, such as
 ``Inner | list[str] | dict[str, str]``, raises a :exc:`RuntimeError` at startup, and at a
 ``max_nested_depth`` of 2 or more ``DTOData.as_builtins()`` returns an optional nested model as an
 instance whose own nested models are dictionaries.

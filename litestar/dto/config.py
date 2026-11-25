@@ -58,8 +58,8 @@ class DTOConfig:
     underscore_fields_private: bool = True
     """Fields starting with an underscore are considered private and excluded from data transfer."""
     experimental_codegen_backend: bool | None = None
-    """Deprecated and without effect: the DTO backend always generates its transfer functions. A value passed is
-    ignored and reads back as ``None``.
+    """Deprecated. The codegen backend is now the only DTO backend. Any value passed is ignored and reads back as
+    ``None``.
 
     .. deprecated:: 3.0
         Will be removed in 4.0.

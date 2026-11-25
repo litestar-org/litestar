@@ -6,15 +6,16 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
-    .. change:: DTO: Remove the non-codegen backend
+    .. change:: DTO: The codegen backend is the only DTO backend
         :type: feature
         :breaking:
         :pr: 5255
 
-        The DTO backend that interpreted field definitions per request is removed; transfer functions
-        are always generated, the default since ``2.8.0``. ``DTOConfig(experimental_codegen_backend=...)``
-        is deprecated, has no effect and warns for any value other than ``None``. See
-        :ref:`release-notes/whats-new-3:Removal of the non-codegen DTO backend`.
+        DTOs always transfer data through generated transfer functions, the default since ``2.8.0``;
+        the backend that interpreted field definitions per request is removed.
+        ``DTOConfig(experimental_codegen_backend=...)`` is deprecated, has no effect and warns for any
+        value other than ``None``. See
+        :ref:`release-notes/whats-new-3:The codegen DTO backend is the only DTO backend`.
 
     .. change:: DTO: Fix slow startup for self-referential and deeply nested models
         :type: bugfix
