@@ -105,7 +105,8 @@ def _create_backend(
     namespace: dict[str, Any] = {"config": config}
     if accessor is not None:
         namespace["attribute_accessor"] = staticmethod(accessor)
-    dto: Any = type("NestedTransferDTO", (DataclassDTO[model],), namespace)  # type: ignore[valid-type]
+    dto_base: Any = DataclassDTO
+    dto: Any = type("NestedTransferDTO", (dto_base[model],), namespace)
     return backend_cls(
         dto_factory=dto,
         field_definition=FieldDefinition.from_annotation(model if annotation is None else annotation),
