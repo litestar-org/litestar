@@ -276,6 +276,12 @@ DATA_ROWS = [
     pytest.param("app", {}, JSONBody[User], USER_IN, (), {"type": "User", "data": USER_IN}, id="no-dto"),
     pytest.param("app", {}, JSONBody[DTOData[User]], None, (), MissingDTOError, id="dto-data-without-dto-raises"),
     pytest.param(
+        "app", {}, JSON_BODY[Optional[DTOData[User]]], None, (), MissingDTOError, id="optional-dto-data-without-dto"
+    ),
+    pytest.param(
+        "app", {}, JSON_BODY[DTOData[User] | None], None, (), MissingDTOError, id="dto-data-or-none-without-dto"
+    ),
+    pytest.param(
         "controller",
         {"dto": UserDTO},
         JSONBody[DTOData[Other]],

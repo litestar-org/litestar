@@ -153,7 +153,13 @@ class Listener(WebsocketListener):
 async def listener(data: DTOData[User]) -> None: ...
 
 
-@pytest.mark.parametrize(("handler", "name"), [(listener, "listener"), (Listener, "Listener")])
+@websocket_listener("/ws")
+async def optional_listener(data: Optional[DTOData[User]]) -> None: ...
+
+
+@pytest.mark.parametrize(
+    ("handler", "name"), [(listener, "listener"), (optional_listener, "optional_listener"), (Listener, "Listener")]
+)
 def test_listener_dto_data_without_dto_raises_at_startup(handler: Any, name: str) -> None:
     with pytest.raises(
         MissingDTOError, match=rf"^\[paths='/ws', handler='{name}'\] The data it receives is annotated "

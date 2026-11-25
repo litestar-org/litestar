@@ -285,7 +285,12 @@ def build_dto_plan(handler: "BaseRouteHandler", app: "Litestar") -> DTOPlan:
                 handler=handler,
                 naming=TransferModelNaming(registry, name_scope),
             )
-        if data is None and data_field is not None and data_field.is_subclass_of(DTOData):
+        if (
+            data is None
+            and data_field is not None
+            and (data_inner := _without_optional(data_field)) is not None
+            and data_inner.is_subclass_of(DTOData)
+        ):
             raise MissingDTOError(
                 f"The data it receives is annotated '{_format_annotation(data_field.annotation)}', but no DTO "
                 "decodes it. Declare 'dto=' on the handler with a DTO that handles the model.",
