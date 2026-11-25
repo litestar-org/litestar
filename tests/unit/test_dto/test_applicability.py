@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 import json
 import sys
 from collections.abc import AsyncGenerator, Callable
@@ -1165,7 +1167,7 @@ D = TypeVar("D", default=User)
 DefaultPageAlias = TypeAliasType("DefaultPageAlias", list[D], type_params=(D,))
 Ts = TypeVarTuple("Ts")
 TupleAlias = TypeAliasType("TupleAlias", tuple[*Ts], type_params=(Ts,))
-Json = TypeAliasType("Json", Union[dict[str, "Json"], list["Json"], str, int, None])
+Json = TypeAliasType("Json", Union[dict[str, "Json"], list["Json"], str, int, None])  # type: ignore[misc]
 NEEDS_TYPE_STATEMENT = pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword needs 3.12")
 NEEDS_TYPE_PARAMETER_DEFAULTS = pytest.mark.skipif(sys.version_info < (3, 13), reason="defaults need 3.13")
 
@@ -1201,7 +1203,7 @@ ALIAS_ROWS = [
     pytest.param(
         "app",
         "return",
-        lambda: TypeAliasType("Alias", list["HiddenUser"]),  # noqa: F821
+        lambda: TypeAliasType("Alias", list["HiddenUser"]),  # type: ignore[name-defined]  # noqa: F821
         list[User],
         [USER],
         id="return-forward-reference-in-signature-namespace",
@@ -1228,7 +1230,7 @@ def test_type_alias_applies_like_its_value(
         if direction == "data":
             app = build_app(
                 placement,
-                body=JSONBody[annotation],
+                body=JSON_BODY[annotation],
                 returns=dict[str, Any],
                 respond=respond_described,
                 handler_options={"return_dto": None},
@@ -1244,7 +1246,7 @@ def test_type_alias_applies_like_its_value(
                 respond=lambda data: sent,
                 openapi_config=DEFAULT_OPENAPI_CONFIG,
                 signature_namespace={"HiddenUser": User, "User": Other},
-                **{"dto" if direction == "reused" else "return_dto": UserDTO},
+                **{"dto" if direction == "reused" else "return_dto": UserDTO},  # type: ignore[arg-type]
             )
         with TestClient(app) as client:
             response = client.post("/", json=sent) if direction == "data" else client.get("/")
@@ -1269,13 +1271,16 @@ def test_type_alias_applies_like_its_value(
         ),
         pytest.param(
             "return_dto",
-            lambda: TypeAliasType("Alias", list["Missing"]),  # noqa: F821
+            lambda: TypeAliasType("Alias", list["Missing"]),  # type: ignore[name-defined]  # noqa: F821
             "name 'Missing' is not defined",
             id="forward-reference",
         ),
         pytest.param("return_dto", lambda: PageAlias, "type parameters", id="bare-generic-alias"),
         pytest.param(
-            "return_dto", lambda: TypeAliasType("Alias", list["1/0"]), "division by zero", id="forward-reference-error"
+            "return_dto",
+            lambda: TypeAliasType("Alias", list["1/0"]),  # type: ignore[valid-type]
+            "division by zero",
+            id="forward-reference-error",
         ),
         pytest.param("return_dto", lambda: TupleAlias[User, int], "type parameters", id="type-var-tuple"),
         pytest.param(
@@ -1299,7 +1304,7 @@ def test_unresolvable_type_alias_fails_at_startup(option: str, alias: Callable[[
 
     with pytest.raises(InvalidAnnotationException, match=pattern):
         if option == "dto":
-            build_app("app", body=JSONBody[alias()], dto=UserDTO, handler_options={"return_dto": None})
+            build_app("app", body=JSON_BODY[alias()], dto=UserDTO, handler_options={"return_dto": None})
         else:
             build_app("app", method="GET", returns=alias(), return_dto=UserDTO, signature_namespace={"T": T})
 
