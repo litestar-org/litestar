@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import sys
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field, make_dataclass
@@ -1218,7 +1219,6 @@ _CONFLICTING_DERIVED_CASES = [
         ("exclusiveMaximum", 9),
         id="own_lt_and_derived_le",
     ),
-    pytest.param(Annotated[str, QueryParameter(pattern="(")], "a", "b", 201, None, id="parameter_invalid_pattern"),
 ]
 
 
@@ -1237,6 +1237,12 @@ def test_dto_drops_derived_constraints_that_conflict(
     with _create_client(dto_type, _make_model(dto_type, annotation), partial) as client:
         assert client.post("/", json={"f": rejected}).status_code == rejected_status
         assert client.post("/", json={"f": accepted}).status_code == 201
+
+
+@pytest.mark.parametrize("dto_type", [DataclassDTO, MsgspecDTO])
+def test_dto_raises_at_startup_for_an_invalid_pattern(dto_type: Any) -> None:
+    with pytest.raises(re.error):
+        _create_client(dto_type, _make_model(dto_type, Annotated[str, QueryParameter(pattern="(")]))
 
 
 @pytest.mark.parametrize("dto_type", [DataclassDTO, MsgspecDTO])

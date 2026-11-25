@@ -4,7 +4,6 @@ back again, to bytes.
 
 from __future__ import annotations
 
-import re
 from contextlib import suppress
 from dataclasses import replace
 from typing import (
@@ -751,7 +750,7 @@ _SCHEMA_META_ATTRIBUTES: Final = ("title", "description", "examples", "extra_jso
 def _msgspec_accepts(annotation: Any, own: tuple[msgspec.Meta, ...], constraint_kwargs: dict[str, Any]) -> bool:
     try:
         msgspec.json.Decoder(Annotated[(annotation, *own, msgspec.Meta(**constraint_kwargs))])
-    except (TypeError, ValueError, re.error):
+    except (TypeError, ValueError):
         return False
     return True
 
