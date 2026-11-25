@@ -82,7 +82,8 @@ class DTOPlan:
     """The DTO applied to the data the handler returns. ``None`` if no DTO applies to it"""
     data_dto: "type[AbstractDTO[Any]] | None"
     """The resolved data DTO class. It may be set while :attr:`data` is ``None``, for a handler configured with a
-    ``dto`` that receives no data
+    ``dto`` that receives no data, or whose data an inherited ``dto`` does not handle; :attr:`data` tells whether a
+    DTO decodes the data
     """
     decode_bytes: "DecodeFn | None"
     """Decode raw request data with the data DTO. Set exactly when :attr:`data` is set"""

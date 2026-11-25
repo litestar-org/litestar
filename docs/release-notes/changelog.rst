@@ -47,10 +47,11 @@
         ``DTONotApplicableError`` and
         ``DTOTransferTypeError`` subclass :exc:`~litestar.exceptions.InvalidAnnotationException`, and
         ``MissingDTOError`` subclasses :exc:`~litestar.exceptions.DTOFactoryException` and
-        :exc:`~litestar.exceptions.ImproperlyConfiguredException`, the exceptions raised before. A return
-        DTO over a type msgspec rejects raises ``DTOTransferTypeError`` at startup instead of a
-        ``TypeError`` during schema generation. Errors and ``litestar routes`` name a websocket listener
-        by its function or class instead of ``ListenerHandler``. See
+        :exc:`~litestar.exceptions.ImproperlyConfiguredException`, the exceptions raised before. A data
+        DTO over a type msgspec rejects raises ``DTOTransferTypeError`` at startup. A return DTO over such
+        a type still starts and encodes; generating the OpenAPI schema raises ``DTOTransferTypeError``
+        instead of a ``TypeError``. Errors and ``litestar routes`` name a websocket listener by its
+        function or class instead of ``ListenerHandler``. See
         :ref:`release-notes/whats-new-3:DTO applicability and startup errors`.
 
     .. change:: DTO: Explicit applicability rules
