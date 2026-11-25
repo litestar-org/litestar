@@ -18,6 +18,7 @@ import pytest
 
 from litestar import Response, get
 from litestar.types import Empty
+from litestar.typing import TypeAliasTypes
 from litestar.utils import is_any, is_async_callable, is_class_and_subclass, is_optional_union, is_union
 from litestar.utils.predicates import (
     is_class_var,
@@ -267,6 +268,14 @@ def test_is_async_callable(c: Callable[[int, int], None], exp: bool) -> None:
     assert is_async_callable(partial_1) is exp
     partial_2 = partial(partial_1, 2)
     assert is_async_callable(partial_2) is exp
+
+
+@pytest.mark.parametrize("alias_type", TypeAliasTypes)
+def test_is_async_callable_of_subscripted_type_alias(alias_type: Any) -> None:
+    generic_list: Any = list
+    alias = alias_type("Alias", generic_list[T], type_params=(T,))
+
+    assert is_async_callable(alias[int]) is False
 
 
 def test_not_undefined_sentinel() -> None:

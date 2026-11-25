@@ -81,9 +81,7 @@ def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[
         return True
     value = unwrap_partial(value)
 
-    return iscoroutinefunction(value) or (
-        callable(value) and iscoroutinefunction(value.__call__)  # type: ignore[operator]
-    )
+    return iscoroutinefunction(value) or (callable(value) and iscoroutinefunction(getattr(value, "__call__", None)))  # noqa: B004
 
 
 def is_dataclass_instance(obj: Any) -> TypeGuard[DataclassProtocol]:
