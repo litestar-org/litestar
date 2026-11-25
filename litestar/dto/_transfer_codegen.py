@@ -49,7 +49,7 @@ def _is_plain_identifier(name: str) -> bool:
 
 @cache
 def _compile(source: str) -> "CodeType":
-    return compile(source, f"dto_transfer_function_{hashlib.sha256(source.encode()).hexdigest()[:12]}", "exec")
+    return compile(source, f"dto_transfer_function_{hashlib.sha256(source.encode()).hexdigest()[:16]}", "exec")
 
 
 class FieldAccessManager(Protocol):
