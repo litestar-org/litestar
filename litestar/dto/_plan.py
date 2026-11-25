@@ -7,7 +7,7 @@ import msgspec
 
 from litestar._layers.errors import HandlerErrorPrefix
 from litestar.di._helpers import _format_key
-from litestar.dto._backend import DTOBackend
+from litestar.dto._backend import DTOBackend, build_annotation_for_backend
 from litestar.dto._msgspec_rejection import qualified_name
 from litestar.dto._registry import TransferModelNaming
 from litestar.dto.data_structures import DTOData
@@ -243,13 +243,23 @@ def build_schema_annotation(
 ) -> Any:
     """Return the annotation to document ``field_definition`` with: the backend's annotation, or, for a model
     wrapped in a generic type other than a ``Response``, the outer generic type with the model replaced by the
-    transfer model.
+    transfer model in each of its arguments. An optional annotation stays optional.
     """
-    if backend.wrapper_attribute_name and not field_definition.is_subclass_of(Response):
+    inner = _without_optional(field_definition)
+    if not backend.wrapper_attribute_name or inner is None:
+        return backend.annotation
+    annotation = backend.annotation
+    if not inner.is_subclass_of(Response):
         model_type = _model_type(dto)
-        generic_args = tuple(backend.transfer_model_type if arg is model_type else arg for arg in field_definition.args)
-        return field_definition.safe_generic_origin[generic_args]
-    return backend.annotation
+        annotation = inner.safe_generic_origin[
+            tuple(
+                build_annotation_for_backend(model_type, inner_type, backend.transfer_model_type)
+                if dto.resolve_model_type(inner_type).is_subclass_of(model_type)
+                else arg
+                for arg, inner_type in zip(inner.args, inner.inner_types, strict=True)
+            )
+        ]
+    return annotation | None if field_definition.is_optional else annotation
 
 
 def handler_name_scope(handler: "BaseRouteHandler") -> "Hashable":

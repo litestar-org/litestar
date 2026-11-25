@@ -618,6 +618,17 @@ def test_optional_generic_wrapper_return_is_encoded(returns: Any, respond: Calla
         assert client.get("/").json() == expected
 
 
+def test_optional_generic_wrapper_schema_omits_the_excluded_field() -> None:
+    @get("/", return_dto=UserDTO, sync_to_thread=False)
+    def read() -> Optional[Wrapper[User]]:
+        return Wrapper(USER)
+
+    components = Litestar([read]).openapi_schema.to_schema()["components"]["schemas"]
+
+    assert components
+    assert all("secret" not in component.get("properties", {}) for component in components.values())
+
+
 @pytest.mark.parametrize("option", ["dto", "return_dto"])
 @pytest.mark.parametrize(
     "annotation",

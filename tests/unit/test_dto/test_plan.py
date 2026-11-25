@@ -1,6 +1,6 @@
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
-from typing import Annotated, Any, Generic, TypeVar
+from typing import Annotated, Any, Generic, Optional, TypeVar
 
 import msgspec
 import pytest
@@ -34,7 +34,14 @@ class WithCount(Generic[T]):
     data: list[T]
 
 
+@dataclass
+class Box(Generic[T]):
+    data: T
+
+
 WITH_COUNT: Any = WithCount
+BOX: Any = Box
+OPTIONAL: Any = Optional
 
 
 @dataclass
@@ -135,6 +142,14 @@ def test_create_backend_uses_backend_cls() -> None:
         pytest.param(Model, lambda backend: backend.transfer_model_type, id="model"),
         pytest.param(list[Model], lambda backend: LIST[backend.transfer_model_type], id="list"),
         pytest.param(WithCount[Model], lambda backend: WITH_COUNT[backend.transfer_model_type], id="generic-wrapper"),
+        pytest.param(
+            Optional[Box[Model]], lambda backend: OPTIONAL[BOX[backend.transfer_model_type]], id="optional-wrapper"
+        ),
+        pytest.param(Optional[Response[Model]], lambda backend: OPTIONAL[backend.annotation], id="optional-response"),
+        pytest.param(Box[list[Model]], lambda backend: BOX[LIST[backend.transfer_model_type]], id="wrapper-of-list"),
+        pytest.param(
+            Box[Optional[Model]], lambda backend: BOX[OPTIONAL[backend.transfer_model_type]], id="wrapper-of-optional"
+        ),
     ],
 )
 def test_build_schema_annotation(annotation: Any, expected: Callable[[DTOBackend], Any]) -> None:
