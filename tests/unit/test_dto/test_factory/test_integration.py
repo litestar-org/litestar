@@ -888,7 +888,9 @@ def _create_client(dto_type: Any, model: Any, partial: bool = False) -> Any:
     async def create(data: Any) -> None:
         return None
 
-    create.__annotations__["data"] = JSONBody[DTOData[model] if partial else model]
+    json_body: Any = JSONBody
+    dto_data: Any = DTOData
+    create.__annotations__["data"] = json_body[dto_data[model] if partial else model]
     dto = dto_type[Annotated[model, DTOConfig(partial=True)]] if partial else dto_type[model]
     return create_test_client([post("/", dto=dto, return_dto=None)(create)], openapi_config=None)
 
@@ -1353,9 +1355,16 @@ class RejectedOuter:
     inner: RejectedInner
 
 
-def test_data_dto_startup_error_names_the_nested_field() -> None:
-    @post("/", dto=DataclassDTO[RejectedOuter], return_dto=None)
-    def create_rejected_outer(data: JSONBody[RejectedOuter]) -> None:
+@dataclass
+class RejectedMappingOuter:
+    _hidden: int
+    inners: dict[str, RejectedInner]
+
+
+@pytest.mark.parametrize("model", [RejectedOuter, RejectedMappingOuter])
+def test_data_dto_startup_error_names_the_nested_field(model: Any) -> None:
+    @post("/", dto=DataclassDTO[model], return_dto=None, signature_namespace={"model": model})
+    def create_rejected_outer(data: JSONBody[model]) -> None:  # pyright: ignore[reportInvalidTypeForm]
         pass
 
     with pytest.raises(InvalidAnnotationException) as exc_info:
