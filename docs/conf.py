@@ -130,7 +130,6 @@ nitpick_ignore = [
     (PY_CLASS, "ClientRequestHookHandler"),
     (PY_CLASS, "ClientResponseHookHandler"),
     (PY_CLASS, "ServerRequestHookHandler"),
-    (PY_CLASS, "AnyIOBackend"),
     (PY_CLASS, "BaseSessionBackendT"),
     (PY_CLASS, "C"),
     (PY_CLASS, "CollectionT"),
@@ -159,7 +158,6 @@ nitpick_ignore = [
     (PY_CLASS, "ExceptionT"),
     (PY_CLASS, "NoneType"),
     (PY_CLASS, "litestar._openapi.schema_generation.schema.SchemaCreator"),
-    (PY_CLASS, "litestar._signature.model.SignatureModel"),
     (PY_CLASS, "litestar.utils.signature.ParsedSignature"),
     (PY_CLASS, "litestar.utils.sync.AsyncCallable"),
     # types in changelog that no longer exist
@@ -223,14 +221,13 @@ nitpick_ignore_regex = [
     (PY_RE, r"litestar.*\.T"),
     (PY_RE, r"litestar\.middleware\.session\.base\.BaseSessionBackendT"),
     (PY_RE, r"litestar\.types.*"),
-    (PY_RE, r"httpx.*"),
+    (PY_RE, r"httpx2.*"),
     # type vars
     (PY_RE, r"litestar.middleware.session.base.ConfigT"),
     (PY_RE, r"litestar\.connection\.base\.AuthT"),
     (PY_RE, r"litestar\.connection\.base\.HandlerT"),
     (PY_RE, r"litestar\.connection\.base\.StateT"),
     (PY_RE, r"litestar\.connection\.base\.UserT"),
-    (PY_RE, r"litestar\.pagination\.C"),
     (PY_RE, r"multidict\..*"),
     (PY_RE, r"advanced_alchemy.*\.T"),
     (PY_RE, r"advanced_alchemy\.config.common\.EngineT"),
@@ -358,6 +355,12 @@ html_theme_options = {
             "title": "About",
             "children": [
                 {
+                    "title": "Official Website",
+                    "summary": "The Litestar project website",
+                    "url": "https://litestar.dev",
+                    "icon": "org",
+                },
+                {
                     "title": "Litestar Organization",
                     "summary": "Details about the Litestar organization",
                     "url": "https://litestar.dev/about",
@@ -404,12 +407,6 @@ html_theme_options = {
                     "title": "GitHub Discussions",
                     "summary": "GitHub Discussions",
                     "url": "https://github.com/orgs/litestar-org/discussions",
-                    "icon": "coc",
-                },
-                {
-                    "title": "Stack Overflow",
-                    "summary": "We monitor the <code><b>litestar</b></code> tag on Stack Overflow",
-                    "url": "https://stackoverflow.com/questions/tagged/litestar",
                     "icon": "coc",
                 },
             ],

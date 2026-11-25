@@ -1,9 +1,20 @@
+import re
 from typing import Annotated
 
 import pytest
 
-from litestar import Controller, Router, get
-from litestar.params import CookieParameter, FromPath, FromQuery, HeaderParameter, Parameter, QueryParameter
+from litestar import Controller, Litestar, Request, Router, get
+from litestar.di import NamedDependency
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.params import (
+    CookieParameter,
+    FromCookie,
+    FromHeader,
+    FromPath,
+    FromQuery,
+    HeaderParameter,
+    QueryParameter,
+)
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 
@@ -12,7 +23,7 @@ def test_layered_parameters_injected_correctly() -> None:
     class MyController(Controller):
         path = "/controller"
         parameters = {
-            "controller1": Parameter(lt=100),
+            "controller1": QueryParameter(lt=100),
             "controller2": QueryParameter(annotation=str, name="controller3"),
         }
 
@@ -20,12 +31,12 @@ def test_layered_parameters_injected_correctly() -> None:
         def my_handler(
             self,
             local: FromPath[float],
-            controller1: int,
-            controller2: str,
-            router1: str,
-            router2: float,
-            app1: str,
-            app2: list[str],
+            controller1: FromQuery[int],
+            controller2: FromQuery[str],
+            router1: FromQuery[str],
+            router2: FromHeader[float],
+            app1: FromCookie[str],
+            app2: FromQuery[list[str]],
         ) -> dict:
             assert isinstance(local, float)
             assert isinstance(controller1, int)
@@ -40,7 +51,7 @@ def test_layered_parameters_injected_correctly() -> None:
         path="/router",
         route_handlers=[MyController],
         parameters={
-            "router1": Parameter(str, pattern="^[a-zA-Z]$"),
+            "router1": QueryParameter(annotation=str, pattern="^[a-zA-Z]$"),
             "router2": HeaderParameter(annotation=float, multiple_of=5.0, name="router3"),
         },
     )
@@ -49,14 +60,14 @@ def test_layered_parameters_injected_correctly() -> None:
         route_handlers=router,
         parameters={
             "app1": CookieParameter(annotation=str, name="app4"),
-            "app2": Parameter(list[str], min_items=2),
-            "app3": Parameter(bool, required=False),
+            "app2": QueryParameter(annotation=list[str], min_items=2),
+            "app3": QueryParameter(annotation=bool, required=False),
         },
     ) as client:
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"app4": "jeronimo"}
 
-        query = {"controller1": "99", "controller3": "tuna", "router1": "albatross", "app2": ["x", "y"]}
+        query = {"controller1": "99", "controller3": "tuna", "router1": "a", "app2": ["x", "y"]}
         headers = {"router3": "10"}
 
         response = client.get("/router/controller/1", params=query, headers=headers)
@@ -79,7 +90,7 @@ def test_layered_parameters_validation(parameter: str, param_type: str) -> None:
     class MyController(Controller):
         path = "/controller"
         parameters = {
-            "controller1": Parameter(int, lt=100),
+            "controller1": QueryParameter(annotation=int, lt=100),
             "controller2": QueryParameter(annotation=str, name="controller3"),
         }
 
@@ -91,7 +102,7 @@ def test_layered_parameters_validation(parameter: str, param_type: str) -> None:
         path="/router",
         route_handlers=[MyController],
         parameters={
-            "router1": Parameter(str, pattern="^[a-zA-Z]$"),
+            "router1": QueryParameter(annotation=str, pattern="^[a-zA-Z]$"),
             "router2": HeaderParameter(annotation=float, multiple_of=5.0, name="router3"),
         },
     )
@@ -100,11 +111,11 @@ def test_layered_parameters_validation(parameter: str, param_type: str) -> None:
         route_handlers=router,
         parameters={
             "app1": CookieParameter(annotation=str, name="app4"),
-            "app2": Parameter(list[str], min_items=2),
-            "app3": Parameter(bool, required=False),
+            "app2": QueryParameter(annotation=list[str], min_items=2),
+            "app3": QueryParameter(annotation=bool, required=False),
         },
     ) as client:
-        query = {"controller1": "99", "controller3": "tuna", "router1": "albatross", "app2": ["x", "y"]}
+        query = {"controller1": "99", "controller3": "tuna", "router1": "a", "app2": ["x", "y"]}
         headers = {"router3": "10"}
         cookies = {"app4": "jeronimo"}
 
@@ -121,7 +132,10 @@ def test_layered_parameters_validation(parameter: str, param_type: str) -> None:
         response = client.get("/router/controller/1", params=query, headers=headers)
 
         assert response.status_code == HTTP_400_BAD_REQUEST
-        assert response.json()["detail"].startswith(f"Missing required {param_type} parameter '{parameter}' for path")
+        assert response.json()["detail"].startswith("Validation failed for GET /router/controller/1")
+        assert response.json()["extra"] == [
+            {"message": f"Missing required {param_type} parameter", "key": parameter, "source": param_type}
+        ]
 
 
 def test_layered_parameters_defaults_and_overrides() -> None:
@@ -157,7 +171,9 @@ def test_layered_parameters_defaults_and_overrides() -> None:
             "app1": QueryParameter(annotation=str),
         },
     ) as client:
-        query = {"controller4": "jeronimo"}
+        # the controller's 'controller2' is a parameter of its own, 'controller3', that the handler's
+        # 'controller2' with a name of its own doesn't bind
+        query = {"controller4": "jeronimo", "controller3": "tuna"}
 
         response = client.get("/router/controller/1", params=query)
         assert response.json() == {"message": "ok"}
@@ -256,3 +272,72 @@ def test_layered_include_in_schema_parameter() -> None:
         assert "/excluded_router/excluded_handler" not in app.openapi_schema.paths
         assert "/excluded_handler" not in app.openapi_schema.paths
         assert "/handler" not in app.openapi_schema.paths
+
+
+def test_unused_layer_parameter_not_required_without_default_is_optional() -> None:
+    @get("/", sync_to_thread=False)
+    def handler() -> None:
+        return None
+
+    with create_test_client(
+        handler, parameters={"layer_param": QueryParameter(annotation=int, required=False)}
+    ) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+
+
+def test_bare_marker_binding_layer_parameter_not_required_receives_default() -> None:
+    @get("/", sync_to_thread=False)
+    def handler(layer_param: FromQuery[int] = 3) -> int:
+        return layer_param
+
+    with create_test_client(
+        handler, parameters={"layer_param": QueryParameter(annotation=int, required=False)}
+    ) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.json() == 3
+
+
+def test_bare_marker_binding_layer_parameter_not_required_without_default_raises() -> None:
+    @get("/", sync_to_thread=False)
+    def handler(layer_param: FromQuery[int]) -> None:
+        return None
+
+    with pytest.raises(
+        ImproperlyConfiguredException,
+        match=re.escape(
+            "[paths='/', handler='handler'] layer parameter 'layer_param' and parameter 'layer_param' of handler "
+            "'handler' declare the query parameter 'layer_param' not required but without a default"
+        ),
+    ):
+        Litestar([handler], parameters={"layer_param": QueryParameter(annotation=int, required=False)})
+
+
+def test_dependency_key_named_like_layer_parameter_is_dependency() -> None:
+    async def provide_value() -> int:
+        return 7
+
+    @get("/", dependencies={"value": provide_value})
+    async def handler(value: NamedDependency[int]) -> int:
+        return value
+
+    router = Router("/", route_handlers=[handler], parameters={"value": QueryParameter(annotation=int)})
+    with create_test_client([router]) as client:
+        # the layer parameter is enforced
+        response = client.get("/", params={"value": 3})
+
+    assert response.json() == 7
+
+
+def test_request_parameter_named_like_layer_parameter_is_request() -> None:
+    @get("/")
+    async def handler(value: Request) -> bool:
+        return isinstance(value, Request)
+
+    router = Router("/", route_handlers=[handler], parameters={"value": QueryParameter(annotation=int)})
+    with create_test_client([router]) as client:
+        # the layer parameter is enforced
+        response = client.get("/", params={"value": 3})
+
+    assert response.json() is True

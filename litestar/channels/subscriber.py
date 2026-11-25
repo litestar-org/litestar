@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from asyncio import CancelledError, Queue, QueueFull
 from collections import deque
 from collections.abc import AsyncGenerator, Awaitable, Callable
-from contextlib import AsyncExitStack, asynccontextmanager, suppress
+from contextlib import AsyncExitStack, asynccontextmanager
 from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar
 
 if TYPE_CHECKING:
@@ -12,6 +13,8 @@ if TYPE_CHECKING:
 
 
 T = TypeVar("T")
+
+logger = logging.getLogger(__name__)
 
 BacklogStrategy = Literal["backoff", "dropleft"]
 
@@ -25,6 +28,12 @@ class AsyncDeque(Queue, Generic[T]):
 
     def _init(self, maxsize: int) -> None:
         self._queue: deque[T] = deque(maxlen=self._deque_maxlen)
+
+    def _put(self, item: T) -> None:
+        if len(self._queue) == self._deque_maxlen:
+            self._queue.popleft()
+            self.task_done()
+        self._queue.append(item)
 
 
 class Subscriber:
@@ -48,6 +57,12 @@ class Subscriber:
 
     async def put(self, item: bytes | None) -> None:
         await self._queue.put(item)
+
+    def _close(self) -> None:
+        if self._queue.full():
+            self._queue.get_nowait()
+            self._queue.task_done()
+        self._queue.put_nowait(None)
 
     def put_nowait(self, item: bytes | None) -> bool:
         """Put an item in the subscriber's stream without waiting"""
@@ -124,13 +139,19 @@ class Subscriber:
         if not self._task:
             return
 
+        task, self._task = self._task, None
+
         if join:
-            await self._queue.join()
+            join_task = asyncio.create_task(self._queue.join())
+            await asyncio.wait((join_task, task), return_when=asyncio.FIRST_COMPLETED)
+            join_task.cancel()
 
-        if not self._task.done():
-            self._task.cancel()
+        if not task.done():
+            task.cancel()
 
-        with suppress(CancelledError):
-            await self._task
-
-        self._task = None
+        try:
+            await task
+        except CancelledError:
+            pass
+        except Exception:
+            logger.exception("Error while sending event to subscriber")

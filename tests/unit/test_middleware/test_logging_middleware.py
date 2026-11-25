@@ -14,7 +14,7 @@ from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotAuthorizedException, PermissionDeniedException
 from litestar.handlers import HTTPRouteHandler
 from litestar.middleware.logging import LoggingMiddleware
-from litestar.params import Body
+from litestar.params import Body, FromPath, JSONBody
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from litestar.testing import create_test_client
 from tests.helpers import cleanup_logging_impl
@@ -154,6 +154,36 @@ def test_logging_middleware_exclude_pattern(caplog: "LogCaptureFixture", handler
         assert len(caplog.messages) == 2
 
 
+@pytest.mark.parametrize(
+    "exclude_kwargs",
+    [{"exclude": ["^/user/1$"]}, {"exclude_path_pattern": [r"^/user/\{user_id:int\}$"]}],
+    ids=["request_path", "handler_path"],
+)
+def test_logging_middleware_exclude_dynamic_path(
+    caplog: "LogCaptureFixture", handler: HTTPRouteHandler, exclude_kwargs: dict[str, Any]
+) -> None:
+    @get("/user/{user_id:int}")
+    def handler2(user_id: FromPath[int]) -> None:
+        return None
+
+    with (
+        create_test_client(
+            route_handlers=[handler, handler2],
+            middleware=[LoggingMiddleware("litestar.test", **exclude_kwargs)],
+        ) as client,
+        caplog.at_level(INFO),
+    ):
+        client.cookies = {"request-cookie": "abc"}
+
+        response = client.get("/user/1")
+        assert response.status_code == HTTP_200_OK
+        assert len(caplog.messages) == 0
+
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert len(caplog.messages) == 2
+
+
 def test_logging_middleware_exclude_opt_key(caplog: "LogCaptureFixture", handler: HTTPRouteHandler) -> None:
     @get("/exclude", skip_logging=True)
     def handler2() -> None:
@@ -210,7 +240,7 @@ def test_logging_middleware_compressed_response_body(
 
 def test_logging_middleware_post_body() -> None:
     @post("/")
-    def post_handler(data: dict[str, str]) -> dict[str, str]:
+    def post_handler(data: JSONBody[dict[str, str]]) -> dict[str, str]:
         return data
 
     with create_test_client(
@@ -315,7 +345,7 @@ def test_logging_middleware_with_session_middleware(session_backend_config_memor
 def test_structlog_invalid_request_body_handled() -> None:
     # https://github.com/litestar-org/litestar/issues/3063
     @post("/")
-    async def hello_world(data: dict[str, Any]) -> dict[str, Any]:
+    async def hello_world(data: JSONBody[dict[str, Any]]) -> dict[str, Any]:
         return data
 
     with create_test_client(

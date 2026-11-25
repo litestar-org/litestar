@@ -1,10 +1,11 @@
 from litestar import Litestar, WebSocket, websocket
 from litestar.channels import ChannelsPlugin
 from litestar.channels.backends.memory import MemoryChannelsBackend
+from litestar.di import NamedDependency
 
 
 @websocket("/ws")
-async def handler(socket: WebSocket, channels: ChannelsPlugin) -> None:
+async def handler(socket: WebSocket, channels: NamedDependency[ChannelsPlugin]) -> None:
     await socket.accept()
 
     async with (

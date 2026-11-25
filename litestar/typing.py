@@ -46,7 +46,7 @@ except ImportError:
     TypeAliasTypes = (TeTypeAliasType,)  # type: ignore[assignment]
 
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import BodyKwarg, KwargDefinition, ParameterKwarg
+from litestar.params import KwargDefinition, ParameterKwarg, ParameterMarker
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.predicates import (
     is_any,
@@ -244,18 +244,12 @@ class FieldDefinition:
         )
 
     @property
-    def is_parameter_field(self) -> bool:
-        """Check if the field type is a parameter kwarg value."""
-        return isinstance(self.kwarg_definition, ParameterKwarg)
-
-    @property
-    def is_non_marker_parameter_field(self) -> bool:
-        """Check if the field type is a ParameterKwarg that's not a marker only.
-
-        A marker is considered an instance of 'ParameterKwarg' without any constraints
-        applied, usually produced by 'FromQuery[]', 'FromPath[]', etc.
+    def is_marker_field(self) -> bool:
+        """Check if the field declares its source explicitly, either via a parameter /
+        body marker ('FromQuery[]', 'Body(...)', etc.) or a dependency marker
+        ('NamedDependency[]').
         """
-        return isinstance(self.kwarg_definition, ParameterKwarg) and not self.kwarg_definition.is_marker
+        return isinstance(self.kwarg_definition, ParameterMarker) or self.is_di_field
 
     @property
     def is_const(self) -> bool:
@@ -324,6 +318,10 @@ class FieldDefinition:
     def is_optional(self) -> bool:
         """Whether the annotation is Optional or not."""
         return bool(self.is_union and NoneType in self.args)
+
+    @property
+    def is_builtin_constant_type(self) -> bool:
+        return self.annotation in (NoneType, True, False, Ellipsis)
 
     @property
     def is_none_type(self) -> bool:
@@ -492,14 +490,10 @@ class FieldDefinition:
                     existing_kwargs_definition, **kwarg_definition_merge_args
                 )
             # if not, create a new KwargDefinition
-            else:
-                if (name := kwargs.get("name")) == "data":
-                    model: type[KwargDefinition] = BodyKwarg
-                elif name is None:
-                    model = KwargDefinition
-                else:
-                    model = ParameterKwarg
-                kwargs["kwarg_definition"] = model(**kwarg_definition_merge_args)
+            elif kwarg_definition_merge_args:
+                # a parameter or body is only ever declared via an explicit marker, so plain
+                # constraint metadata becomes a plain 'KwargDefinition'
+                kwargs["kwarg_definition"] = KwargDefinition(**kwarg_definition_merge_args)
 
         kwargs.setdefault("annotation", unwrapped)
         kwargs.setdefault("args", annotation_args)
@@ -569,26 +563,12 @@ class FieldDefinition:
             ParsedSignatureParameter.
 
         """
-        from litestar.datastructures import ImmutableState
-
         try:
             annotation = fn_type_hints[parameter.name]
         except KeyError as e:
             raise ImproperlyConfiguredException(
                 f"'{parameter.name}' does not have a type annotation. If it should receive any value, use 'Any'."
             ) from e
-
-        if parameter.name == "state":
-            # Unwrap Annotated[...] so we can validate the underlying type
-            bare_annotation = (
-                getattr(annotation, "__origin__", annotation) if hasattr(annotation, "__metadata__") else annotation
-            )
-            if not isinstance(bare_annotation, type) or not issubclass(bare_annotation, ImmutableState):
-                raise ImproperlyConfiguredException(
-                    f"The type annotation `{annotation}` is an invalid type for the 'state' reserved kwarg. "
-                    "It must be typed to a subclass of `litestar.datastructures.ImmutableState` or "
-                    "`litestar.datastructures.State`."
-                )
 
         return FieldDefinition.from_kwarg(
             annotation=annotation,

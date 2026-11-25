@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
+from litestar._layers.utils import narrow_dependencies, narrow_response_cookies, narrow_response_headers
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.empty import Empty
 from litestar.utils import normalize_path
@@ -122,7 +122,7 @@ class Router:
             cache_control: A ``cache-control`` header of type
                 :class:`CacheControlHeader <.datastructures.CacheControlHeader>` to add to route handlers of
                 this router. Can be overridden by route handlers.
-            dependencies: A string keyed mapping of dependency :class:`Provide <.di.Provide>` instances.
+            dependencies: A sequence of :class:`Provider <.di.Provider>` instances, or a mapping of names or types to providers, :class:`Provide <.di.Provide>` instances or callables.
             dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
                 validation of request data.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
@@ -133,7 +133,7 @@ class Router:
             opt: A string keyed mapping of arbitrary values that can be accessed in :data:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
                 :data:`ASGI Scope <.types.Scope>`.
-            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions available to all application
+            parameters: A mapping of :func:`Parameter <.params.ParameterKwarg>` definitions available to all application
                 paths.
             path: A path fragment that is prefixed to all route handlers, controllers and other routers associated
                 with the router instance.
@@ -175,7 +175,7 @@ class Router:
         self.cache_control = cache_control
         self.dto = dto
         self.etag = etag
-        self.dependencies = dict(dependencies or {})
+        self.dependencies = narrow_dependencies(dependencies)
         self.exception_handlers = dict(exception_handlers or {})
         self.guards = tuple(guards or [])
         self.include_in_schema = include_in_schema

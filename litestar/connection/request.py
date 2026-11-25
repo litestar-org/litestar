@@ -6,7 +6,7 @@ import math
 import warnings
 from typing import TYPE_CHECKING, Any, Generic, cast
 
-from litestar._multipart import parse_content_header, parse_multipart_form
+from litestar._multipart import get_charset_table, parse_content_header, parse_multipart_form
 from litestar._parsers import parse_url_encoded_form_data
 from litestar.connection.base import (
     ASGIConnection,
@@ -266,6 +266,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
                         stream=self.stream(),
                         boundary=boundary_bytes,
                         multipart_form_part_limit=self.app.multipart_form_part_limit,
+                        charsets=get_charset_table(self.app.multipart_form_allowed_charsets),
                     )
                 elif content_type == RequestEncodingType.URL_ENCODED:
                     form_data = parse_url_encoded_form_data(  # type: ignore[assignment]

@@ -16,9 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - uses: actions/setup-python@v7.0.0
+      - uses: actions/setup-python@v7.1.0
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Install Pre-Commit
         run: python -m pip install pre-commit
@@ -38,12 +38,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - uses: actions/setup-python@v7.0.0
+      - uses: actions/setup-python@v7.1.0
         with:
           python-version: "3.11"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           enable-cache: true
 
@@ -55,12 +55,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - uses: actions/setup-python@v7.0.0
+      - uses: actions/setup-python@v7.1.0
         with:
           python-version: "3.11"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           enable-cache: true
 
@@ -72,12 +72,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
 
-      - uses: actions/setup-python@v7.0.0
+      - uses: actions/setup-python@v7.1.0
         with:
           python-version: "3.11"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           enable-cache: true
 
@@ -89,11 +89,17 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
+        include:
+          # msgspec, pyyaml, zstandard and autobahn have no cp315 manylinux wheels
+          # yet, so uv builds them from sdist. Allow headroom for a cold uv cache.
+          - python-version: "3.15"
+            timeout: 20
     uses: ./.github/workflows/test.yml
     with:
       coverage: true
       python-version: ${{ matrix.python-version }}
+      timeout: ${{ matrix.timeout || 10 }}
 
   # add an aggregate step here to check if any of the steps of the matrix 'test' job
   # failed. this allows us to have dynamic or diverging steps in the matrix, while still
@@ -114,18 +120,24 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        python-version: ["3.14", "3.15"]
         typing-extensions: ["4.12.1", "4.13.1", "4.14.0", "latest"]
+        exclude:
+          - python-version: "3.15"
+            typing-extensions: "4.12.1"
+          - python-version: "3.15"
+            typing-extensions: "4.13.1"
     steps:
       - name: Check out repository
         uses: actions/checkout@v7.0.1
 
       - name: Set up python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7.1.0
         with:
-          python-version: 3.14
+          python-version: ${{ matrix.python-version }}
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           version: "0.6.12"
           enable-cache: true
@@ -156,12 +168,12 @@ jobs:
         uses: actions/checkout@v7.0.1
 
       - name: Set up python 3.11
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7.1.0
         with:
           python-version: 3.11
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           enable-cache: true
 
@@ -204,13 +216,13 @@ jobs:
         run: sudo apt-get install build-essential libpq-dev python3-dev -y
 
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7.1.0
         with:
           python-version: "3.12"
           allow-prereleases: true
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           enable-cache: true
 
@@ -245,12 +257,12 @@ jobs:
         uses: actions/checkout@v7.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v7.1.0
         with:
           python-version: "3.12"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.3.2
         with:
           enable-cache: true
 
@@ -260,7 +272,7 @@ jobs:
       - name: Test
         run: |
           mv tests/examples/test_hello_world.py test_hello_world.py
-          uv run pytest test_hello_world.py
+          uv run --isolated --group=test --no-default-groups pytest test_hello_world.py
 
   upload-test-coverage:
     runs-on: ubuntu-latest
@@ -268,7 +280,7 @@ jobs:
       - test
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: actions/setup-python@v7.0.0
+      - uses: actions/setup-python@v7.1.0
         with:
           python-version: "3.12"
 
@@ -288,7 +300,7 @@ jobs:
         run: sed -i "s/home\/runner\/work\/litestar\/litestar/github\/workspace/g" coverage.xml
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v7.0.0
+        uses: codecov/codecov-action@v7.1.1
         with:
           files: coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}

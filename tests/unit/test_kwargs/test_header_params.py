@@ -3,7 +3,7 @@ from typing import Annotated, Optional, Union
 import pytest
 
 from litestar import get, post
-from litestar.params import HeaderParameter, ParameterKwarg
+from litestar.params import HeaderParameter, JSONBody, ParameterKwarg
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 
@@ -13,7 +13,7 @@ from litestar.testing import create_test_client
     [
         (str, {"special-header": "123"}, HeaderParameter(name="special-header", min_length=1, max_length=3), False),
         (str, {"special-header": "123"}, HeaderParameter(name="special-header", min_length=1, max_length=2), True),
-        (str, {}, HeaderParameter(name="special-header", min_length=1, max_length=2), True),
+        (str, {}, HeaderParameter(name="special-header", min_length=1, max_length=2), False),
         (
             Optional[str],
             {},
@@ -22,7 +22,7 @@ from litestar.testing import create_test_client
         ),
         (int, {"special-header": "123"}, HeaderParameter(name="special-header", ge=100, le=201), False),
         (int, {"special-header": "123"}, HeaderParameter(name="special-header", ge=100, le=120), True),
-        (int, {}, HeaderParameter(name="special-header", ge=100, le=120), True),
+        (int, {}, HeaderParameter(name="special-header", ge=100, le=120), False),
         (
             Optional[int],
             {},
@@ -52,7 +52,7 @@ def test_header_params(
 def test_header_param_with_post() -> None:
     # https://github.com/litestar-org/litestar/issues/3734
     @post()
-    async def handler(data: str, secret: Annotated[str, HeaderParameter(name="x-secret")]) -> None:
+    async def handler(data: JSONBody[str], secret: Annotated[str, HeaderParameter(name="x-secret")]) -> None:
         return None
 
     with create_test_client([handler], raise_server_exceptions=True) as client:

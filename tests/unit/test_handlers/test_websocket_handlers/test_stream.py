@@ -13,6 +13,7 @@ from litestar.di import NamedDependency
 from litestar.dto import DataclassDTO, dto_field
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.websocket_handlers import websocket_stream
+from litestar.params import FromQuery
 from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
@@ -47,6 +48,39 @@ def test_websocket_stream_without_socket() -> None:
         yield "foo"
 
     with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
+        assert ws.receive_text(timeout=0.1) == "foo"
+
+
+def test_websocket_stream_without_socket_declares_socket_in_original_signature() -> None:
+    @websocket_stream("/")
+    async def handler() -> AsyncGenerator[str, None]:
+        yield "foo"
+
+    app = Litestar([handler])
+    parsed_signature = app.route_handler_method_map["/"]["websocket"].parsed_fn_signature
+
+    assert (
+        list(parsed_signature.original_signature.parameters)
+        == list(parsed_signature.parameters)
+        == ["__litestar_stream_socket__"]
+    )
+
+
+def test_websocket_stream_socket_declared_under_other_name() -> None:
+    @websocket_stream("/")
+    async def handler(connection: WebSocket) -> AsyncGenerator[str, None]:
+        yield type(connection).__name__
+
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
+        assert ws.receive_text(timeout=0.1) == "WebSocket"
+
+
+def test_websocket_stream_parameter_named_socket_with_query_marker_is_query_parameter() -> None:
+    @websocket_stream("/")
+    async def handler(socket: FromQuery[str]) -> AsyncGenerator[str, None]:
+        yield socket
+
+    with create_test_client([handler]) as client, client.websocket_connect("/?socket=foo") as ws:
         assert ws.receive_text(timeout=0.1) == "foo"
 
 

@@ -8,6 +8,7 @@ from msgspec import Struct
 from litestar import delete, post
 from litestar.openapi import ResponseSpec
 from litestar.openapi.spec import OpenAPI
+from litestar.params import JSONBody
 from litestar.status_codes import HTTP_204_NO_CONTENT
 from litestar.testing import create_test_client
 from tests.models import DataclassPerson, MsgSpecStructPerson, TypedDictPerson
@@ -16,7 +17,7 @@ from tests.models import DataclassPerson, MsgSpecStructPerson, TypedDictPerson
 @pytest.mark.parametrize("cls", (DataclassPerson, TypedDictPerson, MsgSpecStructPerson))
 def test_spec_generation(cls: Any) -> None:
     @post("/")
-    def handler(data: cls) -> cls:  # pyright: ignore[reportInvalidTypeForm]
+    def handler(data: JSONBody[cls]) -> cls:  # pyright: ignore[reportInvalidTypeForm]
         return data
 
     with create_test_client(handler) as client:
@@ -88,7 +89,7 @@ def test_msgspec_schema() -> None:
         field_two: float
 
     @post("/")
-    def handler(data: CamelizedStruct) -> CamelizedStruct:
+    def handler(data: JSONBody[CamelizedStruct]) -> CamelizedStruct:
         return data
 
     with create_test_client(handler) as client:

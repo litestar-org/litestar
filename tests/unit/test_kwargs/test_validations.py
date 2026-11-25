@@ -6,15 +6,16 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from litestar import Litestar, get, post, websocket
-from litestar.constants import RESERVED_KWARGS
+from litestar import Litestar, get, post
 from litestar.di import NamedDependency, Provide
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import (
     BodyKwarg,
     CookieParameter,
+    FromPath,
     FromQuery,
     HeaderParameter,
+    JSONBody,
     MultipartBody,
     QueryParameter,
     SkipValidation,
@@ -22,64 +23,57 @@ from litestar.params import (
 )
 from litestar.testing import create_test_client
 
-_PARAM_TYPES = {"query": QueryParameter, "header": HeaderParameter, "cookie": CookieParameter}
+
+def test_path_param_named_like_dependency_key_is_path_param() -> None:
+    async def provide_my_key() -> str:
+        return "from-dependency"
+
+    @get("/{my_key:str}", dependencies={"my_key": provide_my_key})
+    async def handler(my_key: FromPath[str]) -> str:
+        return my_key
+
+    with create_test_client([handler]) as client:
+        response = client.get("/from-path")
+
+    assert response.text == "from-path"
 
 
-async def my_dependency() -> int:
-    return 1
+@pytest.mark.parametrize(
+    "annotation, request_kwargs",
+    [
+        (Annotated[str, QueryParameter(name="my_key")], {"params": {"my_key": "from-request"}}),
+        (Annotated[str, HeaderParameter(name="my_key")], {"headers": {"my_key": "from-request"}}),
+        (Annotated[str, CookieParameter(name="my_key")], {"headers": {"Cookie": "my_key=from-request"}}),
+    ],
+)
+def test_aliased_param_named_like_dependency_key_is_request_param(
+    annotation: Any, request_kwargs: dict[str, Any]
+) -> None:
+    async def provide_my_key() -> str:
+        return "from-dependency"
+
+    @get("/", dependencies={"my_key": provide_my_key})
+    async def handler(my_key: annotation) -> str:  # pyright: ignore
+        return my_key  # type: ignore[no-any-return]
+
+    with create_test_client([handler]) as client:
+        response = client.get("/", **request_kwargs)
+
+    assert response.text == "from-request"
 
 
-@pytest.mark.parametrize("param_field", ["query", "header", "cookie"])
-def test_path_param_and_param_with_same_key_raises(param_field: str) -> None:
-    @get("/{my_key:str}")
-    def handler(my_key: Annotated[str, _PARAM_TYPES[param_field](name="my_key")]) -> None:
-        pass
+def test_provider_param_named_like_own_key_is_request_param() -> None:
+    async def provide_page(page: FromQuery[int]) -> int:
+        return page * 2
 
-    with pytest.raises(ImproperlyConfiguredException):
-        Litestar([handler])
+    @get("/", dependencies={"page": provide_page})
+    async def handler(page: NamedDependency[int]) -> int:
+        return page
 
+    with create_test_client([handler]) as client:
+        response = client.get("/", params={"page": 3})
 
-def test_path_param_and_dependency_with_same_key_raises() -> None:
-    @get("/{my_key:str}", dependencies={"my_key": Provide(my_dependency)})
-    def handler(my_key: str) -> None:
-        pass
-
-    with pytest.raises(ImproperlyConfiguredException):
-        Litestar([handler])
-
-
-@pytest.mark.parametrize("param_field", ["query", "header", "cookie"])
-def test_dependency_and_aliased_param_raises(param_field: str) -> None:
-    @get("/", dependencies={"my_key": Provide(my_dependency)})
-    def handler(my_key: Annotated[str, _PARAM_TYPES[param_field](name="my_key")]) -> None:
-        pass
-
-    with pytest.raises(ImproperlyConfiguredException):
-        Litestar([handler])
-
-
-@pytest.mark.parametrize("reserved_kwarg", sorted(RESERVED_KWARGS))
-def test_raises_when_reserved_kwargs_are_misused(reserved_kwarg: str) -> None:
-    decorator = post if reserved_kwarg != "socket" else websocket
-    local = dict(locals(), **globals())
-    exec(f"async def test_fn({reserved_kwarg}: int) -> None: pass", local, local)
-    handler_with_path_param = decorator("/{" + reserved_kwarg + ":int}")(local["test_fn"])
-    with pytest.raises(ImproperlyConfiguredException):
-        Litestar(route_handlers=[handler_with_path_param])
-
-    exec(f"async def test_fn({reserved_kwarg}: int) -> None: pass", local, local)
-    handler_with_dependency = decorator("/", dependencies={reserved_kwarg: Provide(my_dependency)})(local["test_fn"])
-    with pytest.raises(ImproperlyConfiguredException):
-        Litestar(route_handlers=[handler_with_dependency])
-
-    exec(
-        f"async def test_fn({reserved_kwarg}: Annotated[int, QueryParameter(name='my_param')]) -> None: pass",
-        local,
-        local,
-    )
-    handler_with_aliased_param = decorator("/")(local["test_fn"])
-    with pytest.raises(ImproperlyConfiguredException):
-        Litestar(route_handlers=[handler_with_aliased_param])
+    assert response.json() == 6
 
 
 def url_encoded_dependency(data: URLEncodedBody[dict[str, Any]]) -> dict[str, Any]:
@@ -92,7 +86,7 @@ def multi_part_dependency(data: MultipartBody[dict[str, Any]]) -> dict[str, Any]
     return data
 
 
-def json_dependency(data: dict[str, Any]) -> dict[str, Any]:
+def json_dependency(data: JSONBody[dict[str, Any]]) -> dict[str, Any]:
     assert data
     return data
 
@@ -100,14 +94,14 @@ def json_dependency(data: dict[str, Any]) -> dict[str, Any]:
 @pytest.mark.parametrize(
     "body_annotation, dependency",
     [
-        (Any, json_dependency),
-        (MultipartBody[Any], multi_part_dependency),  # type: ignore[misc]
-        (URLEncodedBody[Any], url_encoded_dependency),  # type: ignore[misc]
+        (dict[str, Any], json_dependency),
+        (MultipartBody[dict[str, Any]], multi_part_dependency),
+        (URLEncodedBody[dict[str, Any]], url_encoded_dependency),
     ],
 )
 def test_dependency_data_kwarg_validation_success_scenarios(body_annotation: Any, dependency: Callable) -> None:
-    @post("/", dependencies={"first": Provide(dependency)})
-    def handler(first: NamedDependency[dict[str, Any]], data: body_annotation) -> None:  # pyright: ignore
+    @post("/", dependencies={"first": Provide(dependency, sync_to_thread=False)})
+    def handler(first: NamedDependency[dict[str, Any]], data: JSONBody[body_annotation]) -> None:  # pyright: ignore
         pass
 
     Litestar(route_handlers=[handler])
@@ -116,6 +110,7 @@ def test_dependency_data_kwarg_validation_success_scenarios(body_annotation: Any
 @pytest.mark.parametrize(
     "body_annotation, dependency",
     [
+        [Any, json_dependency],
         [Any, url_encoded_dependency],
         [Any, multi_part_dependency],
         [URLEncodedBody[Any], json_dependency],  # type: ignore[misc]
@@ -126,7 +121,7 @@ def test_dependency_data_kwarg_validation_success_scenarios(body_annotation: Any
 )
 def test_dependency_data_kwarg_validation_failure_scenarios(body_annotation: BodyKwarg, dependency: Callable) -> None:
     @post("/", dependencies={"first": Provide(dependency, sync_to_thread=False)})
-    def handler(first: NamedDependency[dict[str, Any]], data: body_annotation) -> None:  # type: ignore[valid-type]
+    def handler(first: NamedDependency[dict[str, Any]], data: JSONBody[body_annotation]) -> None:  # type: ignore[valid-type]
         assert first
         assert data
 
@@ -155,7 +150,7 @@ def test_skip_validation_dependency() -> None:
         return "1"
 
     @get("/", dependencies={"foo": provide_foo})
-    def handler(foo: SkipValidation[int]) -> None:
+    def handler(foo: NamedDependency[SkipValidation[int]]) -> None:
         mock(foo)
         return
 

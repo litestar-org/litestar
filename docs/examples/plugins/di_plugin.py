@@ -2,7 +2,7 @@ from inspect import Parameter, Signature
 from typing import Any
 
 from litestar import Litestar, get
-from litestar.di import NamedDependency, Provide
+from litestar.di import TypeDependency
 from litestar.params import FromQuery
 from litestar.plugins import DIPlugin
 
@@ -22,8 +22,8 @@ class MyDIPlugin(DIPlugin):
         return signature, annotations
 
 
-@get("/", dependencies={"injected": Provide(MyBaseType, sync_to_thread=False)})
-async def handler(injected: NamedDependency[MyBaseType]) -> str:
+@get("/", dependencies={MyBaseType: MyBaseType})
+async def handler(injected: TypeDependency[MyBaseType]) -> str:
     return injected.param
 
 

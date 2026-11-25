@@ -18,6 +18,7 @@ from litestar.dto.data_structures import DTOData
 from litestar.dto.types import RenameStrategy
 from litestar.enums import RequestEncodingType
 from litestar.exceptions.dto_exceptions import InvalidAnnotationException
+from litestar.params import BodyKwarg
 from litestar.response.base import Response
 from litestar.types.builtin_types import NoneType
 from litestar.types.composite_types import TypeEncodersMap
@@ -175,7 +176,8 @@ class AbstractDTO(Generic[T]):
         """Creates a DTO subclass for a field definition.
 
         Args:
-            field_definition: A :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance.
+            field_definition: A :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance. Declared as a
+                body, e.g. ``JSONBody[Model]``, it is the data the handler receives, otherwise the data it returns.
             handler_id: ID of the route handler for which to create a DTO instance.
             backend_cls: Alternative DTO backend class to use
 
@@ -187,7 +189,8 @@ class AbstractDTO(Generic[T]):
             cls._dto_backends[handler_id] = {}
 
         backend_context = cls._dto_backends[handler_id]
-        key = "data_backend" if field_definition.name == "data" else "return_backend"
+        is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg)
+        key = "data_backend" if is_data_field else "return_backend"
 
         if key not in backend_context:
             model_type_field_definition = cls.resolve_model_type(field_definition=field_definition)
@@ -211,7 +214,7 @@ class AbstractDTO(Generic[T]):
                 field_definition=field_definition,
                 model_type=model_type_field_definition.annotation,
                 wrapper_attribute_name=wrapper_attribute_name,
-                is_data_field=field_definition.name == "data",
+                is_data_field=is_data_field,
                 handler_id=handler_id,
             )
 
@@ -222,7 +225,9 @@ class AbstractDTO(Generic[T]):
         """Create an OpenAPI request body.
 
         Args:
-            field_definition: A parsed type annotation that represents the annotation used on the handler.
+            field_definition: A parsed type annotation that represents the annotation used on the handler. Declared
+                as a body, e.g. ``JSONBody[Model]``, it is the data the handler receives, otherwise the data it
+                returns.
             handler_id: ID of the route handler for which to create a DTO instance.
             schema_creator: A factory for creating schemas. Has a ``for_field_definition()`` method that accepts a
                 :class:`~litestar.typing.FieldDefinition` instance.
@@ -230,7 +235,7 @@ class AbstractDTO(Generic[T]):
         Returns:
             OpenAPI request body.
         """
-        key = "data_backend" if field_definition.name == "data" else "return_backend"
+        key = "data_backend" if isinstance(field_definition.kwarg_definition, BodyKwarg) else "return_backend"
         backend = cls._dto_backends[handler_id][key]  # type: ignore[literal-required]
 
         if backend.wrapper_attribute_name and not field_definition.is_subclass_of(Response):
@@ -306,7 +311,10 @@ class AbstractDTO(Generic[T]):
     def get_property_fields(cls, model_type: type[Any]) -> dict[str, FieldDefinition]:
         return {
             name: dataclasses.replace(
-                ParsedSignature.from_fn(attr.fget, cls.get_model_namespace(model_type)).return_type,
+                ParsedSignature.from_property(
+                    attr,
+                    cls.get_model_namespace(model_type),
+                ).return_type,
                 name=name,
             )
             for name, attr in vars(model_type).items()

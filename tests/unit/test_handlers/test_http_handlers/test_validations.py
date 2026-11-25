@@ -8,9 +8,10 @@ from typing import Annotated, Any
 import pytest
 
 from litestar import HttpMethod, Litestar, WebSocket, delete, get, patch, post, put, route
+from litestar.di.exceptions import MissingProviderError
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 from litestar.handlers.http_handlers import HTTPRouteHandler
-from litestar.params import Body
+from litestar.params import Body, JSONBody, RawBody
 from litestar.response import File, Redirect
 from litestar.status_codes import (
     HTTP_100_CONTINUE,
@@ -95,7 +96,7 @@ async def test_function_validation() -> None:
 
     assert not file_method.media_type
 
-    with pytest.raises(ImproperlyConfiguredException, match="The 'socket' kwarg is not supported"):
+    with pytest.raises(MissingProviderError, match="has no provider for dependency WebSocket"):
 
         @get(path="/test")
         def test_function_1(socket: WebSocket) -> None:
@@ -103,10 +104,13 @@ async def test_function_validation() -> None:
 
         Litestar([test_function_1])
 
-    with pytest.raises(ImproperlyConfiguredException, match="'data' kwarg is unsupported"):
+    with pytest.raises(
+        ImproperlyConfiguredException,
+        match="declares the request body, which a handler whose methods include 'GET' does not take",
+    ):
 
         @get("/person")
-        def test_function_2(self, data: DataclassPerson) -> None:  # type: ignore[no-untyped-def]
+        def test_function_2(data: JSONBody[DataclassPerson]) -> None:
             return None
 
         Litestar(route_handlers=[test_function_2])
@@ -146,19 +150,10 @@ def no_response_handler() -> {return_annotation}:
 
 
 @pytest.mark.parametrize("decorator", [post, put, patch])
-def test_body_param_with_non_bytes_annotation_raises(decorator: Callable[..., Any]) -> None:
-    def handler_fn(body: list[str]) -> None:
-        pass
-
-    with pytest.raises(ImproperlyConfiguredException, match="Invalid type annotation for 'body' parameter"):
-        Litestar([decorator()(handler_fn)])
-
-
-@pytest.mark.parametrize("decorator", [post, put, patch])
 def test_body_param_with_metadata_allowed(decorator: Callable[..., Any]) -> None:
-    def handler_fn(body: Annotated[bytes, Body(title="something")]) -> None:
+    def handler_fn(body: Annotated[RawBody, Body(title="something")]) -> None:
         pass
 
-    # we expect no error here, even though the type isn't directly 'bytes' but has
+    # we expect no error here, even though the type isn't directly 'RawBody' but has
     # metadata attached to it
     Litestar([decorator()(handler_fn)])

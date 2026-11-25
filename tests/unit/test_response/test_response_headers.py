@@ -3,6 +3,7 @@ import pytest
 from litestar import Controller, Litestar, Router, get, post
 from litestar.datastructures import CacheControlHeader, ETag, ResponseHeader
 from litestar.datastructures.headers import Header
+from litestar.params import JSONBody
 from litestar.status_codes import HTTP_201_CREATED
 from litestar.testing import TestClient, create_test_client
 
@@ -63,7 +64,7 @@ def test_response_headers_rendering() -> None:
         tags=["search"],
         response_headers=[ResponseHeader(name="test-header", value="test value", description="test")],
     )
-    def my_handler(data: dict[str, str]) -> dict[str, str]:
+    def my_handler(data: JSONBody[dict[str, str]]) -> dict[str, str]:
         return data
 
     with create_test_client(my_handler) as client:

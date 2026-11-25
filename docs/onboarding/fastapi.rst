@@ -496,7 +496,7 @@ FastAPI declares a dependency at the call site, either as a default value or ins
 parameter annotation via ``Depends(fn)``, or in a list on the path operation.
 Litestar declares dependencies as a mapping from parameter name to provider, attached to
 the ``dependencies`` keyword on any layer. Async callables can be used as dependency
-providers natively, sync callables must be wrapped in :class:`~litestar.di.Provide`.
+providers natively, sync callables must be wrapped with :func:`~litestar.di.provide`.
 
 .. tab-set::
 
@@ -786,8 +786,8 @@ WebSocket route handlers that publish incoming events to subscribed clients.
 Testing
 -------
 
-Both frameworks ship an ``httpx``-based ``TestClient``. The Litestar one is
-:class:`~litestar.testing.TestClient`. For unit testing, Litestar also provides
+Both frameworks ship a ``TestClient``. The Litestar one is
+:class:`~litestar.testing.TestClient`, based on ``httpx2``. For unit testing, Litestar also provides
 :func:`~litestar.testing.create_test_client` and
 :func:`~litestar.testing.create_async_test_client`, which take the same
 arguments as :class:`Litestar` and return a configured client.
@@ -867,7 +867,7 @@ A lookup table for the most common translations.
 +--------------------------------+--------------------------------------+------------------------------------------+
 | Synchronous handler            | implicit threadpool                  | ``@get(sync_to_thread=True)``            |
 +--------------------------------+--------------------------------------+------------------------------------------+
-| Dependency injection           | ``Depends(fn)``                      | ``dependencies={"name": Provide(fn)}``   |
+| Dependency injection           | ``Depends(fn)``                      | ``dependencies={"name": fn}``            |
 +--------------------------------+--------------------------------------+------------------------------------------+
 | Application state              | ``request.app.state``                | ``state: State`` + ``request.app.state`` |
 +--------------------------------+--------------------------------------+------------------------------------------+

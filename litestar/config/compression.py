@@ -56,7 +56,13 @@ class CompressionConfig:
     middleware_class: type[CompressionMiddleware] = CompressionMiddleware
     """Middleware class to use, should be a subclass of :class:`CompressionMiddleware`."""
     exclude: str | list[str] | None = None
-    """A pattern or list of patterns to skip in the compression middleware."""
+    """A pattern or list of patterns to skip in the compression middleware, matched against the request path."""
+    exclude_path_pattern: str | list[str] | None = None
+    """A pattern or list of patterns to skip in the compression middleware, matched against the handler path at
+    startup.
+
+    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+    """
     exclude_opt_key: str | None = None
     """An identifier to use on routes to disable compression for a particular route."""
     compression_facade: type[CompressionFacade] = GzipCompression

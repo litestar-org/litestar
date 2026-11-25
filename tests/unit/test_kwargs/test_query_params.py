@@ -13,7 +13,8 @@ import pytest
 from litestar import MediaType, Request, get, post
 from litestar.datastructures import MultiDict
 from litestar.di import NamedDependency, Provide
-from litestar.params import FromQuery, QueryParameter
+from litestar.exceptions import LitestarDeprecationWarning
+from litestar.params import FromQuery, JSONBody, QueryParameter, QueryParams
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 
@@ -164,7 +165,7 @@ def test_query_kwarg() -> None:
     )
 
     @get(test_path)
-    def handler(a: FromQuery[list[str]], b: FromQuery[list[str]], query: MultiDict) -> None:
+    def handler(a: FromQuery[list[str]], b: FromQuery[list[str]], query: QueryParams) -> None:
         assert isinstance(query, MultiDict)
         assert {k: query.getall(k) for k in query} == {"a": ["foo", "bar"], "b": ["qux"]}
         assert isinstance(a, list)
@@ -172,7 +173,9 @@ def test_query_kwarg() -> None:
         assert a == ["foo", "bar"]
         assert b == ["qux"]
 
-    with create_test_client(handler) as client:
+    with pytest.warns(LitestarDeprecationWarning, match="'QueryParams', which is deprecated"):
+        client = create_test_client(handler)
+    with client:
         response = client.get(f"{test_path}?{params}")
         assert response.status_code == HTTP_200_OK, response.json()
 
@@ -225,7 +228,7 @@ def test_query_param_dependency_with_alias() -> None:
 def test_query_params_with_post() -> None:
     # https://github.com/litestar-org/litestar/issues/3734
     @post()
-    async def handler(data: str, secret: Annotated[str, QueryParameter(name="x-secret")]) -> None:
+    async def handler(data: JSONBody[str], secret: Annotated[str, QueryParameter(name="x-secret")]) -> None:
         return None
 
     with create_test_client([handler], raise_server_exceptions=True) as client:

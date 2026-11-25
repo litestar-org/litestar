@@ -19,7 +19,7 @@ from litestar.middleware._internal.exceptions.middleware import (
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
 from litestar.types import ExceptionHandlersMap
-from litestar.types.asgi_types import HTTPReceiveMessage, HTTPScope, Message, Receive, Scope, Send
+from litestar.types.asgi_types import ASGIApp, HTTPReceiveMessage, HTTPScope, Message, Receive, Scope, Send
 from litestar.utils.scope.state import ScopeState
 from tests.helpers import cleanup_logging_impl
 
@@ -265,6 +265,56 @@ def test_pdb_on_exception(mocker: MockerFixture) -> None:
     app = Litestar([handler], pdb_on_exception=True)
 
     with TestClient(app=app) as client:
+        response = client.get("/test")
+
+    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+    mock_post_mortem.assert_called_once()
+
+
+def test_after_exception_hook_called_once_for_exception_without_response_on_route_with_middleware() -> None:
+    # the route's own exception handler middleware re-raises an exception it cannot create a
+    # response for, and the app's catches it again
+    calls: list[Exception] = []
+
+    async def after_exception_hook(exc: Exception, scope: "Scope") -> None:
+        calls.append(exc)
+
+    def middleware(app: "ASGIApp") -> "ASGIApp":
+        async def middleware_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+            await app(scope, receive, send)
+
+        return middleware_app
+
+    error = ValueError("Test exception")
+
+    @get("/test", middleware=[middleware])
+    def handler() -> None:
+        raise error
+
+    with create_test_client(handler, after_exception=[after_exception_hook]) as client:
+        response = client.get("/test")
+
+    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
+    assert calls == [error]
+
+
+@pytest.mark.filterwarnings("ignore::litestar.utils.warnings.LitestarWarning:")
+def test_pdb_on_exception_called_once_for_exception_without_response_on_route_with_middleware(
+    mocker: MockerFixture,
+) -> None:
+    def middleware(app: "ASGIApp") -> "ASGIApp":
+        async def middleware_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+            await app(scope, receive, send)
+
+        return middleware_app
+
+    @get("/test", middleware=[middleware])
+    def handler() -> None:
+        raise ValueError("Test debug exception")
+
+    mock_post_mortem = mocker.patch("litestar.app.pdb.post_mortem")
+
+    with TestClient(app=Litestar([handler], pdb_on_exception=True)) as client:
         response = client.get("/test")
 
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR

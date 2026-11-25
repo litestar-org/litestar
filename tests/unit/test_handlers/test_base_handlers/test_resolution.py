@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock
 
 from litestar import Controller, Litestar, Router, get
 from litestar.di import Provide
-from litestar.params import Parameter
+from litestar.params import QueryParameter
 
 
 def test_resolve_dependencies_without_provide() -> None:
@@ -13,11 +13,13 @@ def test_resolve_dependencies_without_provide() -> None:
     async def bar() -> None:
         pass
 
-    @get(dependencies={"foo": foo, "bar": Provide(bar)})
+    provide_bar = Provide(bar)
+
+    @get(dependencies={"foo": foo, "bar": provide_bar})
     async def handler() -> None:
         pass
 
-    assert handler.dependencies == {"foo": Provide(foo), "bar": Provide(bar)}
+    assert handler.dependencies == {"foo": foo, "bar": provide_bar}
 
 
 def function_factory() -> Callable[[], Awaitable[None]]:
@@ -49,10 +51,10 @@ def test_resolve_from_layers() -> None:
     handler = handler_map["handler"]
 
     assert handler.dependencies == {
-        "app": Provide(app_dependency),
-        "router": Provide(router_dependency),
-        "controller": Provide(controller_dependency),
-        "handler": Provide(handler_dependency),
+        "app": app_dependency,
+        "router": router_dependency,
+        "controller": controller_dependency,
+        "handler": handler_dependency,
     }
 
 
@@ -75,7 +77,7 @@ def test_resolve_type_decoders() -> None:
 
 
 def test_resolve_parameters() -> None:
-    parameters = {"foo": Parameter()}
+    parameters = {"foo": QueryParameter()}
 
     @get("/")
     def handler() -> None:

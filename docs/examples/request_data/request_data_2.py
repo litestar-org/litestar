@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from litestar import Litestar, post
+from litestar.params import JSONBody
 
 
 @dataclass
@@ -10,7 +11,7 @@ class User:
 
 
 @post(path="/")
-async def index(data: User) -> User:
+async def index(data: JSONBody[User]) -> User:
     return data
 
 

@@ -13,7 +13,7 @@ Here is our final application:
 .. literalinclude:: /examples/plugins/sqlalchemy_init_plugin/full_app_with_plugin.py
     :language: python
     :linenos:
-    :emphasize-lines: 10, 82
+    :emphasize-lines: 11, 86
 
 Recap
 =====
@@ -27,7 +27,7 @@ In the final application ``TodoItem`` is defined, representing a TODO item. It e
 .. literalinclude:: /examples/plugins/sqlalchemy_init_plugin/full_app_with_plugin.py
     :language: python
     :linenos:
-    :lines: 1-6, 12-21
+    :lines: 1-6, 14-23
 
 Next, we define a dependency that centralizes our database transaction management and error handling. This dependency
 depends on the ``db_session`` dependency, which is provided by the SQLAlchemy plugin, and is made available to our
@@ -36,21 +36,21 @@ handlers via the ``transaction`` argument:
 .. literalinclude:: /examples/plugins/sqlalchemy_init_plugin/full_app_with_plugin.py
     :language: python
     :linenos:
-    :lines: 1-11, 22-32
+    :lines: 1-13, 24-34
 
 We also define a couple of utility functions, that help us to retrieve our TODO items from the database:
 
 .. literalinclude:: /examples/plugins/sqlalchemy_init_plugin/full_app_with_plugin.py
     :language: python
     :linenos:
-    :lines: 1-11, 33-50
+    :lines: 1-13, 35-52
 
 We define our route handlers, which are the interface through which TODO items can be created, retrieved and updated:
 
 .. literalinclude:: /examples/plugins/sqlalchemy_init_plugin/full_app_with_plugin.py
     :language: python
     :linenos:
-    :lines: 1-11, 51-69
+    :lines: 1-13, 53-73
 
 Finally, we define our application, using the
 :class:`SQLAlchemyPlugin <advanced_alchemy.extensions.litestar.plugins.SQLAlchemyPlugin>` to configure SQLAlchemy and manage the
@@ -59,7 +59,7 @@ engine and session lifecycle, and register our ``transaction`` dependency.
 .. literalinclude:: /examples/plugins/sqlalchemy_init_plugin/full_app_with_plugin.py
     :language: python
     :linenos:
-    :lines: 1-11, 78-83
+    :lines: 1-13, 82-87
 
 .. seealso::
 

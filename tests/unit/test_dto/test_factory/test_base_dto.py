@@ -9,6 +9,7 @@ import pytest
 from litestar import Request
 from litestar.dto import DataclassDTO, DTOConfig
 from litestar.exceptions.dto_exceptions import InvalidAnnotationException
+from litestar.params import JSONBody
 from litestar.typing import FieldDefinition
 
 from . import Model
@@ -101,7 +102,7 @@ def test_config_assigned_via_subclassing() -> None:
 async def test_from_bytes(asgi_connection: Request[Any, Any, Any]) -> None:
     dto_type = DataclassDTO[Model]
     dto_type.create_for_field_definition(
-        FieldDefinition.from_kwarg(Model, name="data"), handler_id=asgi_connection.route_handler.handler_id
+        FieldDefinition.from_annotation(JSONBody[Model]), handler_id=asgi_connection.route_handler.handler_id
     )
     assert dto_type(asgi_connection).decode_bytes(b'{"a":1,"b":"two"}') == Model(a=1, b="two")
 
@@ -110,7 +111,7 @@ def test_config_field_rename(asgi_connection: Request[Any, Any, Any]) -> None:
     config = DTOConfig(rename_fields={"a": "z"})
     DataclassDTO._dto_backends = {}
     dto_type = DataclassDTO[Annotated[Model, config]]
-    dto_type.create_for_field_definition(FieldDefinition.from_kwarg(Model, name="data"), handler_id="handler_id")
+    dto_type.create_for_field_definition(FieldDefinition.from_annotation(JSONBody[Model]), handler_id="handler_id")
     field_definitions = dto_type._dto_backends["handler_id"]["data_backend"].parsed_field_definitions  # pyright: ignore[reportTypedDictNotRequiredAccess]
     assert field_definitions[0].serialization_name == "z"
 
@@ -154,7 +155,7 @@ def test_sub_types_supported() -> None:
         c: int
 
     dto_type.create_for_field_definition(
-        handler_id="handler_id", field_definition=FieldDefinition.from_kwarg(SubType, name="data")
+        handler_id="handler_id", field_definition=FieldDefinition.from_annotation(JSONBody[SubType])
     )
     assert (
         dto_type._dto_backends["handler_id"]["data_backend"].parsed_field_definitions[-1].name == "c"  # pyright: ignore[reportTypedDictNotRequiredAccess]
