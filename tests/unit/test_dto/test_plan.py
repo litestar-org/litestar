@@ -22,6 +22,7 @@ from litestar.typing import FieldDefinition
 from tests.unit.test_dto import Model, registered
 
 T = TypeVar("T")
+LIST: Any = list
 
 
 @dataclass
@@ -33,6 +34,9 @@ class OtherModel:
 class WithCount(Generic[T]):
     count: int
     data: list[T]
+
+
+WITH_COUNT: Any = WithCount
 
 
 @dataclass
@@ -148,8 +152,8 @@ def test_create_backend_uses_backend_cls() -> None:
     ("annotation", "expected"),
     [
         pytest.param(Model, lambda backend: backend.transfer_model_type, id="model"),
-        pytest.param(list[Model], lambda backend: list[backend.transfer_model_type], id="list"),
-        pytest.param(WithCount[Model], lambda backend: WithCount[backend.transfer_model_type], id="generic-wrapper"),
+        pytest.param(list[Model], lambda backend: LIST[backend.transfer_model_type], id="list"),
+        pytest.param(WithCount[Model], lambda backend: WITH_COUNT[backend.transfer_model_type], id="generic-wrapper"),
     ],
 )
 def test_build_schema_annotation(annotation: Any, expected: Callable[[DTOBackend], Any]) -> None:

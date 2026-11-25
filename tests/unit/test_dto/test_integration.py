@@ -1,3 +1,5 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Annotated
@@ -79,7 +81,7 @@ def test_set_dto_none_disables_inherited_dto(ModelDataDTO: type[AbstractDTO]) ->
 
     instances: list[AbstractDTO] = []
 
-    class RecordingDTO(ModelDataDTO):
+    class RecordingDTO(ModelDataDTO):  # type: ignore[valid-type, misc]
         def __init__(self, asgi_connection: ASGIConnection) -> None:
             instances.append(self)
             super().__init__(asgi_connection)

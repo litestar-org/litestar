@@ -180,7 +180,8 @@ def in_tree_dto(kind: str) -> tuple[type[AbstractDTO[Any]], type[Any]]:
     from litestar.plugins.pydantic import PydanticDTO
 
     pydantic_model = pydantic.create_model("PydanticModel", a=(int, ...), b=(str, ...))
-    return PydanticDTO[pydantic_model], pydantic_model
+    pydantic_dto: Any = PydanticDTO
+    return pydantic_dto[pydantic_model], pydantic_model
 
 
 @pytest.mark.parametrize("kind", ["dataclass", "msgspec", "pydantic", "sqlalchemy"])
@@ -190,11 +191,11 @@ def test_in_tree_dtos_emit_no_deprecation_warning(kind: str) -> None:
         dto, model = in_tree_dto(kind)
 
         @post("/json", dto=dto, signature_namespace={"M": model})
-        async def json_handler(data: "JSONBody[M]") -> "M":  # type: ignore[valid-type]  # noqa: F821
+        async def json_handler(data: "JSONBody[M]") -> "M":  # type: ignore[name-defined]  # noqa: F821
             return data
 
         @post("/form", dto=dto, signature_namespace={"M": model})
-        async def form_handler(data: "URLEncodedBody[M]") -> "M":  # type: ignore[valid-type]  # noqa: F821
+        async def form_handler(data: "URLEncodedBody[M]") -> "M":  # type: ignore[name-defined]  # noqa: F821
             return data
 
         app = Litestar([json_handler, form_handler])
@@ -223,7 +224,7 @@ def test_overriding_a_deprecated_entry_point_warns_once_per_class_and_method() -
     assert {(warning.category, warning.filename) for warning in record} == {(LitestarDeprecationWarning, __file__)}
     assert [warning.lineno for warning in record] == [
         OverridingDTO.decode_bytes.__code__.co_firstlineno,
-        OverridingDTO.create_openapi_schema.__func__.__code__.co_firstlineno,
+        OverridingDTO.__dict__["create_openapi_schema"].__func__.__code__.co_firstlineno,
     ]
 
     assert [str(warning.message) for warning in record] == [
