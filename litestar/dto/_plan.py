@@ -1,5 +1,6 @@
 import sys
 from collections.abc import AsyncGenerator, AsyncIterator, Generator, Iterator
+from contextlib import suppress
 from dataclasses import dataclass
 from types import NoneType
 from typing import TYPE_CHECKING, Annotated, Any, ForwardRef, Literal, TypeAlias, TypeVar, Union, get_args, get_origin
@@ -372,8 +373,14 @@ def build_dto_plan(handler: "BaseRouteHandler", app: "Litestar") -> DTOPlan:
         declares_dto = dto is not None and dto is not Empty
         if data_field is not None and declares_dto:
             data_field = _without_type_aliases(data_field, handler.signature_namespace)
+        elif data_field is not None and dto is Empty and app.plugins.serialization:
+            with suppress(InvalidAnnotationException):
+                data_field = _without_type_aliases(data_field, handler.signature_namespace)
         if return_dto is not None and (return_dto is not Empty or declares_dto):
             return_field = _without_type_aliases(return_field, handler.signature_namespace)
+        elif return_dto is Empty and app.plugins.serialization:
+            with suppress(InvalidAnnotationException):
+                return_field = _without_type_aliases(return_field, handler.signature_namespace)
         data_dto, data_target = _resolve_data_dto(handler, app, data_field)
         data: DTODirectionPlan | None = None
         if data_field is not None and data_dto is not None and data_target is not None:

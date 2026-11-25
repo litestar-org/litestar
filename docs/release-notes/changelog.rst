@@ -114,10 +114,10 @@
         :type: bugfix
         :pr: 5260
 
-        When a DTO is declared, a ``type`` statement or ``TypeAliasType`` alias in a handler annotation
-        is now handled like the type it stands for, in both directions and in the OpenAPI schema. A
-        generic alias missing a type argument that has no default, or an alias whose value or type
-        parameter default cannot be evaluated, fails at startup.
+        When a DTO is declared or a serialization plugin provides one, a ``type`` statement or
+        ``TypeAliasType`` alias in a handler annotation is handled like the type it stands for, in both
+        directions and in the OpenAPI schema. With a declared DTO, a generic alias missing a type argument
+        that has no default, or an alias whose value or default cannot be evaluated, fails at startup.
 
     .. change:: DTO: Stable OpenAPI component names across application instances
         :type: bugfix

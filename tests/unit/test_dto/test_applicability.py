@@ -1259,6 +1259,17 @@ def test_type_alias_applies_like_its_value(
     assert "secret" not in observed[2]
 
 
+def test_plugin_dto_applies_through_a_type_alias_and_skips_an_unresolvable_one() -> None:
+    plugins = (ModelPlugin(User, UserDTO),)
+    app = build_app("app", method="GET", returns=UsersAlias, respond=lambda data: [USER], plugins=plugins)
+
+    with TestClient(app) as client:
+        assert client.get("/").json() == [USER_ENCODED]
+
+    Alias = TypeAliasType("Alias", list["Missing"])  # type: ignore[name-defined]  # noqa: F821
+    assert build_app("app", method="GET", returns=Alias, respond=lambda data: [], plugins=plugins)
+
+
 @pytest.mark.parametrize("body", [URLEncodedBody, MultipartBody])
 def test_empty_form_body_passes_none_through_an_optional_alias(body: Any) -> None:
     def observe(annotation: Any) -> tuple[int, Any]:
