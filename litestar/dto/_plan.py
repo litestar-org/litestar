@@ -312,7 +312,11 @@ def _resolve_type_aliases(annotation: Any, namespace: dict[str, Any], expanding:
         params = alias.__type_params__
         args = () if get_args(annotation) == params else get_args(annotation)
         try:
-            args += tuple(param.__default__ for param in params[len(args) :] if getattr(param, "has_default", bool)())
+            args += tuple(
+                param.__default__
+                for param in params[len(args) :]
+                if hasattr(param, "has_default") and param.has_default()
+            )
             value = alias.__value__
         except Exception as exc:
             raise _unresolvable_alias(annotation, exc) from exc
