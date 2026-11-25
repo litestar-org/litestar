@@ -4,6 +4,7 @@ back again, to bytes.
 
 from __future__ import annotations
 
+import re
 from contextlib import suppress
 from dataclasses import replace
 from typing import (
@@ -53,6 +54,8 @@ if TYPE_CHECKING:
     from litestar.types.serialization import LitestarEncodableType
 
 __all__ = ("DTOBackend",)
+
+_COMPONENT_NAME_PARTS_PATTERN: Final = re.compile(r"\w+", re.ASCII)
 
 
 class CompositeTypeHandler(Protocol):
@@ -479,10 +482,11 @@ class DTOBackend:
 
     def _nested_model_name(self, unique_name: str, field_path: tuple[str, ...], model_name: str) -> str:
         name = f"{unique_name}{model_name}"
-        for length in range(1, len(field_path) + 1):
+        path = ["_".join(_COMPONENT_NAME_PARTS_PATTERN.findall(segment)) for segment in field_path]
+        for length in range(1, len(path) + 1):
             if name not in self._nested_model_names:
                 break
-            name = f"{unique_name}_{'_'.join(field_path[-length:])}{model_name}"
+            name = f"{unique_name}_{'_'.join(path[-length:])}{model_name}"
         if name in self._nested_model_names:
             name = unique_name_for_scope(name, self._nested_model_names)
         self._nested_model_names.add(name)

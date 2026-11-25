@@ -1,5 +1,5 @@
 from collections.abc import Iterator
-from dataclasses import dataclass
+from dataclasses import dataclass, make_dataclass
 from typing import Annotated, Any, Optional, get_args
 
 import msgspec
@@ -230,6 +230,9 @@ class Node:
     kids: "Optional[list[Node]]" = None
 
 
+NonAscii: Any = make_dataclass("NonAscii", [("first", Cc), ("名前", Cc), ("住所", Cc)])
+
+
 def deep_names(model: Any, depth: int) -> list[list[str]]:
     dto = DataclassDTO[Annotated[model, DTOConfig(max_nested_depth=depth)]]
 
@@ -291,6 +294,17 @@ def deep_names(model: Any, depth: int) -> list[list[str]]:
                 "HNode_0_kids_kids_childNodeResponseBody",
             ],
             id="self-referential-depth-3",
+        ),
+        pytest.param(
+            NonAscii,
+            1,
+            [
+                "HNonAsciiCcResponseBody",
+                "HNonAsciiResponseBody",
+                "HNonAscii_CcResponseBody",
+                "HNonAscii_Cc_0ResponseBody",
+            ],
+            id="non-ascii-field-names",
         ),
     ],
 )
