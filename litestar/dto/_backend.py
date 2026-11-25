@@ -335,7 +335,7 @@ class DTOBackend:
             Encoded data.
         """
         if self.wrapper_attribute_name:
-            wrapped_transfer = self._encode_data(getattr(data, self.wrapper_attribute_name))
+            wrapped_transfer = self._encode_data(self.attribute_accessor(data, self.wrapper_attribute_name))
             setattr(data, self.wrapper_attribute_name, wrapped_transfer)
             return cast("LitestarEncodableType", data)
 
