@@ -73,14 +73,15 @@
         :exc:`~litestar.exceptions.DTONotApplicableError` at startup instead of being skipped. Declare
         ``return_dto=None`` on the handler to opt out.
 
-    .. change:: DTO: An optional union of several types is not handled
+    .. change:: DTO: Unions of several types
         :type: feature
         :breaking:
         :pr: 5259
 
         A DTO no longer handles an optional union of several types, such as ``User | int | None``,
-        through its first member that is not ``None``; such an annotation now fails at startup with
-        ``DTONotApplicableError``.
+        through its first member; such an annotation fails at startup with ``DTONotApplicableError``.
+        A return value annotated with a union of generic wrappers holding the model in one attribute,
+        such as ``CursorPagination[User] | OffsetPagination[User]``, is handled.
 
     .. change:: DTO: Pass ``None`` through an optional annotation
         :type: bugfix

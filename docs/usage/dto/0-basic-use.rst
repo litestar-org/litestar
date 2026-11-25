@@ -81,7 +81,9 @@ A DTO narrowed with ``User`` handles ``User`` and collections or mappings of ``U
 ``dict[str, User]`` or ``tuple[User, ...]``, optional or not. For request data it also handles ``DTOData[User]``; for a
 return value, one generic wrapper around these, such as ``Response[User]`` or a generic dataclass holding the data in
 an attribute typed with its type variable. An optional annotation is handled through its only member that is not
-``None``; a union of several types, such as ``User | int | None``, is not handled.
+``None``; a union of several types, such as ``User | int | None``, is not handled, except for a return value that is a
+union of generic wrappers holding the model in the same attribute, such as
+``CursorPagination[User] | OffsetPagination[User]``.
 
 When a DTO cannot handle the annotation, the outcome depends on where it is declared:
 

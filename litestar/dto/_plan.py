@@ -1,7 +1,7 @@
 from collections.abc import AsyncGenerator, AsyncIterator, Generator, Iterator
 from dataclasses import dataclass
 from types import NoneType
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias, Union
 
 import msgspec
 
@@ -160,12 +160,13 @@ def resolve_dto_target(
     The DTO applies to an annotation without ``None``, or to the only member of an optional annotation that is not
     ``None``, whose model type, unwrapped from ``DTOData``, a collection, a mapping value or a variadic tuple, is a
     subclass of the DTO's model type, except for a collection or mapping on a form body. In the return direction
-    the DTO must also support that annotation, and it applies to a model wrapped in a generic type.
+    the DTO must also support that annotation, and it applies to a model wrapped in a generic type, or in a union of
+    generic types that hold it in the same attribute.
     """
     if (
         not is_data_field
         and (inner := _without_optional(field_definition)) is not None
-        and not dto.is_supported_model_type_field(inner)
+        and not all(dto.is_supported_model_type_field(member) for member in _union_members(inner))
     ):
         return None
     return _match_target(dto, field_definition, is_data_field=is_data_field)
@@ -194,20 +195,37 @@ def _match_target(
             passes_none=passes_none,
         )
 
-    if (
-        not is_data_field
-        and model_field is inner
-        and not inner.is_union
-        and (wrapped := dto.resolve_generic_wrapper_type(inner))
-    ):
-        model_field, transfer_field, wrapper_attribute_name = wrapped
-        return DTOTarget(
-            model_field=model_field,
-            transfer_field=transfer_field,
-            wrapper_attribute_name=wrapper_attribute_name,
-            passes_none=passes_none,
-        )
-    return None
+    if is_data_field or model_field is not inner:
+        return None
+    first, *others = [_match_wrapper(dto, member) for member in _union_members(inner)]
+    if first is None or any(other is None or _wrapper_key(other) != _wrapper_key(first) for other in others):
+        return None
+    model_field, transfer_field, wrapper_attribute_name = first
+    return DTOTarget(
+        model_field=model_field,
+        transfer_field=transfer_field,
+        wrapper_attribute_name=wrapper_attribute_name,
+        passes_none=passes_none,
+    )
+
+
+def _union_members(field_definition: FieldDefinition) -> tuple[FieldDefinition, ...]:
+    if not field_definition.is_union:
+        return (field_definition,)
+    return tuple(inner for inner in field_definition.inner_types if not inner.is_subclass_of(NoneType))
+
+
+def _match_wrapper(
+    dto: "type[AbstractDTO[Any]]", field_definition: FieldDefinition
+) -> tuple[FieldDefinition, FieldDefinition, str] | None:
+    if field_definition.is_union:
+        return None
+    return dto.resolve_generic_wrapper_type(field_definition)
+
+
+def _wrapper_key(wrapped: tuple[FieldDefinition, FieldDefinition, str]) -> tuple[Any, Any, str]:
+    model_field, transfer_field, wrapper_attribute_name = wrapped
+    return model_field.annotation, transfer_field.annotation, wrapper_attribute_name
 
 
 def create_backend(
@@ -248,18 +266,23 @@ def build_schema_annotation(
     inner = _without_optional(field_definition)
     if not backend.wrapper_attribute_name or inner is None:
         return backend.annotation
-    annotation = backend.annotation
-    if not inner.is_subclass_of(Response):
-        model_type = _model_type(dto)
-        annotation = inner.safe_generic_origin[
-            tuple(
-                build_annotation_for_backend(model_type, inner_type, backend.transfer_model_type)
-                if dto.resolve_model_type(inner_type).is_subclass_of(model_type)
-                else arg
-                for arg, inner_type in zip(inner.args, inner.inner_types, strict=True)
-            )
-        ]
-    return annotation | None if field_definition.is_optional else annotation
+    model_type = _model_type(dto)
+    annotation: Any = Union[
+        tuple(
+            backend.annotation
+            if member.is_subclass_of(Response)
+            else member.safe_generic_origin[
+                tuple(
+                    build_annotation_for_backend(model_type, inner_type, backend.transfer_model_type)
+                    if dto.resolve_model_type(inner_type).is_subclass_of(model_type)
+                    else arg
+                    for arg, inner_type in zip(member.args, member.inner_types, strict=True)
+                )
+            ]
+            for member in _union_members(inner)
+        )
+    ]
+    return Union[annotation, None] if field_definition.is_optional else annotation
 
 
 def handler_name_scope(handler: "BaseRouteHandler") -> "Hashable":

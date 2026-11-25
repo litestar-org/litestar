@@ -11,7 +11,7 @@ from litestar.dto._plan import resolve_dto_target
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import DTONotApplicableError, InvalidAnnotationException, MissingDTOError
 from litestar.handlers import WebsocketListener, websocket_stream
-from litestar.params import BodyKwarg, JSONBody, MultipartBody, URLEncodedBody
+from litestar.params import BodyKwarg, FromQuery, JSONBody, MultipartBody, URLEncodedBody
 from litestar.plugins import SerializationPlugin
 from litestar.response import ServerSentEvent, Stream
 from litestar.testing import TestClient, create_test_client
@@ -42,6 +42,17 @@ class Other:
 @dataclass
 class Wrapper(Generic[T]):
     data: T
+
+
+@dataclass
+class Page(Generic[T]):
+    data: T
+    cursor: str = "c"
+
+
+@dataclass
+class Items(Generic[T]):
+    items: T
 
 
 UserDTO = DataclassDTO[Annotated[User, DTOConfig(exclude={"secret"})]]
@@ -169,6 +180,9 @@ NOT_APPLICABLE: Any = object()
         pytest.param(Optional[Wrapper[User]], None, ("data", True, False), id="optional-wrapper"),
         pytest.param(Optional[Response[Optional[User]]], None, ("content", True, True), id="optional-response"),
         pytest.param(list[Wrapper[User]], None, None, id="list-of-wrappers"),
+        pytest.param(Wrapper[User] | Page[User] | None, None, ("data", True, False), id="union-of-wrappers"),
+        pytest.param(Wrapper[User] | Items[User], None, None, id="union-of-wrappers-with-other-attributes"),
+        pytest.param(Wrapper[User] | int, None, None, id="union-of-wrapper-and-int"),
         pytest.param(AsyncGenerator[User, None], None, None, id="async-generator"),
         pytest.param(dict[User, int], None, None, id="model-as-key"),
         pytest.param(tuple[User, int], None, None, id="tuple"),
@@ -616,6 +630,24 @@ def test_optional_generic_wrapper_return_is_encoded(returns: Any, respond: Calla
 
     with TestClient(app) as client:
         assert client.get("/").json() == expected
+
+
+def test_union_of_generic_wrappers_over_the_model_is_filtered_and_documented() -> None:
+    @get("/", return_dto=UserDTO, sync_to_thread=False)
+    def read(kind: FromQuery[str]) -> Wrapper[User] | Page[User]:
+        return Wrapper(USER) if kind == "wrapper" else Page(USER)
+
+    app = Litestar([read])
+    with TestClient(app) as client:
+        assert client.get("/", params={"kind": "wrapper"}).json() == {"data": USER_ENCODED}
+        assert client.get("/", params={"kind": "page"}).json() == {"data": USER_ENCODED, "cursor": "c"}
+
+    schema = app.openapi_schema.to_schema()
+    response = schema["paths"]["/"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
+    components = schema["components"]["schemas"]
+    wrappers = [components[member["$ref"].rsplit("/", 1)[1]] for member in response["oneOf"]]
+    assert [sorted(wrapper["properties"]) for wrapper in wrappers] == [["data"], ["cursor", "data"]]
+    assert all("secret" not in component.get("properties", {}) for component in components.values())
 
 
 def test_optional_generic_wrapper_schema_omits_the_excluded_field() -> None:
