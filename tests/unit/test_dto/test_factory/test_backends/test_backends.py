@@ -888,7 +888,7 @@ M5 = Meta(min_length=5)
             Annotated[str, annotated_types.MinLen(5)],
             False,
             "12345",
-            Annotated[str, Meta(min_length=5, examples=[])],
+            Annotated[str, Meta(min_length=5)],
             id="DataclassDTO-annotated_types",
         ),
         pytest.param(
@@ -896,7 +896,7 @@ M5 = Meta(min_length=5)
             Annotated[str, annotated_types.MinLen(5)],
             True,
             "12345",
-            Union[Annotated[str, Meta(min_length=5, examples=[])], UnsetType],
+            Union[Annotated[str, Meta(min_length=5)], UnsetType],
             id="DataclassDTO-annotated_types_partial",
         ),
         *(
@@ -938,26 +938,24 @@ def test_transfer_model_field_annotations(
     "annotation, expected",
     [
         pytest.param(Annotated[int, Meta(ge=1)], (Meta(ge=1),), id="own_meta"),
-        pytest.param(Annotated[int, annotated_types.Ge(1)], (Meta(ge=1, examples=[]),), id="derived"),
+        pytest.param(Annotated[int, annotated_types.Ge(1)], (Meta(ge=1),), id="derived"),
         pytest.param(
             Annotated[int, Meta(ge=1), annotated_types.Ge(3)],
-            (Meta(ge=1), Meta(examples=[])),
+            (Meta(ge=1),),
             id="own_meta_wins_same_attribute",
         ),
         pytest.param(
             Annotated[int, Meta(ge=1), annotated_types.Le(5)],
-            (Meta(ge=1), Meta(le=5, examples=[])),
+            (Meta(ge=1), Meta(le=5)),
             id="own_meta_and_derived_different_attributes",
         ),
         pytest.param(int, (), id="unconstrained"),
-        pytest.param(Annotated[Decimal, annotated_types.Gt(0)], (Meta(examples=[]),), id="derived_rejected_type"),
-        pytest.param(Annotated[int, annotated_types.Ge(1.5)], (Meta(examples=[]),), id="derived_rejected_value"),
-        pytest.param(
-            Annotated[date, annotated_types.Ge(date(2020, 1, 1))], (Meta(examples=[]),), id="derived_not_numeric"
-        ),
+        pytest.param(Annotated[Decimal, annotated_types.Gt(0)], (), id="derived_rejected_type"),
+        pytest.param(Annotated[int, annotated_types.Ge(1.5)], (), id="derived_rejected_value"),
+        pytest.param(Annotated[date, annotated_types.Ge(date(2020, 1, 1))], (), id="derived_not_numeric"),
         pytest.param(
             Annotated[str, KwargDefinition(min_length=2, ge=1)],
-            (Meta(min_length=2, examples=[]),),
+            (Meta(min_length=2),),
             id="derived_partly_rejected",
         ),
     ],

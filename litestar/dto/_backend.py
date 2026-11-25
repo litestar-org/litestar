@@ -622,7 +622,7 @@ def _derived_constraint_kwargs(field_definition: FieldDefinition) -> dict[str, A
 
     kwargs = {
         "description": kwarg_definition.description,
-        "examples": [e.value for e in kwarg_definition.examples or []],
+        "examples": [e.value for e in kwarg_definition.examples] if kwarg_definition.examples else None,
         "ge": kwarg_definition.ge,
         "gt": kwarg_definition.gt,
         "le": kwarg_definition.le,
