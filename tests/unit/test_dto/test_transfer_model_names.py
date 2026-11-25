@@ -230,7 +230,7 @@ class Node:
     kids: "Optional[list[Node]]" = None
 
 
-def deep_names(model: type[Any], depth: int) -> list[list[str]]:
+def deep_names(model: Any, depth: int) -> list[list[str]]:
     dto = DataclassDTO[Annotated[model, DTOConfig(max_nested_depth=depth)]]
 
     async def h() -> Any: ...
