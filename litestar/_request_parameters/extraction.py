@@ -315,7 +315,8 @@ class RequestParameterExtractor:
                     create_request_body_extractor(
                         field_definition=field_definition,
                         body_kwarg=marker,
-                        is_data_optional=field_definition.is_optional,
+                        is_data_optional=field_definition.is_optional
+                        or bool(dto_plan and dto_plan.data and dto_plan.data.passes_none),
                         dto_plan=dto_plan,
                     ),
                 )

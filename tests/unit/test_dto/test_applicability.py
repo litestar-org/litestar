@@ -1259,6 +1259,24 @@ def test_type_alias_applies_like_its_value(
     assert "secret" not in observed[2]
 
 
+@pytest.mark.parametrize("body", [URLEncodedBody, MultipartBody])
+def test_empty_form_body_passes_none_through_an_optional_alias(body: Any) -> None:
+    def observe(annotation: Any) -> tuple[int, Any]:
+        app = build_app(
+            "handler",
+            body=body[annotation],
+            returns=dict[str, Any],
+            respond=respond_described,
+            handler_options={"return_dto": None},
+            dto=UserDTO,
+        )
+        with TestClient(app) as client:
+            response = client.post("/")
+        return response.status_code, response.json()
+
+    assert observe(OptionalUserAlias) == observe(Optional[User]) == (201, {"type": "NoneType", "data": None})
+
+
 @pytest.mark.parametrize(
     ("option", "alias", "reason"),
     [
