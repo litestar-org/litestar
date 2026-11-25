@@ -77,6 +77,17 @@ def test_create_for_field_definition_warns_and_validates() -> None:
         dto.create_for_field_definition(FieldDefinition.from_annotation(tuple[Model, str]), handler_id="h")
 
 
+def test_create_for_field_definition_keeps_the_backends_of_earlier_calls() -> None:
+    class DirectDTO(DataclassDTO[Model]):
+        pass
+
+    with pytest.warns(LitestarDeprecationWarning):
+        DirectDTO.create_for_field_definition(FieldDefinition.from_annotation(JSONBody[Model]), handler_id="h")
+        DirectDTO.create_for_field_definition(FieldDefinition.from_annotation(Model), handler_id="h")
+
+    assert list(vars(DirectDTO)["_direct_backends"]["h"]) == [True, False]
+
+
 def test_direct_backend_serves_the_direction_the_plan_lacks_on_its_class_only() -> None:
     class DirectDTO(DataclassDTO[Model]):
         pass
