@@ -252,7 +252,9 @@ class TransferFunctionFactory:
         cache: TransferFunctionCache,
     ) -> Callable[[Any], Any]:
         if field_definition and field_definition.is_optional:
-            field_definition = next(inner for inner in field_definition.inner_types if not inner.is_none_type)
+            non_none = [inner for inner in field_definition.inner_types if not inner.is_none_type]
+            if len(non_none) == 1:
+                field_definition = non_none[0]
         if field_definition and field_definition.is_non_string_collection and field_definition.inner_types:
             factory = cls(
                 is_data_field=is_data_field,

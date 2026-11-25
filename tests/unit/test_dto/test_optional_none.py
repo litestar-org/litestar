@@ -300,6 +300,9 @@ ENCODED = {"id": 1, "name": "a"}
             id="dict-of-optional",
         ),
         pytest.param(OptionalWrapper[DCPerson], OptionalWrapper(), None, {"data": None}, id="optional-wrapper-none"),
+        pytest.param(
+            OptionalWrapper[DCPerson], OptionalWrapper(PERSON), None, {"data": ENCODED}, id="optional-wrapper-value"
+        ),
     ],
 )
 def test_optional_and_nested_collections_round_trip(annotation: Any, value: Any, sent: Any, expected: Any) -> None:
