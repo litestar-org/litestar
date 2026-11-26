@@ -52,7 +52,7 @@ class Cafe:
     address: Address = field(default_factory=Address)
 
 
-Cafe.__name__ = "Café"
+Cafe.__name__ = "Zoë"
 
 
 @dataclass
@@ -318,14 +318,14 @@ def transfer_models(app: Litestar) -> set[type[Any]]:
         (
             unusual_class_names,
             [
-                "Caf_e9ResponseBody",
-                "Caf_e9ResponseBody.address",
                 "CafeDTOResponseBody",
                 "CafeDTOResponseBody.address",
                 "SnakeDTOResponseBody",
                 "UniDTOResponseBody",
                 "UniDTOResponseBody.gr_f6_dfe",
                 "UniDTOResponseBody.gr_f6sse",
+                "Zo_ebResponseBody",
+                "Zo_ebResponseBody.address",
             ],
         ),
         (model_subclass, ["UserDTOAdminResponseBody", "UserDTOResponseBody"]),
