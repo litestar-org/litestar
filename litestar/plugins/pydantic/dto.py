@@ -8,7 +8,7 @@ from typing_extensions import override
 
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
-from litestar.dto.field import DTO_FIELD_META_KEY, extract_dto_field
+from litestar.dto.field import DTO_FIELD_META_KEY, DTOField, Mark, extract_dto_field
 from litestar.exceptions import MissingDependencyException, ValidationException
 from litestar.plugins.pydantic.utils import get_model_info, is_pydantic_2_model, is_pydantic_undefined
 from litestar.types.empty import Empty
@@ -116,6 +116,8 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
             else:
                 # Computed fields don't expose FieldInfo; mark Optional[...] as default=None so
                 # the transfer struct treats them as optional when the computed value is None.
+                if dto_field.mark is None:
+                    dto_field = DTOField(mark=Mark.READ_ONLY)
                 if field_definition.is_optional:
                     default = None
                 else:

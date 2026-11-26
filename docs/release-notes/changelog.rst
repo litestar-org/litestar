@@ -16,11 +16,12 @@
         ``forbid_unknown_fields=True``, clients sending such a field get a ``400``, and a
         ``"private"`` or ``"read-only"`` field now needs a default.
 
-    .. change:: DTO: Stop requiring properties in request data
+    .. change:: DTO: Stop requiring properties and computed fields in request data
         :type: bugfix
 
-        ``DataclassDTO`` and ``MsgspecDTO`` required a model's properties in request data.
-        Properties are read-only and are no longer part of the inbound model.
+        ``DataclassDTO`` and ``MsgspecDTO`` required a model's properties in request data,
+        and ``PydanticDTO`` its computed fields. Both are read-only and are no longer part of
+        the inbound model.
 
     .. change:: DTO: Apply field filtering to nested models in fixed-length tuples
         :type: bugfix

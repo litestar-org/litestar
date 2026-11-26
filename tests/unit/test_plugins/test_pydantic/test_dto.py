@@ -166,3 +166,26 @@ def test_excluded_field_name_not_valid_as_string_literal(excluded_name: str) -> 
 
     assert response.status_code == HTTP_201_CREATED
     assert response.json() == {"other": 1, excluded_name: 0}
+
+
+class Shout(pydantic_v2.BaseModel):
+    name: str
+
+    @pydantic_v2.computed_field  # type: ignore[prop-decorator]
+    @property
+    def loud(self) -> str:
+        return self.name.upper()
+
+
+def test_pydantic_dto_does_not_require_computed_fields_in_request_data() -> None:
+    @post("/", dto=PydanticDTO[Shout])
+    def create_shout(data: JSONBody[Shout]) -> Shout:
+        return data
+
+    with create_test_client([create_shout]) as client:
+        response = client.post("/", json={"name": "a"})
+        assert response.status_code == HTTP_201_CREATED
+        assert response.json() == {"name": "a", "loud": "A"}
+        request_schema = client.get("/schema/openapi.json").json()["components"]["schemas"]["ShoutRequestBody"]
+
+    assert "loud" not in request_schema["properties"]
