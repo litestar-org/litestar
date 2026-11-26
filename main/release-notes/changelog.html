@@ -1850,6 +1850,17 @@ Previously, this fields was nullable and not required.</p>
 <section id="3.0.0-misc">
 <h3>Other changes<a class="headerlink" href="#3.0.0-misc" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>DTO: Store DTO backends on the route handler<a class="headerlink reference internal" href="#3.0.0-dto: store dto backends on the route handler" id="3.0.0-dto: store dto backends on the route handler">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>A route handler keeps the backends of its DTOs, instead of the DTO class keeping
+them for every handler. This changes two methods that custom DTOs may override
+or call:
+<a class="reference internal" href="../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_for_field_definition" title="litestar.dto.base_dto.AbstractDTO.create_for_field_definition"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_for_field_definition()</span></code></a> returns
+the backend it builds, where it returned <code class="docutils literal notranslate"><span class="pre">None</span></code>, and
+<a class="reference internal" href="../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema" title="litestar.dto.base_dto.AbstractDTO.create_openapi_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_openapi_schema()</span></code></a> takes the
+<code class="docutils literal notranslate"><span class="pre">route_handler</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">handler_id</span></code>.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5266">https://github.com/litestar-org/litestar/pull/5266</a></span></p>
+</div>
+</dd>
 <dt>DTO: Remove the non-codegen DTO backend<a class="headerlink reference internal" href="#3.0.0-dto: remove the non-codegen dto backend" id="3.0.0-dto: remove the non-codegen dto backend">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>DTOs always transfer data through the codegen backend, the default since
 <code class="docutils literal notranslate"><span class="pre">2.8.0</span></code>. The <code class="docutils literal notranslate"><span class="pre">DTOConfig.experimental_codegen_backend</span></code> option and the private

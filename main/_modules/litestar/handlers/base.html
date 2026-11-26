@@ -540,510 +540,522 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="38">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di</span><span class="w"> </span><span class="kn">import</span> <span class="n">DependencyKey</span><span class="p">,</span> <span class="n">DIContext</span><span class="p">,</span> <span class="n">Provide</span><span class="p">,</span> <span class="n">Provider</span>
 </span><span data-line="39">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.di._route_handler</span><span class="w"> </span><span class="kn">import</span> <span class="n">HandlerInjectionSetup</span>
 </span><span data-line="40">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractDTO</span>
-</span><span data-line="41">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.router</span><span class="w"> </span><span class="kn">import</span> <span class="n">Router</span>
-</span><span data-line="42">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.routes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRoute</span>
-</span><span data-line="43">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncAnyCallable</span><span class="p">,</span> <span class="n">Scope</span>
-</span><span data-line="44">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.callable_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnyCallable</span><span class="p">,</span> <span class="n">AsyncGuard</span>
-</span><span data-line="45">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.empty</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmptyType</span>
-</span><span data-line="46">
-</span><span data-line="47"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;BaseRouteHandler&quot;</span><span class="p">,)</span>
-</span><span data-line="48">
+</span><span data-line="41">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto._backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOBackend</span>
+</span><span data-line="42">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.router</span><span class="w"> </span><span class="kn">import</span> <span class="n">Router</span>
+</span><span data-line="43">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.routes</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRoute</span>
+</span><span data-line="44">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncAnyCallable</span><span class="p">,</span> <span class="n">Scope</span>
+</span><span data-line="45">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.callable_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnyCallable</span><span class="p">,</span> <span class="n">AsyncGuard</span>
+</span><span data-line="46">    <span class="kn">from</span><span class="w"> </span><span class="nn">litestar.types.empty</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmptyType</span>
+</span><span data-line="47">
+</span><span data-line="48"><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;BaseRouteHandler&quot;</span><span class="p">,)</span>
 </span><span data-line="49">
+</span><span data-line="50">
 <div class="viewcode-block" id="BaseRouteHandler">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.BaseRouteHandler">[docs]</a>
-</span><span data-line="50"><span class="k">class</span><span class="w"> </span><span class="nc">BaseRouteHandler</span><span class="p">:</span>
-</span><span data-line="51"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Base route handler.</span>
-</span><span data-line="52">
-</span><span data-line="53"><span class="sd">    Serves as a subclass for all route handlers</span>
-</span><span data-line="54"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="55">
-</span><span data-line="56">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="57">        <span class="s2">&quot;_dto&quot;</span><span class="p">,</span>
-</span><span data-line="58">        <span class="s2">&quot;_injection_setup&quot;</span><span class="p">,</span>
-</span><span data-line="59">        <span class="s2">&quot;_parameter_field_definitions&quot;</span><span class="p">,</span>
-</span><span data-line="60">        <span class="s2">&quot;_parsed_data_field&quot;</span><span class="p">,</span>
-</span><span data-line="61">        <span class="s2">&quot;_parsed_fn_signature&quot;</span><span class="p">,</span>
-</span><span data-line="62">        <span class="s2">&quot;_parsed_return_field&quot;</span><span class="p">,</span>
-</span><span data-line="63">        <span class="s2">&quot;_return_dto&quot;</span><span class="p">,</span>
-</span><span data-line="64">        <span class="s2">&quot;_validate_request_parameters&quot;</span><span class="p">,</span>
-</span><span data-line="65">        <span class="s2">&quot;dependencies&quot;</span><span class="p">,</span>
-</span><span data-line="66">        <span class="s2">&quot;exception_handlers&quot;</span><span class="p">,</span>
-</span><span data-line="67">        <span class="s2">&quot;fn&quot;</span><span class="p">,</span>
-</span><span data-line="68">        <span class="s2">&quot;guards&quot;</span><span class="p">,</span>
-</span><span data-line="69">        <span class="s2">&quot;middleware&quot;</span><span class="p">,</span>
-</span><span data-line="70">        <span class="s2">&quot;name&quot;</span><span class="p">,</span>
-</span><span data-line="71">        <span class="s2">&quot;opt&quot;</span><span class="p">,</span>
-</span><span data-line="72">        <span class="s2">&quot;parameters&quot;</span><span class="p">,</span>
-</span><span data-line="73">        <span class="s2">&quot;paths&quot;</span><span class="p">,</span>
-</span><span data-line="74">        <span class="s2">&quot;signature_namespace&quot;</span><span class="p">,</span>
-</span><span data-line="75">        <span class="s2">&quot;type_decoders&quot;</span><span class="p">,</span>
-</span><span data-line="76">        <span class="s2">&quot;type_encoders&quot;</span><span class="p">,</span>
-</span><span data-line="77">    <span class="p">)</span>
-</span><span data-line="78">
-</span><span data-line="79">    <span class="n">_injection_setup</span><span class="p">:</span> <span class="n">HandlerInjectionSetup</span>
-</span><span data-line="80"><span class="w">    </span><span class="sd">&quot;&quot;&quot;What injecting the handler&#39;s function takes. Set on registration&quot;&quot;&quot;</span>
+</span><span data-line="51"><span class="k">class</span><span class="w"> </span><span class="nc">BaseRouteHandler</span><span class="p">:</span>
+</span><span data-line="52"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Base route handler.</span>
+</span><span data-line="53">
+</span><span data-line="54"><span class="sd">    Serves as a subclass for all route handlers</span>
+</span><span data-line="55"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="56">
+</span><span data-line="57">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="58">        <span class="s2">&quot;_dto&quot;</span><span class="p">,</span>
+</span><span data-line="59">        <span class="s2">&quot;_dto_data_backend&quot;</span><span class="p">,</span>
+</span><span data-line="60">        <span class="s2">&quot;_dto_return_backend&quot;</span><span class="p">,</span>
+</span><span data-line="61">        <span class="s2">&quot;_injection_setup&quot;</span><span class="p">,</span>
+</span><span data-line="62">        <span class="s2">&quot;_parameter_field_definitions&quot;</span><span class="p">,</span>
+</span><span data-line="63">        <span class="s2">&quot;_parsed_data_field&quot;</span><span class="p">,</span>
+</span><span data-line="64">        <span class="s2">&quot;_parsed_fn_signature&quot;</span><span class="p">,</span>
+</span><span data-line="65">        <span class="s2">&quot;_parsed_return_field&quot;</span><span class="p">,</span>
+</span><span data-line="66">        <span class="s2">&quot;_return_dto&quot;</span><span class="p">,</span>
+</span><span data-line="67">        <span class="s2">&quot;_validate_request_parameters&quot;</span><span class="p">,</span>
+</span><span data-line="68">        <span class="s2">&quot;dependencies&quot;</span><span class="p">,</span>
+</span><span data-line="69">        <span class="s2">&quot;exception_handlers&quot;</span><span class="p">,</span>
+</span><span data-line="70">        <span class="s2">&quot;fn&quot;</span><span class="p">,</span>
+</span><span data-line="71">        <span class="s2">&quot;guards&quot;</span><span class="p">,</span>
+</span><span data-line="72">        <span class="s2">&quot;middleware&quot;</span><span class="p">,</span>
+</span><span data-line="73">        <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+</span><span data-line="74">        <span class="s2">&quot;opt&quot;</span><span class="p">,</span>
+</span><span data-line="75">        <span class="s2">&quot;parameters&quot;</span><span class="p">,</span>
+</span><span data-line="76">        <span class="s2">&quot;paths&quot;</span><span class="p">,</span>
+</span><span data-line="77">        <span class="s2">&quot;signature_namespace&quot;</span><span class="p">,</span>
+</span><span data-line="78">        <span class="s2">&quot;type_decoders&quot;</span><span class="p">,</span>
+</span><span data-line="79">        <span class="s2">&quot;type_encoders&quot;</span><span class="p">,</span>
+</span><span data-line="80">    <span class="p">)</span>
 </span><span data-line="81">
-</span><span data-line="82">    <span class="n">_validate_request_parameters</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">ASGIConnection</span><span class="p">],</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">|</span> <span class="kc">None</span>
-</span><span data-line="83"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The validation pass over the request parameters of the handler&#39;s function, dependencies and layers,</span>
-</span><span data-line="84"><span class="sd">    see :func:`~litestar._request_parameters.validation.create_request_param_validaton_fn`. ``None`` if</span>
-</span><span data-line="85"><span class="sd">    there are none. Set on registration</span>
-</span><span data-line="86"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="87">
+</span><span data-line="82">    <span class="n">_injection_setup</span><span class="p">:</span> <span class="n">HandlerInjectionSetup</span>
+</span><span data-line="83"><span class="w">    </span><span class="sd">&quot;&quot;&quot;What injecting the handler&#39;s function takes. Set on registration&quot;&quot;&quot;</span>
+</span><span data-line="84">
+</span><span data-line="85">    <span class="n">_validate_request_parameters</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">ASGIConnection</span><span class="p">],</span> <span class="n">Coroutine</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span data-line="86"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The validation pass over the request parameters of the handler&#39;s function, dependencies and layers,</span>
+</span><span data-line="87"><span class="sd">    see :func:`~litestar._request_parameters.validation.create_request_param_validaton_fn`. ``None`` if</span>
+</span><span data-line="88"><span class="sd">    there are none. Set on registration</span>
+</span><span data-line="89"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="90">
+</span><span data-line="91">    <span class="n">_dto_data_backend</span><span class="p">:</span> <span class="n">DTOBackend</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span data-line="92"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The backend of the handler&#39;s data DTO. Set on registration&quot;&quot;&quot;</span>
+</span><span data-line="93">
+</span><span data-line="94">    <span class="n">_dto_return_backend</span><span class="p">:</span> <span class="n">DTOBackend</span> <span class="o">|</span> <span class="kc">None</span>
+</span><span data-line="95"><span class="w">    </span><span class="sd">&quot;&quot;&quot;The backend of the handler&#39;s return DTO. Set on registration&quot;&quot;&quot;</span>
+</span><span data-line="96">
 <div class="viewcode-block" id="BaseRouteHandler.__init__">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.BaseRouteHandler.__init__">[docs]</a>
-</span><span data-line="88">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-</span><span data-line="89">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="90">        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="91">        <span class="o">*</span><span class="p">,</span>
-</span><span data-line="92">        <span class="n">fn</span><span class="p">:</span> <span class="n">AsyncAnyCallable</span><span class="p">,</span>
-</span><span data-line="93">        <span class="n">dependencies</span><span class="p">:</span> <span class="n">Dependencies</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="94">        <span class="n">dto</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>
-</span><span data-line="95">        <span class="n">exception_handlers</span><span class="p">:</span> <span class="n">ExceptionHandlersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="96">        <span class="n">guards</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Guard</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="97">        <span class="n">middleware</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Middleware</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="98">        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="99">        <span class="n">opt</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="100">        <span class="n">return_dto</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>
-</span><span data-line="101">        <span class="n">signature_namespace</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="102">        <span class="n">signature_types</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="103">        <span class="n">parameters</span><span class="p">:</span> <span class="n">ParametersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="104">        <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="105">        <span class="n">type_encoders</span><span class="p">:</span> <span class="n">TypeEncodersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="106">        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-</span><span data-line="107">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="108"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ``HTTPRouteHandler``.</span>
-</span><span data-line="109">
-</span><span data-line="110"><span class="sd">        Args:</span>
-</span><span data-line="111"><span class="sd">            path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults</span>
-</span><span data-line="112"><span class="sd">                to ``/``</span>
-</span><span data-line="113"><span class="sd">            fn: The handler function</span>
-</span><span data-line="114">
-</span><span data-line="115"><span class="sd">                .. versionadded:: 3.0</span>
-</span><span data-line="116"><span class="sd">            dependencies: A sequence of :class:`Provider &lt;.di.Provider&gt;` instances, or a mapping of names or types to providers, :class:`Provide &lt;.di.Provide&gt;` instances or callables.</span>
-</span><span data-line="117"><span class="sd">            dto: :class:`AbstractDTO &lt;.dto.base_dto.AbstractDTO&gt;` to use for (de)serializing and</span>
-</span><span data-line="118"><span class="sd">                validation of request data.</span>
-</span><span data-line="119"><span class="sd">            exception_handlers: A mapping of status codes and/or exception types to handler functions.</span>
-</span><span data-line="120"><span class="sd">            guards: A sequence of :class:`Guard &lt;.types.Guard&gt;` callables.</span>
-</span><span data-line="121"><span class="sd">            middleware: A sequence of :class:`Middleware &lt;.types.Middleware&gt;`.</span>
-</span><span data-line="122"><span class="sd">            name: A string identifying the route handler.</span>
-</span><span data-line="123"><span class="sd">            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards &lt;.types.Guard&gt;` or</span>
-</span><span data-line="124"><span class="sd">                wherever you have access to :class:`Request &lt;.connection.Request&gt;` or</span>
-</span><span data-line="125"><span class="sd">                :class:`ASGI Scope &lt;.types.Scope&gt;`.</span>
-</span><span data-line="126"><span class="sd">            return_dto: :class:`AbstractDTO &lt;.dto.base_dto.AbstractDTO&gt;` to use for serializing</span>
-</span><span data-line="127"><span class="sd">                outbound response data.</span>
-</span><span data-line="128"><span class="sd">            signature_namespace: A mapping of names to types for use in forward reference resolution during signature</span>
-</span><span data-line="129"><span class="sd">                modelling.</span>
-</span><span data-line="130"><span class="sd">            signature_types: A sequence of types for use in forward reference resolution during signature modelling.</span>
-</span><span data-line="131"><span class="sd">                These types will be added to the signature namespace using their ``__name__`` attribute.</span>
-</span><span data-line="132"><span class="sd">            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.</span>
-</span><span data-line="133"><span class="sd">            type_encoders: A mapping of types to callables that transform them into types supported for serialization.</span>
-</span><span data-line="134"><span class="sd">            parameters: A mapping of :func:`Parameter &lt;.params.ParameterKwarg&gt;` definitions</span>
-</span><span data-line="135"><span class="sd">            **kwargs: Any additional kwarg - will be set in the opt dictionary.</span>
-</span><span data-line="136"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="137">        <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span><span class="p">:</span> <span class="n">ParsedSignature</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="138">        <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_return_field</span><span class="p">:</span> <span class="n">FieldDefinition</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="139">        <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_data_field</span><span class="p">:</span> <span class="n">FieldDefinition</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="140">        <span class="bp">self</span><span class="o">.</span><span class="n">_parameter_field_definitions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FieldDefinition</span><span class="p">]</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
-</span><span data-line="141">
-</span><span data-line="142">        <span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span> <span class="o">=</span> <span class="n">narrow_dependencies</span><span class="p">(</span><span class="n">dependencies</span><span class="p">)</span>
-</span><span data-line="143">        <span class="bp">self</span><span class="o">.</span><span class="n">_dto</span> <span class="o">=</span> <span class="n">dto</span>
-</span><span data-line="144">        <span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span> <span class="o">=</span> <span class="n">return_dto</span>
-</span><span data-line="145">        <span class="bp">self</span><span class="o">.</span><span class="n">exception_handlers</span> <span class="o">=</span> <span class="n">exception_handlers</span> <span class="ow">or</span> <span class="p">{}</span>
-</span><span data-line="146">        <span class="bp">self</span><span class="o">.</span><span class="n">guards</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">AsyncGuard</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ensure_async_callable</span><span class="p">(</span><span class="n">guard</span><span class="p">)</span> <span class="k">for</span> <span class="n">guard</span> <span class="ow">in</span> <span class="n">guards</span><span class="p">)</span> <span class="k">if</span> <span class="n">guards</span> <span class="k">else</span> <span class="p">()</span>  <span class="c1"># pyright: ignore[reportAttributeAccessIssue]</span>
-</span><span data-line="147">        <span class="bp">self</span><span class="o">.</span><span class="n">middleware</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">middleware</span><span class="p">)</span> <span class="k">if</span> <span class="n">middleware</span> <span class="k">else</span> <span class="p">()</span>
-</span><span data-line="148">        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-</span><span data-line="149">        <span class="bp">self</span><span class="o">.</span><span class="n">opt</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">opt</span> <span class="ow">or</span> <span class="p">{})</span>
-</span><span data-line="150">        <span class="bp">self</span><span class="o">.</span><span class="n">opt</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</span><span data-line="151">        <span class="bp">self</span><span class="o">.</span><span class="n">signature_namespace</span> <span class="o">=</span> <span class="n">add_types_to_signature_namespace</span><span class="p">(</span>
-</span><span data-line="152">            <span class="n">signature_types</span> <span class="ow">or</span> <span class="p">[],</span> <span class="nb">dict</span><span class="p">(</span><span class="n">signature_namespace</span> <span class="ow">or</span> <span class="p">{})</span>
-</span><span data-line="153">        <span class="p">)</span>
-</span><span data-line="154">        <span class="bp">self</span><span class="o">.</span><span class="n">type_decoders</span> <span class="o">=</span> <span class="n">type_decoders</span> <span class="ow">or</span> <span class="p">()</span>
-</span><span data-line="155">        <span class="bp">self</span><span class="o">.</span><span class="n">type_encoders</span> <span class="o">=</span> <span class="n">type_encoders</span> <span class="ow">or</span> <span class="p">{}</span>
-</span><span data-line="156">        <span class="bp">self</span><span class="o">.</span><span class="n">paths</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="157">            <span class="p">{</span><span class="n">normalize_path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">path</span><span class="p">}</span> <span class="k">if</span> <span class="n">path</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">{</span><span class="n">normalize_path</span><span class="p">(</span><span class="n">path</span> <span class="ow">or</span> <span class="s2">&quot;/&quot;</span><span class="p">)}</span>  <span class="c1"># type: ignore[arg-type]</span>
-</span><span data-line="158">        <span class="p">)</span>
-</span><span data-line="159">        <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">fn</span>
-</span><span data-line="160">        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span> <span class="ow">or</span> <span class="p">{}</span></div>
+</span><span data-line="97">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span data-line="98">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="99">        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="100">        <span class="o">*</span><span class="p">,</span>
+</span><span data-line="101">        <span class="n">fn</span><span class="p">:</span> <span class="n">AsyncAnyCallable</span><span class="p">,</span>
+</span><span data-line="102">        <span class="n">dependencies</span><span class="p">:</span> <span class="n">Dependencies</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="103">        <span class="n">dto</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>
+</span><span data-line="104">        <span class="n">exception_handlers</span><span class="p">:</span> <span class="n">ExceptionHandlersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="105">        <span class="n">guards</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Guard</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="106">        <span class="n">middleware</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Middleware</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="107">        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="108">        <span class="n">opt</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="109">        <span class="n">return_dto</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span><span class="p">,</span>
+</span><span data-line="110">        <span class="n">signature_namespace</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="111">        <span class="n">signature_types</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="112">        <span class="n">parameters</span><span class="p">:</span> <span class="n">ParametersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="113">        <span class="n">type_decoders</span><span class="p">:</span> <span class="n">TypeDecodersSequence</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="114">        <span class="n">type_encoders</span><span class="p">:</span> <span class="n">TypeEncodersMap</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="115">        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+</span><span data-line="116">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="117"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize ``HTTPRouteHandler``.</span>
+</span><span data-line="118">
+</span><span data-line="119"><span class="sd">        Args:</span>
+</span><span data-line="120"><span class="sd">            path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults</span>
+</span><span data-line="121"><span class="sd">                to ``/``</span>
+</span><span data-line="122"><span class="sd">            fn: The handler function</span>
+</span><span data-line="123">
+</span><span data-line="124"><span class="sd">                .. versionadded:: 3.0</span>
+</span><span data-line="125"><span class="sd">            dependencies: A sequence of :class:`Provider &lt;.di.Provider&gt;` instances, or a mapping of names or types to providers, :class:`Provide &lt;.di.Provide&gt;` instances or callables.</span>
+</span><span data-line="126"><span class="sd">            dto: :class:`AbstractDTO &lt;.dto.base_dto.AbstractDTO&gt;` to use for (de)serializing and</span>
+</span><span data-line="127"><span class="sd">                validation of request data.</span>
+</span><span data-line="128"><span class="sd">            exception_handlers: A mapping of status codes and/or exception types to handler functions.</span>
+</span><span data-line="129"><span class="sd">            guards: A sequence of :class:`Guard &lt;.types.Guard&gt;` callables.</span>
+</span><span data-line="130"><span class="sd">            middleware: A sequence of :class:`Middleware &lt;.types.Middleware&gt;`.</span>
+</span><span data-line="131"><span class="sd">            name: A string identifying the route handler.</span>
+</span><span data-line="132"><span class="sd">            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards &lt;.types.Guard&gt;` or</span>
+</span><span data-line="133"><span class="sd">                wherever you have access to :class:`Request &lt;.connection.Request&gt;` or</span>
+</span><span data-line="134"><span class="sd">                :class:`ASGI Scope &lt;.types.Scope&gt;`.</span>
+</span><span data-line="135"><span class="sd">            return_dto: :class:`AbstractDTO &lt;.dto.base_dto.AbstractDTO&gt;` to use for serializing</span>
+</span><span data-line="136"><span class="sd">                outbound response data.</span>
+</span><span data-line="137"><span class="sd">            signature_namespace: A mapping of names to types for use in forward reference resolution during signature</span>
+</span><span data-line="138"><span class="sd">                modelling.</span>
+</span><span data-line="139"><span class="sd">            signature_types: A sequence of types for use in forward reference resolution during signature modelling.</span>
+</span><span data-line="140"><span class="sd">                These types will be added to the signature namespace using their ``__name__`` attribute.</span>
+</span><span data-line="141"><span class="sd">            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.</span>
+</span><span data-line="142"><span class="sd">            type_encoders: A mapping of types to callables that transform them into types supported for serialization.</span>
+</span><span data-line="143"><span class="sd">            parameters: A mapping of :func:`Parameter &lt;.params.ParameterKwarg&gt;` definitions</span>
+</span><span data-line="144"><span class="sd">            **kwargs: Any additional kwarg - will be set in the opt dictionary.</span>
+</span><span data-line="145"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="146">        <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span><span class="p">:</span> <span class="n">ParsedSignature</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="147">        <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_return_field</span><span class="p">:</span> <span class="n">FieldDefinition</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="148">        <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_data_field</span><span class="p">:</span> <span class="n">FieldDefinition</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="149">        <span class="bp">self</span><span class="o">.</span><span class="n">_parameter_field_definitions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FieldDefinition</span><span class="p">]</span> <span class="o">|</span> <span class="n">EmptyType</span> <span class="o">=</span> <span class="n">Empty</span>
+</span><span data-line="150">        <span class="bp">self</span><span class="o">.</span><span class="n">_dto_data_backend</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="151">        <span class="bp">self</span><span class="o">.</span><span class="n">_dto_return_backend</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="152">
+</span><span data-line="153">        <span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span> <span class="o">=</span> <span class="n">narrow_dependencies</span><span class="p">(</span><span class="n">dependencies</span><span class="p">)</span>
+</span><span data-line="154">        <span class="bp">self</span><span class="o">.</span><span class="n">_dto</span> <span class="o">=</span> <span class="n">dto</span>
+</span><span data-line="155">        <span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span> <span class="o">=</span> <span class="n">return_dto</span>
+</span><span data-line="156">        <span class="bp">self</span><span class="o">.</span><span class="n">exception_handlers</span> <span class="o">=</span> <span class="n">exception_handlers</span> <span class="ow">or</span> <span class="p">{}</span>
+</span><span data-line="157">        <span class="bp">self</span><span class="o">.</span><span class="n">guards</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">AsyncGuard</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ensure_async_callable</span><span class="p">(</span><span class="n">guard</span><span class="p">)</span> <span class="k">for</span> <span class="n">guard</span> <span class="ow">in</span> <span class="n">guards</span><span class="p">)</span> <span class="k">if</span> <span class="n">guards</span> <span class="k">else</span> <span class="p">()</span>  <span class="c1"># pyright: ignore[reportAttributeAccessIssue]</span>
+</span><span data-line="158">        <span class="bp">self</span><span class="o">.</span><span class="n">middleware</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">middleware</span><span class="p">)</span> <span class="k">if</span> <span class="n">middleware</span> <span class="k">else</span> <span class="p">()</span>
+</span><span data-line="159">        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+</span><span data-line="160">        <span class="bp">self</span><span class="o">.</span><span class="n">opt</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">opt</span> <span class="ow">or</span> <span class="p">{})</span>
+</span><span data-line="161">        <span class="bp">self</span><span class="o">.</span><span class="n">opt</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span data-line="162">        <span class="bp">self</span><span class="o">.</span><span class="n">signature_namespace</span> <span class="o">=</span> <span class="n">add_types_to_signature_namespace</span><span class="p">(</span>
+</span><span data-line="163">            <span class="n">signature_types</span> <span class="ow">or</span> <span class="p">[],</span> <span class="nb">dict</span><span class="p">(</span><span class="n">signature_namespace</span> <span class="ow">or</span> <span class="p">{})</span>
+</span><span data-line="164">        <span class="p">)</span>
+</span><span data-line="165">        <span class="bp">self</span><span class="o">.</span><span class="n">type_decoders</span> <span class="o">=</span> <span class="n">type_decoders</span> <span class="ow">or</span> <span class="p">()</span>
+</span><span data-line="166">        <span class="bp">self</span><span class="o">.</span><span class="n">type_encoders</span> <span class="o">=</span> <span class="n">type_encoders</span> <span class="ow">or</span> <span class="p">{}</span>
+</span><span data-line="167">        <span class="bp">self</span><span class="o">.</span><span class="n">paths</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="168">            <span class="p">{</span><span class="n">normalize_path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">path</span><span class="p">}</span> <span class="k">if</span> <span class="n">path</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">{</span><span class="n">normalize_path</span><span class="p">(</span><span class="n">path</span> <span class="ow">or</span> <span class="s2">&quot;/&quot;</span><span class="p">)}</span>  <span class="c1"># type: ignore[arg-type]</span>
+</span><span data-line="169">        <span class="p">)</span>
+</span><span data-line="170">        <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">fn</span>
+</span><span data-line="171">        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span> <span class="ow">or</span> <span class="p">{}</span></div>
 
-</span><span data-line="161">
-</span><span data-line="162">    <span class="k">def</span><span class="w"> </span><span class="nf">_get_merge_opts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">others</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Router</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="163"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get kwargs for .merge.</span>
-</span><span data-line="164">
-</span><span data-line="165"><span class="sd">        This is effectively the same as doing:</span>
-</span><span data-line="166">
-</span><span data-line="167"><span class="sd">        for other in others:</span>
-</span><span data-line="168"><span class="sd">            handler = handler.merge(other)</span>
-</span><span data-line="169">
-</span><span data-line="170"><span class="sd">        The downside of that approach is that it creates a bunch of intermediate</span>
-</span><span data-line="171"><span class="sd">        instances requires every subclass that adds properties to re-implement all the</span>
-</span><span data-line="172"><span class="sd">        merging logic.</span>
-</span><span data-line="173"><span class="sd">        With this approach, the subclass can instead override this method, call</span>
-</span><span data-line="174"><span class="sd">        super()._get_merge_opts(), and extend the dict returned by it.</span>
+</span><span data-line="172">
+</span><span data-line="173">    <span class="k">def</span><span class="w"> </span><span class="nf">_get_merge_opts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">others</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Router</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="174"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get kwargs for .merge.</span>
 </span><span data-line="175">
-</span><span data-line="176"><span class="sd">        The downside here is that we don&#39;t get type safety (as long as annotating</span>
-</span><span data-line="177"><span class="sd">        **kwargs with TypedDicts isn&#39;t supported anyway).</span>
-</span><span data-line="178">
-</span><span data-line="179"><span class="sd">        The plan is for this to go away in version 4, where we can move to fully static</span>
-</span><span data-line="180"><span class="sd">        handler config, separating the logic and configuration entirely.</span>
-</span><span data-line="181"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="182">        <span class="n">path</span> <span class="o">=</span> <span class="p">(</span>
-</span><span data-line="183">            <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span>
-</span><span data-line="184">                <span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">join_paths</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]),</span>
-</span><span data-line="185">                <span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">path</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">others</span><span class="p">)),</span>
-</span><span data-line="186">            <span class="p">)</span>
-</span><span data-line="187">            <span class="k">if</span> <span class="n">others</span>
-</span><span data-line="188">            <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-</span><span data-line="189">        <span class="p">)</span>
-</span><span data-line="190">        <span class="n">merge_opts</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-</span><span data-line="191">            <span class="s2">&quot;fn&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span>
-</span><span data-line="192">            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-</span><span data-line="193">            <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">join_paths</span><span class="p">([</span><span class="n">path</span><span class="p">,</span> <span class="n">p</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">],</span>
-</span><span data-line="194">        <span class="p">}</span>
-</span><span data-line="195">
-</span><span data-line="196">        <span class="n">other</span><span class="p">:</span> <span class="n">BaseRouteHandler</span> <span class="o">|</span> <span class="n">Router</span>
-</span><span data-line="197">        <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">others</span><span class="p">):</span>  <span class="c1"># type: ignore[assignment]</span>
-</span><span data-line="198">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;dependencies&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">other</span><span class="o">.</span><span class="n">dependencies</span><span class="p">,</span> <span class="o">**</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dependencies&quot;</span><span class="p">,</span> <span class="p">{})}</span>
-</span><span data-line="199">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;exception_handlers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">other</span><span class="o">.</span><span class="n">exception_handlers</span><span class="p">,</span> <span class="o">**</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exception_handlers&quot;</span><span class="p">,</span> <span class="p">{})}</span>
-</span><span data-line="200">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;guards&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">other</span><span class="o">.</span><span class="n">guards</span><span class="p">,</span> <span class="o">*</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;guards&quot;</span><span class="p">,</span> <span class="p">()))</span>
-</span><span data-line="201">
-</span><span data-line="202">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;middleware&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">other</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span> <span class="o">*</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;middleware&quot;</span><span class="p">,</span> <span class="p">()))</span>
-</span><span data-line="203">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;opt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">other</span><span class="o">.</span><span class="n">opt</span><span class="p">,</span> <span class="o">**</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;opt&quot;</span><span class="p">,</span> <span class="p">{})}</span>
-</span><span data-line="204">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;type_decoders&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type_decoders&quot;</span><span class="p">,</span> <span class="p">()),</span> <span class="o">*</span><span class="n">other</span><span class="o">.</span><span class="n">type_decoders</span><span class="p">)</span>
-</span><span data-line="205">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;type_encoders&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type_encoders&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="o">**</span><span class="n">other</span><span class="o">.</span><span class="n">type_encoders</span><span class="p">}</span>
-</span><span data-line="206">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;parameters&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="o">**</span><span class="n">other</span><span class="o">.</span><span class="n">parameters</span><span class="p">}</span>
-</span><span data-line="207">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;signature_namespace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_signature_namespaces</span><span class="p">(</span>
-</span><span data-line="208">                <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;signature_namespace&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">other</span><span class="o">.</span><span class="n">signature_namespace</span>
-</span><span data-line="209">            <span class="p">)</span>
-</span><span data-line="210">
-</span><span data-line="211">            <span class="c1"># &#39;.dto&#39; on the router is the dto config value supplied by the users,</span>
-</span><span data-line="212">            <span class="c1"># whereas &#39;.dto&#39; on the handler is the fully resolved dto. The dto config on</span>
-</span><span data-line="213">            <span class="c1"># the handler is stored under &#39;._dto&#39;, so we have to do this little workaround</span>
-</span><span data-line="214">            <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
-</span><span data-line="215">                <span class="n">other</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;Router&quot;</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>  <span class="c1"># mypy cannot narrow with the &#39;is not self&#39; check</span>
-</span><span data-line="216">                <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;dto&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_or_default</span><span class="p">(</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dto&quot;</span><span class="p">,</span> <span class="n">Empty</span><span class="p">),</span> <span class="n">other</span><span class="o">.</span><span class="n">dto</span><span class="p">)</span>
-</span><span data-line="217">                <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;return_dto&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_or_default</span><span class="p">(</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;return_dto&quot;</span><span class="p">,</span> <span class="n">Empty</span><span class="p">),</span> <span class="n">other</span><span class="o">.</span><span class="n">return_dto</span><span class="p">)</span>
-</span><span data-line="218">
-</span><span data-line="219">        <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;dto&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_or_default</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dto</span><span class="p">,</span> <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dto&quot;</span><span class="p">,</span> <span class="n">Empty</span><span class="p">))</span>
-</span><span data-line="220">        <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;return_dto&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_or_default</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span><span class="p">,</span> <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;return_dto&quot;</span><span class="p">,</span> <span class="n">Empty</span><span class="p">))</span>
+</span><span data-line="176"><span class="sd">        This is effectively the same as doing:</span>
+</span><span data-line="177">
+</span><span data-line="178"><span class="sd">        for other in others:</span>
+</span><span data-line="179"><span class="sd">            handler = handler.merge(other)</span>
+</span><span data-line="180">
+</span><span data-line="181"><span class="sd">        The downside of that approach is that it creates a bunch of intermediate</span>
+</span><span data-line="182"><span class="sd">        instances requires every subclass that adds properties to re-implement all the</span>
+</span><span data-line="183"><span class="sd">        merging logic.</span>
+</span><span data-line="184"><span class="sd">        With this approach, the subclass can instead override this method, call</span>
+</span><span data-line="185"><span class="sd">        super()._get_merge_opts(), and extend the dict returned by it.</span>
+</span><span data-line="186">
+</span><span data-line="187"><span class="sd">        The downside here is that we don&#39;t get type safety (as long as annotating</span>
+</span><span data-line="188"><span class="sd">        **kwargs with TypedDicts isn&#39;t supported anyway).</span>
+</span><span data-line="189">
+</span><span data-line="190"><span class="sd">        The plan is for this to go away in version 4, where we can move to fully static</span>
+</span><span data-line="191"><span class="sd">        handler config, separating the logic and configuration entirely.</span>
+</span><span data-line="192"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="193">        <span class="n">path</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="194">            <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span>
+</span><span data-line="195">                <span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">join_paths</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]),</span>
+</span><span data-line="196">                <span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">path</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">others</span><span class="p">)),</span>
+</span><span data-line="197">            <span class="p">)</span>
+</span><span data-line="198">            <span class="k">if</span> <span class="n">others</span>
+</span><span data-line="199">            <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+</span><span data-line="200">        <span class="p">)</span>
+</span><span data-line="201">        <span class="n">merge_opts</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="202">            <span class="s2">&quot;fn&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span>
+</span><span data-line="203">            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+</span><span data-line="204">            <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">join_paths</span><span class="p">([</span><span class="n">path</span><span class="p">,</span> <span class="n">p</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">],</span>
+</span><span data-line="205">        <span class="p">}</span>
+</span><span data-line="206">
+</span><span data-line="207">        <span class="n">other</span><span class="p">:</span> <span class="n">BaseRouteHandler</span> <span class="o">|</span> <span class="n">Router</span>
+</span><span data-line="208">        <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">others</span><span class="p">):</span>  <span class="c1"># type: ignore[assignment]</span>
+</span><span data-line="209">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;dependencies&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">other</span><span class="o">.</span><span class="n">dependencies</span><span class="p">,</span> <span class="o">**</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dependencies&quot;</span><span class="p">,</span> <span class="p">{})}</span>
+</span><span data-line="210">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;exception_handlers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">other</span><span class="o">.</span><span class="n">exception_handlers</span><span class="p">,</span> <span class="o">**</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exception_handlers&quot;</span><span class="p">,</span> <span class="p">{})}</span>
+</span><span data-line="211">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;guards&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">other</span><span class="o">.</span><span class="n">guards</span><span class="p">,</span> <span class="o">*</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;guards&quot;</span><span class="p">,</span> <span class="p">()))</span>
+</span><span data-line="212">
+</span><span data-line="213">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;middleware&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">other</span><span class="o">.</span><span class="n">middleware</span><span class="p">,</span> <span class="o">*</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;middleware&quot;</span><span class="p">,</span> <span class="p">()))</span>
+</span><span data-line="214">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;opt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">other</span><span class="o">.</span><span class="n">opt</span><span class="p">,</span> <span class="o">**</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;opt&quot;</span><span class="p">,</span> <span class="p">{})}</span>
+</span><span data-line="215">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;type_decoders&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type_decoders&quot;</span><span class="p">,</span> <span class="p">()),</span> <span class="o">*</span><span class="n">other</span><span class="o">.</span><span class="n">type_decoders</span><span class="p">)</span>
+</span><span data-line="216">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;type_encoders&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type_encoders&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="o">**</span><span class="n">other</span><span class="o">.</span><span class="n">type_encoders</span><span class="p">}</span>
+</span><span data-line="217">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;parameters&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="o">**</span><span class="n">other</span><span class="o">.</span><span class="n">parameters</span><span class="p">}</span>
+</span><span data-line="218">            <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;signature_namespace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">merge_signature_namespaces</span><span class="p">(</span>
+</span><span data-line="219">                <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;signature_namespace&quot;</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">other</span><span class="o">.</span><span class="n">signature_namespace</span>
+</span><span data-line="220">            <span class="p">)</span>
 </span><span data-line="221">
-</span><span data-line="222">        <span class="k">return</span> <span class="n">merge_opts</span>
-</span><span data-line="223">
-</span><span data-line="224">    <span class="k">def</span><span class="w"> </span><span class="nf">_with_changes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
-</span><span data-line="225"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a new instance of the handler, replacing attributes specified in **kwargs&quot;&quot;&quot;</span>
-</span><span data-line="226">        <span class="n">opts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_merge_opts</span><span class="p">(())</span>
-</span><span data-line="227">        <span class="n">opts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-</span><span data-line="228">        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="o">**</span><span class="n">opts</span><span class="p">)</span>
+</span><span data-line="222">            <span class="c1"># &#39;.dto&#39; on the router is the dto config value supplied by the users,</span>
+</span><span data-line="223">            <span class="c1"># whereas &#39;.dto&#39; on the handler is the fully resolved dto. The dto config on</span>
+</span><span data-line="224">            <span class="c1"># the handler is stored under &#39;._dto&#39;, so we have to do this little workaround</span>
+</span><span data-line="225">            <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
+</span><span data-line="226">                <span class="n">other</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;Router&quot;</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>  <span class="c1"># mypy cannot narrow with the &#39;is not self&#39; check</span>
+</span><span data-line="227">                <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;dto&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_or_default</span><span class="p">(</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dto&quot;</span><span class="p">,</span> <span class="n">Empty</span><span class="p">),</span> <span class="n">other</span><span class="o">.</span><span class="n">dto</span><span class="p">)</span>
+</span><span data-line="228">                <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;return_dto&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_or_default</span><span class="p">(</span><span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;return_dto&quot;</span><span class="p">,</span> <span class="n">Empty</span><span class="p">),</span> <span class="n">other</span><span class="o">.</span><span class="n">return_dto</span><span class="p">)</span>
 </span><span data-line="229">
-</span><span data-line="230">    <span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">others</span><span class="p">:</span> <span class="n">Router</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
-</span><span data-line="231">        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_merge_opts</span><span class="p">(</span><span class="n">others</span><span class="p">))</span>
+</span><span data-line="230">        <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;dto&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_or_default</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dto</span><span class="p">,</span> <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dto&quot;</span><span class="p">,</span> <span class="n">Empty</span><span class="p">))</span>
+</span><span data-line="231">        <span class="n">merge_opts</span><span class="p">[</span><span class="s2">&quot;return_dto&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_or_default</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span><span class="p">,</span> <span class="n">merge_opts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;return_dto&quot;</span><span class="p">,</span> <span class="n">Empty</span><span class="p">))</span>
 </span><span data-line="232">
-</span><span data-line="233">    <span class="nd">@property</span>
-</span><span data-line="234">    <span class="k">def</span><span class="w"> </span><span class="nf">handler_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="235"><span class="w">        </span><span class="sd">&quot;&quot;&quot;A unique identifier used for generation of DTOs.&quot;&quot;&quot;</span>
-</span><span data-line="236">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">!s}</span><span class="s2">::</span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span data-line="237">
-</span><span data-line="238">    <span class="nd">@property</span>
-</span><span data-line="239">    <span class="k">def</span><span class="w"> </span><span class="nf">default_deserializer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="240"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a default deserializer for the route handler.</span>
-</span><span data-line="241">
-</span><span data-line="242"><span class="sd">        Returns:</span>
-</span><span data-line="243"><span class="sd">            A default deserializer for the route handler.</span>
-</span><span data-line="244">
-</span><span data-line="245"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="246">        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">default_deserializer</span><span class="p">,</span> <span class="n">type_decoders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type_decoders</span><span class="p">)</span>
-</span><span data-line="247">
-</span><span data-line="248">    <span class="nd">@property</span>
-</span><span data-line="249">    <span class="k">def</span><span class="w"> </span><span class="nf">default_serializer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="250"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a default serializer for the route handler.</span>
-</span><span data-line="251">
-</span><span data-line="252"><span class="sd">        Returns:</span>
-</span><span data-line="253"><span class="sd">            A default serializer for the route handler.</span>
-</span><span data-line="254">
-</span><span data-line="255"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="256">        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">default_serializer</span><span class="p">,</span> <span class="n">type_encoders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type_encoders</span><span class="p">)</span>
-</span><span data-line="257">
-</span><span data-line="258">    <span class="nd">@property</span>
-</span><span data-line="259">    <span class="k">def</span><span class="w"> </span><span class="nf">parsed_fn_signature</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParsedSignature</span><span class="p">:</span>
-</span><span data-line="260"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the parsed signature of the handler function.</span>
-</span><span data-line="261">
-</span><span data-line="262"><span class="sd">        This method is memoized so the computation occurs only once.</span>
-</span><span data-line="263">
-</span><span data-line="264"><span class="sd">        Returns:</span>
-</span><span data-line="265"><span class="sd">            A ParsedSignature instance</span>
+</span><span data-line="233">        <span class="k">return</span> <span class="n">merge_opts</span>
+</span><span data-line="234">
+</span><span data-line="235">    <span class="k">def</span><span class="w"> </span><span class="nf">_with_changes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+</span><span data-line="236"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a new instance of the handler, replacing attributes specified in **kwargs&quot;&quot;&quot;</span>
+</span><span data-line="237">        <span class="n">opts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_merge_opts</span><span class="p">(())</span>
+</span><span data-line="238">        <span class="n">opts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span data-line="239">        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="o">**</span><span class="n">opts</span><span class="p">)</span>
+</span><span data-line="240">
+</span><span data-line="241">    <span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">others</span><span class="p">:</span> <span class="n">Router</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+</span><span data-line="242">        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_merge_opts</span><span class="p">(</span><span class="n">others</span><span class="p">))</span>
+</span><span data-line="243">
+</span><span data-line="244">    <span class="nd">@property</span>
+</span><span data-line="245">    <span class="k">def</span><span class="w"> </span><span class="nf">handler_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="246"><span class="w">        </span><span class="sd">&quot;&quot;&quot;A unique identifier used for generation of DTOs.&quot;&quot;&quot;</span>
+</span><span data-line="247">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">!s}</span><span class="s2">::</span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span data-line="248">
+</span><span data-line="249">    <span class="nd">@property</span>
+</span><span data-line="250">    <span class="k">def</span><span class="w"> </span><span class="nf">default_deserializer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="251"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a default deserializer for the route handler.</span>
+</span><span data-line="252">
+</span><span data-line="253"><span class="sd">        Returns:</span>
+</span><span data-line="254"><span class="sd">            A default deserializer for the route handler.</span>
+</span><span data-line="255">
+</span><span data-line="256"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="257">        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">default_deserializer</span><span class="p">,</span> <span class="n">type_decoders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type_decoders</span><span class="p">)</span>
+</span><span data-line="258">
+</span><span data-line="259">    <span class="nd">@property</span>
+</span><span data-line="260">    <span class="k">def</span><span class="w"> </span><span class="nf">default_serializer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="261"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a default serializer for the route handler.</span>
+</span><span data-line="262">
+</span><span data-line="263"><span class="sd">        Returns:</span>
+</span><span data-line="264"><span class="sd">            A default serializer for the route handler.</span>
+</span><span data-line="265">
 </span><span data-line="266"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="267">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="268">            <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span> <span class="o">=</span> <span class="n">ParsedSignature</span><span class="o">.</span><span class="n">from_fn</span><span class="p">(</span><span class="n">unwrap_partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">signature_namespace</span><span class="p">)</span>
-</span><span data-line="269">
-</span><span data-line="270">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span>
-</span><span data-line="271">
-</span><span data-line="272">    <span class="nd">@property</span>
-</span><span data-line="273">    <span class="k">def</span><span class="w"> </span><span class="nf">parsed_return_field</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FieldDefinition</span><span class="p">:</span>
-</span><span data-line="274">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_return_field</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="275">            <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_return_field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="o">.</span><span class="n">return_type</span>
-</span><span data-line="276">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_return_field</span>
-</span><span data-line="277">
-</span><span data-line="278">    <span class="nd">@property</span>
-</span><span data-line="279">    <span class="k">def</span><span class="w"> </span><span class="nf">parsed_data_field</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FieldDefinition</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="280"><span class="w">        </span><span class="sd">&quot;&quot;&quot;The request body of an HTTP handler, or the data a websocket listener receives. Set on registration&quot;&quot;&quot;</span>
-</span><span data-line="281">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_data_field</span>
+</span><span data-line="267">        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">default_serializer</span><span class="p">,</span> <span class="n">type_encoders</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type_encoders</span><span class="p">)</span>
+</span><span data-line="268">
+</span><span data-line="269">    <span class="nd">@property</span>
+</span><span data-line="270">    <span class="k">def</span><span class="w"> </span><span class="nf">parsed_fn_signature</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParsedSignature</span><span class="p">:</span>
+</span><span data-line="271"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the parsed signature of the handler function.</span>
+</span><span data-line="272">
+</span><span data-line="273"><span class="sd">        This method is memoized so the computation occurs only once.</span>
+</span><span data-line="274">
+</span><span data-line="275"><span class="sd">        Returns:</span>
+</span><span data-line="276"><span class="sd">            A ParsedSignature instance</span>
+</span><span data-line="277"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="278">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="279">            <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span> <span class="o">=</span> <span class="n">ParsedSignature</span><span class="o">.</span><span class="n">from_fn</span><span class="p">(</span><span class="n">unwrap_partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">signature_namespace</span><span class="p">)</span>
+</span><span data-line="280">
+</span><span data-line="281">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_fn_signature</span>
 </span><span data-line="282">
 </span><span data-line="283">    <span class="nd">@property</span>
-</span><span data-line="284">    <span class="k">def</span><span class="w"> </span><span class="nf">handler_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="285"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the name of the handler function.</span>
-</span><span data-line="286">
-</span><span data-line="287"><span class="sd">        Raises:</span>
-</span><span data-line="288"><span class="sd">            ImproperlyConfiguredException: if handler fn is not set.</span>
-</span><span data-line="289">
-</span><span data-line="290"><span class="sd">        Returns:</span>
-</span><span data-line="291"><span class="sd">            Name of the handler function</span>
-</span><span data-line="292"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="293">        <span class="k">return</span> <span class="n">get_name</span><span class="p">(</span><span class="n">unwrap_partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">))</span>
-</span><span data-line="294">
-</span><span data-line="295">    <span class="k">def</span><span class="w"> </span><span class="nf">_raise_not_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
-</span><span data-line="296">        <span class="k">raise</span> <span class="n">LitestarException</span><span class="p">(</span>
-</span><span data-line="297">            <span class="sa">f</span><span class="s2">&quot;Handler </span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s2">: Accessing this attribute is unsafe until the handler has been &quot;</span>
-</span><span data-line="298">            <span class="s2">&quot;registered with an application, as it may yield different results after registration.&quot;</span>
-</span><span data-line="299">        <span class="p">)</span>
+</span><span data-line="284">    <span class="k">def</span><span class="w"> </span><span class="nf">parsed_return_field</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FieldDefinition</span><span class="p">:</span>
+</span><span data-line="285">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_return_field</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="286">            <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_return_field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_fn_signature</span><span class="o">.</span><span class="n">return_type</span>
+</span><span data-line="287">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_return_field</span>
+</span><span data-line="288">
+</span><span data-line="289">    <span class="nd">@property</span>
+</span><span data-line="290">    <span class="k">def</span><span class="w"> </span><span class="nf">parsed_data_field</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FieldDefinition</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="291"><span class="w">        </span><span class="sd">&quot;&quot;&quot;The request body of an HTTP handler, or the data a websocket listener receives. Set on registration&quot;&quot;&quot;</span>
+</span><span data-line="292">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_data_field</span>
+</span><span data-line="293">
+</span><span data-line="294">    <span class="nd">@property</span>
+</span><span data-line="295">    <span class="k">def</span><span class="w"> </span><span class="nf">handler_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="296"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the name of the handler function.</span>
+</span><span data-line="297">
+</span><span data-line="298"><span class="sd">        Raises:</span>
+</span><span data-line="299"><span class="sd">            ImproperlyConfiguredException: if handler fn is not set.</span>
 </span><span data-line="300">
+</span><span data-line="301"><span class="sd">        Returns:</span>
+</span><span data-line="302"><span class="sd">            Name of the handler function</span>
+</span><span data-line="303"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="304">        <span class="k">return</span> <span class="n">get_name</span><span class="p">(</span><span class="n">unwrap_partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">))</span>
+</span><span data-line="305">
+</span><span data-line="306">    <span class="k">def</span><span class="w"> </span><span class="nf">_raise_not_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
+</span><span data-line="307">        <span class="k">raise</span> <span class="n">LitestarException</span><span class="p">(</span>
+</span><span data-line="308">            <span class="sa">f</span><span class="s2">&quot;Handler </span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s2">: Accessing this attribute is unsafe until the handler has been &quot;</span>
+</span><span data-line="309">            <span class="s2">&quot;registered with an application, as it may yield different results after registration.&quot;</span>
+</span><span data-line="310">        <span class="p">)</span>
+</span><span data-line="311">
 <div class="viewcode-block" id="BaseRouteHandler.resolve_type_encoders">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_type_encoders">[docs]</a>
-</span><span data-line="301">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.type_encoders attribute&quot;</span><span class="p">)</span>
-</span><span data-line="302">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_type_encoders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeEncodersMap</span><span class="p">:</span>
-</span><span data-line="303"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a merged type_encoders mapping.</span>
-</span><span data-line="304">
-</span><span data-line="305"><span class="sd">        Returns:</span>
-</span><span data-line="306"><span class="sd">            A dict of type encoders</span>
-</span><span data-line="307"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="308">
-</span><span data-line="309">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_encoders</span></div>
+</span><span data-line="312">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.type_encoders attribute&quot;</span><span class="p">)</span>
+</span><span data-line="313">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_type_encoders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeEncodersMap</span><span class="p">:</span>
+</span><span data-line="314"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a merged type_encoders mapping.</span>
+</span><span data-line="315">
+</span><span data-line="316"><span class="sd">        Returns:</span>
+</span><span data-line="317"><span class="sd">            A dict of type encoders</span>
+</span><span data-line="318"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="319">
+</span><span data-line="320">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_encoders</span></div>
 
-</span><span data-line="310">
+</span><span data-line="321">
 <div class="viewcode-block" id="BaseRouteHandler.resolve_type_decoders">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_type_decoders">[docs]</a>
-</span><span data-line="311">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.type_decoders attribute&quot;</span><span class="p">)</span>
-</span><span data-line="312">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_type_decoders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeDecodersSequence</span><span class="p">:</span>
-</span><span data-line="313"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a merged type_encoders mapping.</span>
-</span><span data-line="314">
-</span><span data-line="315"><span class="sd">        Returns:</span>
-</span><span data-line="316"><span class="sd">            A dict of type encoders</span>
-</span><span data-line="317"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="318">
-</span><span data-line="319">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_decoders</span></div>
+</span><span data-line="322">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.type_decoders attribute&quot;</span><span class="p">)</span>
+</span><span data-line="323">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_type_decoders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeDecodersSequence</span><span class="p">:</span>
+</span><span data-line="324"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a merged type_encoders mapping.</span>
+</span><span data-line="325">
+</span><span data-line="326"><span class="sd">        Returns:</span>
+</span><span data-line="327"><span class="sd">            A dict of type encoders</span>
+</span><span data-line="328"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="329">
+</span><span data-line="330">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_decoders</span></div>
 
-</span><span data-line="320">
-</span><span data-line="321">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.parameter_field_definitions property&quot;</span><span class="p">)</span>
-</span><span data-line="322">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_layered_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FieldDefinition</span><span class="p">]:</span>
-</span><span data-line="323">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_field_definitions</span>
-</span><span data-line="324">
-</span><span data-line="325">    <span class="nd">@property</span>
-</span><span data-line="326">    <span class="k">def</span><span class="w"> </span><span class="nf">parameter_field_definitions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FieldDefinition</span><span class="p">]:</span>
-</span><span data-line="327"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all parameters declared above the handler.&quot;&quot;&quot;</span>
-</span><span data-line="328">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameter_field_definitions</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="329">            <span class="bp">self</span><span class="o">.</span><span class="n">_parameter_field_definitions</span> <span class="o">=</span> <span class="p">{</span>
-</span><span data-line="330">                <span class="n">key</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="o">.</span><span class="n">from_kwarg</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">annotation</span><span class="o">=</span><span class="n">parameter</span><span class="o">.</span><span class="n">annotation</span><span class="p">,</span> <span class="n">kwarg_definition</span><span class="o">=</span><span class="n">parameter</span><span class="p">)</span>
-</span><span data-line="331">                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-</span><span data-line="332">            <span class="p">}</span>
-</span><span data-line="333">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameter_field_definitions</span>
-</span><span data-line="334">
+</span><span data-line="331">
+</span><span data-line="332">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.parameter_field_definitions property&quot;</span><span class="p">)</span>
+</span><span data-line="333">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_layered_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FieldDefinition</span><span class="p">]:</span>
+</span><span data-line="334">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_field_definitions</span>
+</span><span data-line="335">
+</span><span data-line="336">    <span class="nd">@property</span>
+</span><span data-line="337">    <span class="k">def</span><span class="w"> </span><span class="nf">parameter_field_definitions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FieldDefinition</span><span class="p">]:</span>
+</span><span data-line="338"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all parameters declared above the handler.&quot;&quot;&quot;</span>
+</span><span data-line="339">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameter_field_definitions</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="340">            <span class="bp">self</span><span class="o">.</span><span class="n">_parameter_field_definitions</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="341">                <span class="n">key</span><span class="p">:</span> <span class="n">FieldDefinition</span><span class="o">.</span><span class="n">from_kwarg</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">annotation</span><span class="o">=</span><span class="n">parameter</span><span class="o">.</span><span class="n">annotation</span><span class="p">,</span> <span class="n">kwarg_definition</span><span class="o">=</span><span class="n">parameter</span><span class="p">)</span>
+</span><span data-line="342">                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</span><span data-line="343">            <span class="p">}</span>
+</span><span data-line="344">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameter_field_definitions</span>
+</span><span data-line="345">
 <div class="viewcode-block" id="BaseRouteHandler.resolve_guards">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_guards">[docs]</a>
-</span><span data-line="335">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.guards attribute&quot;</span><span class="p">)</span>
-</span><span data-line="336">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_guards</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Guard</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-</span><span data-line="337"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all guards in the handlers scope, starting from highest to current layer.&quot;&quot;&quot;</span>
-</span><span data-line="338">
-</span><span data-line="339">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">guards</span></div>
+</span><span data-line="346">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.guards attribute&quot;</span><span class="p">)</span>
+</span><span data-line="347">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_guards</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Guard</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+</span><span data-line="348"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all guards in the handlers scope, starting from highest to current layer.&quot;&quot;&quot;</span>
+</span><span data-line="349">
+</span><span data-line="350">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">guards</span></div>
 
-</span><span data-line="340">
+</span><span data-line="351">
 <div class="viewcode-block" id="BaseRouteHandler.resolve_dependencies">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_dependencies">[docs]</a>
-</span><span data-line="341">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.dependencies attribute&quot;</span><span class="p">)</span>
-</span><span data-line="342">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">DependencyKey</span><span class="p">,</span> <span class="n">Provider</span> <span class="o">|</span> <span class="n">Provide</span> <span class="o">|</span> <span class="n">AnyCallable</span><span class="p">]:</span>
-</span><span data-line="343"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all dependencies correlating to handler function&#39;s kwargs that exist in the handler&#39;s scope.&quot;&quot;&quot;</span>
-</span><span data-line="344">
-</span><span data-line="345">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span></div>
+</span><span data-line="352">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.dependencies attribute&quot;</span><span class="p">)</span>
+</span><span data-line="353">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_dependencies</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">DependencyKey</span><span class="p">,</span> <span class="n">Provider</span> <span class="o">|</span> <span class="n">Provide</span> <span class="o">|</span> <span class="n">AnyCallable</span><span class="p">]:</span>
+</span><span data-line="354"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all dependencies correlating to handler function&#39;s kwargs that exist in the handler&#39;s scope.&quot;&quot;&quot;</span>
+</span><span data-line="355">
+</span><span data-line="356">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dependencies</span></div>
 
-</span><span data-line="346">
+</span><span data-line="357">
 <div class="viewcode-block" id="BaseRouteHandler.resolve_middleware">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_middleware">[docs]</a>
-</span><span data-line="347">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.middleware attribute&quot;</span><span class="p">)</span>
-</span><span data-line="348">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_middleware</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Middleware</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-</span><span data-line="349"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return registered middlewares&quot;&quot;&quot;</span>
-</span><span data-line="350">
-</span><span data-line="351">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">middleware</span></div>
+</span><span data-line="358">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.middleware attribute&quot;</span><span class="p">)</span>
+</span><span data-line="359">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_middleware</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Middleware</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+</span><span data-line="360"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return registered middlewares&quot;&quot;&quot;</span>
+</span><span data-line="361">
+</span><span data-line="362">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">middleware</span></div>
 
-</span><span data-line="352">
+</span><span data-line="363">
 <div class="viewcode-block" id="BaseRouteHandler.resolve_exception_handlers">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_exception_handlers">[docs]</a>
-</span><span data-line="353">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.exception_handlers attribute&quot;</span><span class="p">)</span>
-</span><span data-line="354">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_exception_handlers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExceptionHandlersMap</span><span class="p">:</span>
-</span><span data-line="355"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the exception_handlers by starting from the route handler and moving up.</span>
-</span><span data-line="356">
-</span><span data-line="357"><span class="sd">        This method is memoized so the computation occurs only once.</span>
-</span><span data-line="358"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="359">
-</span><span data-line="360">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exception_handlers</span></div>
+</span><span data-line="364">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.exception_handlers attribute&quot;</span><span class="p">)</span>
+</span><span data-line="365">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_exception_handlers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExceptionHandlersMap</span><span class="p">:</span>
+</span><span data-line="366"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the exception_handlers by starting from the route handler and moving up.</span>
+</span><span data-line="367">
+</span><span data-line="368"><span class="sd">        This method is memoized so the computation occurs only once.</span>
+</span><span data-line="369"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="370">
+</span><span data-line="371">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exception_handlers</span></div>
 
-</span><span data-line="361">
+</span><span data-line="372">
 <div class="viewcode-block" id="BaseRouteHandler.resolve_signature_namespace">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_signature_namespace">[docs]</a>
-</span><span data-line="362">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.signature_namespace attribute&quot;</span><span class="p">)</span>
-</span><span data-line="363">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_signature_namespace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="364"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the route handler signature namespace dictionary by going from top to bottom&quot;&quot;&quot;</span>
-</span><span data-line="365">
-</span><span data-line="366">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">signature_namespace</span></div>
+</span><span data-line="373">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.signature_namespace attribute&quot;</span><span class="p">)</span>
+</span><span data-line="374">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_signature_namespace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="375"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the route handler signature namespace dictionary by going from top to bottom&quot;&quot;&quot;</span>
+</span><span data-line="376">
+</span><span data-line="377">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">signature_namespace</span></div>
 
-</span><span data-line="367">
-</span><span data-line="368">    <span class="nd">@property</span>
-</span><span data-line="369">    <span class="k">def</span><span class="w"> </span><span class="nf">data_dto</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="370">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dto</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="371">            <span class="bp">self</span><span class="o">.</span><span class="n">_raise_not_registered</span><span class="p">()</span>
-</span><span data-line="372">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dto</span>
-</span><span data-line="373">
-</span><span data-line="374">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.data_dto attribute&quot;</span><span class="p">)</span>
-</span><span data-line="375">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_data_dto</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="376">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_dto</span>
-</span><span data-line="377">
-</span><span data-line="378">    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_data_dto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="379"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the data_dto by starting from the route handler and moving up.</span>
-</span><span data-line="380"><span class="sd">        If a handler is found it is returned, otherwise None is set.</span>
-</span><span data-line="381"><span class="sd">        This method is memoized so the computation occurs only once.</span>
-</span><span data-line="382">
-</span><span data-line="383"><span class="sd">        Returns:</span>
-</span><span data-line="384"><span class="sd">            An optional :class:`DTO type &lt;.dto.base_dto.AbstractDTO&gt;`</span>
-</span><span data-line="385"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="386">        <span class="n">data_dto</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="387">        <span class="k">if</span> <span class="p">(</span><span class="n">_data_dto</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dto</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="388">            <span class="n">data_dto</span> <span class="o">=</span> <span class="n">_data_dto</span>
-</span><span data-line="389">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span> <span class="ow">and</span> <span class="p">(</span>
-</span><span data-line="390">            <span class="n">plugin_for_data_type</span> <span class="o">:=</span> <span class="nb">next</span><span class="p">(</span>
-</span><span data-line="391">                <span class="p">(</span>
-</span><span data-line="392">                    <span class="n">plugin</span>
-</span><span data-line="393">                    <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">app</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">serialization</span>
-</span><span data-line="394">                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span><span class="o">.</span><span class="n">match_predicate_recursively</span><span class="p">(</span><span class="n">plugin</span><span class="o">.</span><span class="n">supports_type</span><span class="p">)</span>
-</span><span data-line="395">                <span class="p">),</span>
-</span><span data-line="396">                <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="397">            <span class="p">)</span>
-</span><span data-line="398">        <span class="p">):</span>
-</span><span data-line="399">            <span class="n">data_dto</span> <span class="o">=</span> <span class="n">plugin_for_data_type</span><span class="o">.</span><span class="n">create_dto_for_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span><span class="p">)</span>
-</span><span data-line="400">
-</span><span data-line="401">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span> <span class="ow">and</span> <span class="n">data_dto</span><span class="p">:</span>
-</span><span data-line="402">            <span class="n">data_dto</span><span class="o">.</span><span class="n">create_for_field_definition</span><span class="p">(</span>
-</span><span data-line="403">                <span class="n">field_definition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span><span class="p">,</span>
-</span><span data-line="404">                <span class="n">handler_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">handler_id</span><span class="p">,</span>
-</span><span data-line="405">            <span class="p">)</span>
-</span><span data-line="406">
-</span><span data-line="407">        <span class="k">return</span> <span class="n">data_dto</span>
-</span><span data-line="408">
-</span><span data-line="409">    <span class="nd">@property</span>
-</span><span data-line="410">    <span class="k">def</span><span class="w"> </span><span class="nf">return_dto</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="411">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="412">            <span class="bp">self</span><span class="o">.</span><span class="n">_raise_not_registered</span><span class="p">()</span>
-</span><span data-line="413">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span>
-</span><span data-line="414">
-</span><span data-line="415">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.return_dto attribute&quot;</span><span class="p">)</span>
-</span><span data-line="416">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_return_dto</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="417">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_dto</span>
-</span><span data-line="418">
-</span><span data-line="419">    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_return_dto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">data_dto</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="420"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the return_dto by starting from the route handler and moving up.</span>
-</span><span data-line="421"><span class="sd">        If a handler is found it is returned, otherwise None is set.</span>
-</span><span data-line="422"><span class="sd">        This method is memoized so the computation occurs only once.</span>
-</span><span data-line="423">
-</span><span data-line="424"><span class="sd">        Returns:</span>
-</span><span data-line="425"><span class="sd">            An optional :class:`DTO type &lt;.dto.base_dto.AbstractDTO&gt;`</span>
-</span><span data-line="426"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="427">        <span class="k">if</span> <span class="p">(</span><span class="n">_return_dto</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
-</span><span data-line="428">            <span class="n">return_dto</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">_return_dto</span>
-</span><span data-line="429">        <span class="k">elif</span> <span class="n">data_dto</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">data_dto</span><span class="o">.</span><span class="n">is_supported_model_type_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="p">):</span>
-</span><span data-line="430">            <span class="n">return_dto</span> <span class="o">=</span> <span class="n">data_dto</span>
-</span><span data-line="431">        <span class="k">elif</span> <span class="n">plugin_for_return_type</span> <span class="o">:=</span> <span class="nb">next</span><span class="p">(</span>
-</span><span data-line="432">            <span class="p">(</span>
-</span><span data-line="433">                <span class="n">plugin</span>
-</span><span data-line="434">                <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">app</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">serialization</span>
-</span><span data-line="435">                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="o">.</span><span class="n">match_predicate_recursively</span><span class="p">(</span><span class="n">plugin</span><span class="o">.</span><span class="n">supports_type</span><span class="p">)</span>
-</span><span data-line="436">            <span class="p">),</span>
-</span><span data-line="437">            <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="438">        <span class="p">):</span>
-</span><span data-line="439">            <span class="n">return_dto</span> <span class="o">=</span> <span class="n">plugin_for_return_type</span><span class="o">.</span><span class="n">create_dto_for_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="p">)</span>
-</span><span data-line="440">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="378">
+</span><span data-line="379">    <span class="nd">@property</span>
+</span><span data-line="380">    <span class="k">def</span><span class="w"> </span><span class="nf">data_dto</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="381">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dto</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="382">            <span class="bp">self</span><span class="o">.</span><span class="n">_raise_not_registered</span><span class="p">()</span>
+</span><span data-line="383">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dto</span>
+</span><span data-line="384">
+</span><span data-line="385">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.data_dto attribute&quot;</span><span class="p">)</span>
+</span><span data-line="386">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_data_dto</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="387">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_dto</span>
+</span><span data-line="388">
+</span><span data-line="389">    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_data_dto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="390"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the data_dto by starting from the route handler and moving up.</span>
+</span><span data-line="391"><span class="sd">        If a handler is found it is returned, otherwise None is set.</span>
+</span><span data-line="392"><span class="sd">        This method is memoized so the computation occurs only once.</span>
+</span><span data-line="393">
+</span><span data-line="394"><span class="sd">        Returns:</span>
+</span><span data-line="395"><span class="sd">            An optional :class:`DTO type &lt;.dto.base_dto.AbstractDTO&gt;`</span>
+</span><span data-line="396"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="397">        <span class="n">data_dto</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="398">        <span class="k">if</span> <span class="p">(</span><span class="n">_data_dto</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dto</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="399">            <span class="n">data_dto</span> <span class="o">=</span> <span class="n">_data_dto</span>
+</span><span data-line="400">        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span> <span class="ow">and</span> <span class="p">(</span>
+</span><span data-line="401">            <span class="n">plugin_for_data_type</span> <span class="o">:=</span> <span class="nb">next</span><span class="p">(</span>
+</span><span data-line="402">                <span class="p">(</span>
+</span><span data-line="403">                    <span class="n">plugin</span>
+</span><span data-line="404">                    <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">app</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">serialization</span>
+</span><span data-line="405">                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span><span class="o">.</span><span class="n">match_predicate_recursively</span><span class="p">(</span><span class="n">plugin</span><span class="o">.</span><span class="n">supports_type</span><span class="p">)</span>
+</span><span data-line="406">                <span class="p">),</span>
+</span><span data-line="407">                <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="408">            <span class="p">)</span>
+</span><span data-line="409">        <span class="p">):</span>
+</span><span data-line="410">            <span class="n">data_dto</span> <span class="o">=</span> <span class="n">plugin_for_data_type</span><span class="o">.</span><span class="n">create_dto_for_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span><span class="p">)</span>
+</span><span data-line="411">
+</span><span data-line="412">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span> <span class="ow">and</span> <span class="n">data_dto</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dto_data_backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="413">            <span class="bp">self</span><span class="o">.</span><span class="n">_dto_data_backend</span> <span class="o">=</span> <span class="n">data_dto</span><span class="o">.</span><span class="n">create_for_field_definition</span><span class="p">(</span>
+</span><span data-line="414">                <span class="n">field_definition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span><span class="p">,</span>
+</span><span data-line="415">                <span class="n">handler_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">handler_id</span><span class="p">,</span>
+</span><span data-line="416">            <span class="p">)</span>
+</span><span data-line="417">
+</span><span data-line="418">        <span class="k">return</span> <span class="n">data_dto</span>
+</span><span data-line="419">
+</span><span data-line="420">    <span class="nd">@property</span>
+</span><span data-line="421">    <span class="k">def</span><span class="w"> </span><span class="nf">return_dto</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="422">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span> <span class="ow">is</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="423">            <span class="bp">self</span><span class="o">.</span><span class="n">_raise_not_registered</span><span class="p">()</span>
+</span><span data-line="424">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span>
+</span><span data-line="425">
+</span><span data-line="426">    <span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;3.0&quot;</span><span class="p">,</span> <span class="n">removal_in</span><span class="o">=</span><span class="s2">&quot;4.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;.return_dto attribute&quot;</span><span class="p">)</span>
+</span><span data-line="427">    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_return_dto</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="428">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_dto</span>
+</span><span data-line="429">
+</span><span data-line="430">    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_return_dto</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">data_dto</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="431"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve the return_dto by starting from the route handler and moving up.</span>
+</span><span data-line="432"><span class="sd">        If a handler is found it is returned, otherwise None is set.</span>
+</span><span data-line="433"><span class="sd">        This method is memoized so the computation occurs only once.</span>
+</span><span data-line="434">
+</span><span data-line="435"><span class="sd">        Returns:</span>
+</span><span data-line="436"><span class="sd">            An optional :class:`DTO type &lt;.dto.base_dto.AbstractDTO&gt;`</span>
+</span><span data-line="437"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="438">        <span class="k">if</span> <span class="p">(</span><span class="n">_return_dto</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Empty</span><span class="p">:</span>
+</span><span data-line="439">            <span class="n">return_dto</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AbstractDTO</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">_return_dto</span>
+</span><span data-line="440">        <span class="k">elif</span> <span class="n">data_dto</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">data_dto</span><span class="o">.</span><span class="n">is_supported_model_type_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="p">):</span>
 </span><span data-line="441">            <span class="n">return_dto</span> <span class="o">=</span> <span class="n">data_dto</span>
-</span><span data-line="442">
-</span><span data-line="443">        <span class="k">if</span> <span class="n">return_dto</span> <span class="ow">and</span> <span class="n">return_dto</span><span class="o">.</span><span class="n">is_supported_model_type_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="p">):</span>
-</span><span data-line="444">            <span class="n">return_dto</span><span class="o">.</span><span class="n">create_for_field_definition</span><span class="p">(</span>
-</span><span data-line="445">                <span class="n">field_definition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="p">,</span>
-</span><span data-line="446">                <span class="n">handler_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">handler_id</span><span class="p">,</span>
-</span><span data-line="447">            <span class="p">)</span>
-</span><span data-line="448">            <span class="n">resolved_return_dto</span> <span class="o">=</span> <span class="n">return_dto</span>
-</span><span data-line="449">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="450">            <span class="n">resolved_return_dto</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="451">
-</span><span data-line="452">        <span class="k">return</span> <span class="n">resolved_return_dto</span>
+</span><span data-line="442">        <span class="k">elif</span> <span class="n">plugin_for_return_type</span> <span class="o">:=</span> <span class="nb">next</span><span class="p">(</span>
+</span><span data-line="443">            <span class="p">(</span>
+</span><span data-line="444">                <span class="n">plugin</span>
+</span><span data-line="445">                <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">app</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">serialization</span>
+</span><span data-line="446">                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="o">.</span><span class="n">match_predicate_recursively</span><span class="p">(</span><span class="n">plugin</span><span class="o">.</span><span class="n">supports_type</span><span class="p">)</span>
+</span><span data-line="447">            <span class="p">),</span>
+</span><span data-line="448">            <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="449">        <span class="p">):</span>
+</span><span data-line="450">            <span class="n">return_dto</span> <span class="o">=</span> <span class="n">plugin_for_return_type</span><span class="o">.</span><span class="n">create_dto_for_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="p">)</span>
+</span><span data-line="451">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="452">            <span class="n">return_dto</span> <span class="o">=</span> <span class="n">data_dto</span>
 </span><span data-line="453">
-</span><span data-line="454">    <span class="k">def</span><span class="w"> </span><span class="nf">_create_di_request_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_ctx</span><span class="p">:</span> <span class="n">DIContext</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DIContext</span><span class="p">:</span>
-</span><span data-line="455"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the request&#39;s dependency context, not yet entered: nested in ``app_ctx`` if the app has one, and</span>
-</span><span data-line="456"><span class="sd">        resolving through the handler&#39;s registry. It is stored in the scope state.</span>
-</span><span data-line="457"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="458">        <span class="n">request_ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_injection_setup</span><span class="o">.</span><span class="n">request_context</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">app_ctx</span><span class="p">)</span>
-</span><span data-line="459">        <span class="n">ScopeState</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">dependency_context</span> <span class="o">=</span> <span class="n">request_ctx</span>
-</span><span data-line="460">        <span class="k">return</span> <span class="n">request_ctx</span>
-</span><span data-line="461">
-</span><span data-line="462">    <span class="k">def</span><span class="w"> </span><span class="nf">_create_di_handler_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span> <span class="n">seeds</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">DIContext</span><span class="p">:</span>
-</span><span data-line="463"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the handler&#39;s dependency context for ``connection``, not yet entered: nested in the request&#39;s</span>
-</span><span data-line="464"><span class="sd">        and seeded with ``seeds``.</span>
-</span><span data-line="465"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="466">        <span class="n">request_ctx</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;DIContext&quot;</span><span class="p">,</span> <span class="n">ScopeState</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">connection</span><span class="o">.</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">dependency_context</span><span class="p">)</span>
-</span><span data-line="467">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_injection_setup</span><span class="o">.</span><span class="n">handler_context</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">request_ctx</span><span class="p">,</span> <span class="n">seeds</span><span class="p">)</span>
-</span><span data-line="468">
+</span><span data-line="454">        <span class="k">if</span> <span class="n">return_dto</span> <span class="ow">and</span> <span class="n">return_dto</span><span class="o">.</span><span class="n">is_supported_model_type_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="p">):</span>
+</span><span data-line="455">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dto_return_backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="456">                <span class="bp">self</span><span class="o">.</span><span class="n">_dto_return_backend</span> <span class="o">=</span> <span class="n">return_dto</span><span class="o">.</span><span class="n">create_for_field_definition</span><span class="p">(</span>
+</span><span data-line="457">                    <span class="n">field_definition</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parsed_return_field</span><span class="p">,</span>
+</span><span data-line="458">                    <span class="n">handler_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">handler_id</span><span class="p">,</span>
+</span><span data-line="459">                <span class="p">)</span>
+</span><span data-line="460">            <span class="n">resolved_return_dto</span> <span class="o">=</span> <span class="n">return_dto</span>
+</span><span data-line="461">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="462">            <span class="n">resolved_return_dto</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="463">
+</span><span data-line="464">        <span class="k">return</span> <span class="n">resolved_return_dto</span>
+</span><span data-line="465">
+</span><span data-line="466">    <span class="k">def</span><span class="w"> </span><span class="nf">_create_di_request_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_ctx</span><span class="p">:</span> <span class="n">DIContext</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DIContext</span><span class="p">:</span>
+</span><span data-line="467"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the request&#39;s dependency context, not yet entered: nested in ``app_ctx`` if the app has one, and</span>
+</span><span data-line="468"><span class="sd">        resolving through the handler&#39;s registry. It is stored in the scope state.</span>
+</span><span data-line="469"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="470">        <span class="n">request_ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_injection_setup</span><span class="o">.</span><span class="n">request_context</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">app_ctx</span><span class="p">)</span>
+</span><span data-line="471">        <span class="n">ScopeState</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">dependency_context</span> <span class="o">=</span> <span class="n">request_ctx</span>
+</span><span data-line="472">        <span class="k">return</span> <span class="n">request_ctx</span>
+</span><span data-line="473">
+</span><span data-line="474">    <span class="k">def</span><span class="w"> </span><span class="nf">_create_di_handler_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span> <span class="n">seeds</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">DIContext</span><span class="p">:</span>
+</span><span data-line="475"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the handler&#39;s dependency context for ``connection``, not yet entered: nested in the request&#39;s</span>
+</span><span data-line="476"><span class="sd">        and seeded with ``seeds``.</span>
+</span><span data-line="477"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="478">        <span class="n">request_ctx</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;DIContext&quot;</span><span class="p">,</span> <span class="n">ScopeState</span><span class="o">.</span><span class="n">from_scope</span><span class="p">(</span><span class="n">connection</span><span class="o">.</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">dependency_context</span><span class="p">)</span>
+</span><span data-line="479">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_injection_setup</span><span class="o">.</span><span class="n">handler_context</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">request_ctx</span><span class="p">,</span> <span class="n">seeds</span><span class="p">)</span>
+</span><span data-line="480">
 <div class="viewcode-block" id="BaseRouteHandler.authorize_connection">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.BaseRouteHandler.authorize_connection">[docs]</a>
-</span><span data-line="469">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authorize_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="470"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensure the connection is authorized by running all the route guards in scope.&quot;&quot;&quot;</span>
-</span><span data-line="471">        <span class="k">for</span> <span class="n">guard</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">guards</span><span class="p">:</span>
-</span><span data-line="472">            <span class="k">await</span> <span class="n">guard</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+</span><span data-line="481">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authorize_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="482"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensure the connection is authorized by running all the route guards in scope.&quot;&quot;&quot;</span>
+</span><span data-line="483">        <span class="k">for</span> <span class="n">guard</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">guards</span><span class="p">:</span>
+</span><span data-line="484">            <span class="k">await</span> <span class="n">guard</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
 
-</span><span data-line="473">
+</span><span data-line="485">
 <div class="viewcode-block" id="BaseRouteHandler.on_registration">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.BaseRouteHandler.on_registration">[docs]</a>
-</span><span data-line="474">    <span class="k">def</span><span class="w"> </span><span class="nf">on_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="n">BaseRoute</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="475"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Called once per handler when the app object is instantiated.</span>
-</span><span data-line="476">
-</span><span data-line="477"><span class="sd">        Args:</span>
-</span><span data-line="478"><span class="sd">            route: The route this handler is being registered on</span>
-</span><span data-line="479"><span class="sd">            app: The application instance</span>
-</span><span data-line="480">
-</span><span data-line="481"><span class="sd">        Returns:</span>
-</span><span data-line="482"><span class="sd">            None</span>
-</span><span data-line="483"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="484">
-</span><span data-line="485">        <span class="bp">self</span><span class="o">.</span><span class="n">_dto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_data_dto</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
-</span><span data-line="486">        <span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_return_dto</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">data_dto</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dto</span><span class="p">)</span>
-</span><span data-line="487">
-</span><span data-line="488">        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_handler_function</span><span class="p">()</span>
-</span><span data-line="489">
-</span><span data-line="490">        <span class="n">check_middleware_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">middleware</span><span class="p">)</span></div>
-
-</span><span data-line="491">
-</span><span data-line="492">    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_handler_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="493"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the route handler function once set by inspecting its return annotations.&quot;&quot;&quot;</span>
-</span><span data-line="494">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">DTOData</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_dto</span><span class="p">:</span>
-</span><span data-line="495">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
-</span><span data-line="496">                <span class="sa">f</span><span class="s2">&quot;Handler function </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">handler_name</span><span class="si">}</span><span class="s2"> has a data parameter that is a subclass of DTOData but no &quot;</span>
-</span><span data-line="497">                <span class="s2">&quot;DTO has been registered for it.&quot;</span>
-</span><span data-line="498">            <span class="p">)</span>
+</span><span data-line="486">    <span class="k">def</span><span class="w"> </span><span class="nf">on_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">:</span> <span class="n">BaseRoute</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="487"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Called once per handler when the app object is instantiated.</span>
+</span><span data-line="488">
+</span><span data-line="489"><span class="sd">        Args:</span>
+</span><span data-line="490"><span class="sd">            route: The route this handler is being registered on</span>
+</span><span data-line="491"><span class="sd">            app: The application instance</span>
+</span><span data-line="492">
+</span><span data-line="493"><span class="sd">        Returns:</span>
+</span><span data-line="494"><span class="sd">            None</span>
+</span><span data-line="495"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="496">
+</span><span data-line="497">        <span class="bp">self</span><span class="o">.</span><span class="n">_dto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_data_dto</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
+</span><span data-line="498">        <span class="bp">self</span><span class="o">.</span><span class="n">_return_dto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_return_dto</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">data_dto</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dto</span><span class="p">)</span>
 </span><span data-line="499">
+</span><span data-line="500">        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_handler_function</span><span class="p">()</span>
+</span><span data-line="501">
+</span><span data-line="502">        <span class="n">check_middleware_constraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">middleware</span><span class="p">)</span></div>
+
+</span><span data-line="503">
+</span><span data-line="504">    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_handler_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="505"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the route handler function once set by inspecting its return annotations.&quot;&quot;&quot;</span>
+</span><span data-line="506">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">parsed_data_field</span><span class="o">.</span><span class="n">is_subclass_of</span><span class="p">(</span><span class="n">DTOData</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_dto</span><span class="p">:</span>
+</span><span data-line="507">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="508">                <span class="sa">f</span><span class="s2">&quot;Handler function </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">handler_name</span><span class="si">}</span><span class="s2"> has a data parameter that is a subclass of DTOData but no &quot;</span>
+</span><span data-line="509">                <span class="s2">&quot;DTO has been registered for it.&quot;</span>
+</span><span data-line="510">            <span class="p">)</span>
+</span><span data-line="511">
 <div class="viewcode-block" id="BaseRouteHandler.__str__">
 <a class="viewcode-back" href="../../../reference/handlers.html#litestar.handlers.BaseRouteHandler.__str__">[docs]</a>
-</span><span data-line="500">    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span data-line="501"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a unique identifier for the route handler.</span>
-</span><span data-line="502">
-</span><span data-line="503"><span class="sd">        Returns:</span>
-</span><span data-line="504"><span class="sd">            A string</span>
-</span><span data-line="505"><span class="sd">        &quot;&quot;&quot;</span>
-</span><span data-line="506">        <span class="n">target</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AsyncAnyCallable</span><span class="p">]</span> <span class="o">|</span> <span class="n">AsyncAnyCallable</span>  <span class="c1"># pyright: ignore[reportInvalidTypeForm]</span>
-</span><span data-line="507">        <span class="n">target</span> <span class="o">=</span> <span class="n">unwrap_partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
-</span><span data-line="508">        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;__qualname__&quot;</span><span class="p">):</span>
-</span><span data-line="509">            <span class="n">target</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-</span><span data-line="510">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">&quot;</span></div>
+</span><span data-line="512">    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="513"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a unique identifier for the route handler.</span>
+</span><span data-line="514">
+</span><span data-line="515"><span class="sd">        Returns:</span>
+</span><span data-line="516"><span class="sd">            A string</span>
+</span><span data-line="517"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="518">        <span class="n">target</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">AsyncAnyCallable</span><span class="p">]</span> <span class="o">|</span> <span class="n">AsyncAnyCallable</span>  <span class="c1"># pyright: ignore[reportInvalidTypeForm]</span>
+</span><span data-line="519">        <span class="n">target</span> <span class="o">=</span> <span class="n">unwrap_partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
+</span><span data-line="520">        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s2">&quot;__qualname__&quot;</span><span class="p">):</span>
+</span><span data-line="521">            <span class="n">target</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+</span><span data-line="522">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">&quot;</span></div>
 </div>
 
 </span></pre></div>
