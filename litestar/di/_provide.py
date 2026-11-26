@@ -1,11 +1,7 @@
-from __future__ import annotations
+from typing import Any
 
-from typing import TYPE_CHECKING, Any
-
+from litestar.types import AnyCallable
 from litestar.utils.deprecation import warn_deprecation
-
-if TYPE_CHECKING:
-    from litestar.types import AnyCallable
 
 __all__ = ("Provide",)
 

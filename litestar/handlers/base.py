@@ -1,26 +1,34 @@
 # pyright: reportUnnecessaryTypeIgnoreComment=false
 
-from __future__ import annotations
 
 import functools
+from collections.abc import Callable, Coroutine, Mapping, Sequence
 from functools import partial
-from typing import TYPE_CHECKING, Any, NoReturn, cast
+from typing import TYPE_CHECKING, Any, NoReturn, Self, cast
 
 from litestar._layers.utils import narrow_dependencies
-from litestar.dto import DTOData
+from litestar.connection import ASGIConnection
+from litestar.di import DependencyKey, DIContext, Provide, Provider
+from litestar.dto import AbstractDTO, DTOData
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.middleware.constraints import check_middleware_constraints
+from litestar.router import Router
+from litestar.routes import BaseRoute
 from litestar.serialization import default_deserializer, default_serializer
 from litestar.types import (
+    AnyCallable,
+    AsyncAnyCallable,
     Dependencies,
     Empty,
     ExceptionHandlersMap,
     Guard,
     Middleware,
     ParametersMap,
+    Scope,
     TypeDecodersSequence,
     TypeEncodersMap,
 )
+from litestar.types.empty import EmptyType
 from litestar.typing import FieldDefinition
 from litestar.utils import ensure_async_callable, get_name, join_paths, normalize_path
 from litestar.utils.deprecation import deprecated
@@ -30,19 +38,9 @@ from litestar.utils.scope.state import ScopeState
 from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace, merge_signature_namespaces
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Coroutine, Mapping, Sequence
-    from typing import Self
-
     from litestar.app import Litestar
-    from litestar.connection import ASGIConnection
-    from litestar.di import DependencyKey, DIContext, Provide, Provider
     from litestar.di._route_handler import HandlerInjectionSetup
-    from litestar.dto import AbstractDTO
-    from litestar.router import Router
-    from litestar.routes import BaseRoute
-    from litestar.types import AsyncAnyCallable, Scope
-    from litestar.types.callable_types import AnyCallable, AsyncGuard
-    from litestar.types.empty import EmptyType
+    from litestar.types.callable_types import AsyncGuard
 
 __all__ = ("BaseRouteHandler",)
 
@@ -76,7 +74,7 @@ class BaseRouteHandler:
         "type_encoders",
     )
 
-    _injection_setup: HandlerInjectionSetup
+    _injection_setup: "HandlerInjectionSetup"
     """What injecting the handler's function takes. Set on registration"""
 
     _validate_request_parameters: Callable[[ASGIConnection], Coroutine[Any, Any, dict[str, Any]]] | None
@@ -375,7 +373,7 @@ class BaseRouteHandler:
     def resolve_data_dto(self) -> type[AbstractDTO] | None:
         return self.data_dto
 
-    def _resolve_data_dto(self, app: Litestar) -> type[AbstractDTO] | None:
+    def _resolve_data_dto(self, app: "Litestar") -> type[AbstractDTO] | None:
         """Resolve the data_dto by starting from the route handler and moving up.
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once.
@@ -416,7 +414,7 @@ class BaseRouteHandler:
     def resolve_return_dto(self) -> type[AbstractDTO] | None:
         return self.return_dto
 
-    def _resolve_return_dto(self, app: Litestar, data_dto: type[AbstractDTO] | None) -> type[AbstractDTO] | None:
+    def _resolve_return_dto(self, app: "Litestar", data_dto: type[AbstractDTO] | None) -> type[AbstractDTO] | None:
         """Resolve the return_dto by starting from the route handler and moving up.
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once.
@@ -471,7 +469,7 @@ class BaseRouteHandler:
         for guard in self.guards:
             await guard(connection, self)
 
-    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+    def on_registration(self, route: BaseRoute, app: "Litestar") -> None:
         """Called once per handler when the app object is instantiated.
 
         Args:

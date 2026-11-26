@@ -1,12 +1,7 @@
-from __future__ import annotations
-
 from types import NoneType, UnionType
-from typing import TYPE_CHECKING, Union
+from typing import Union
 
-from typing_extensions import _TypedDictMeta  # type: ignore[attr-defined]
-
-if TYPE_CHECKING:
-    from typing import TypeAlias
+from typing_extensions import TypeAliasType, _TypedDictMeta  # type: ignore[attr-defined]
 
 __all__ = (
     "NoneType",
@@ -17,4 +12,4 @@ __all__ = (
 
 
 UnionTypes = {UnionType, Union}
-TypedDictClass: TypeAlias = type[_TypedDictMeta]
+TypedDictClass = TypeAliasType("TypedDictClass", type[_TypedDictMeta])

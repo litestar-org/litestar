@@ -1,11 +1,10 @@
-from __future__ import annotations
-
 import collections
 import inspect
 import itertools
 import pdb  # noqa: T100
 import warnings
 from collections import defaultdict
+from collections.abc import AsyncGenerator, Callable, Generator, Iterable, Mapping, Sequence
 from contextlib import (
     AbstractAsyncContextManager,
     AsyncExitStack,
@@ -16,22 +15,27 @@ from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, TypedDict, cast
+from typing import TYPE_CHECKING, Any, Literal, Self, TypedDict, cast
 from uuid import UUID
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, run_asgi_lifespan, wrap_in_exception_handler
-from litestar._layers.utils import narrow_dependencies
 from litestar._openapi.plugin import OpenAPIPlugin
 from litestar._openapi.schema_generation import openapi_schema_plugins
 from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.app import AppConfig, ExperimentalFeatures
+from litestar.config.compression import CompressionConfig
+from litestar.config.cors import CORSConfig
+from litestar.config.csrf import CSRFConfig
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.connection import Request, WebSocket
 from litestar.constants import DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS
+from litestar.datastructures import CacheControlHeader, ETag
 from litestar.datastructures.state import State
-from litestar.di import check_divergence
+from litestar.di import DependencyKey, DIContext, Provider, check_divergence
+from litestar.dto import AbstractDTO
 from litestar.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
+from litestar.events.listener import EventListener
 from litestar.exceptions import (
     ImproperlyConfiguredException,
     LitestarWarning,
@@ -42,16 +46,50 @@ from litestar.handlers import ASGIRouteHandler, BaseRouteHandler, HTTPRouteHandl
 from litestar.handlers.http_handlers._options import create_options_handler
 from litestar.middleware._internal.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
+from litestar.openapi.spec import SecurityRequirement
+from litestar.openapi.spec.open_api import OpenAPI
 from litestar.plugins import (
     CLIPlugin,
     InitPluginProtocol,
     PluginProtocol,
     PluginRegistry,
 )
+from litestar.response import Response
 from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
+from litestar.stores.base import Store
 from litestar.stores.registry import StoreRegistry
-from litestar.types import Empty, TypeDecodersSequence
+from litestar.types import (
+    AfterExceptionHookHandler,
+    AfterRequestHookHandler,
+    AfterResponseHookHandler,
+    ASGIApp,
+    BeforeMessageSendHookHandler,
+    BeforeRequestHookHandler,
+    ControllerRouterHandler,
+    Debugger,
+    Dependencies,
+    Empty,
+    EmptyType,
+    ExceptionHandlersMap,
+    Guard,
+    LifeSpanReceive,
+    LifeSpanScope,
+    LifeSpanSend,
+    Message,
+    Middleware,
+    OnAppInitHandler,
+    ParametersMap,
+    Receive,
+    ResponseCookies,
+    ResponseHeaders,
+    RouteHandlerType,
+    Scope,
+    Send,
+    TypeDecodersSequence,
+    TypeEncodersMap,
+)
+from litestar.types.callable_types import LifespanHook
 from litestar.types.internal_types import PathParameterDefinition, RouteHandlerMapItem, TemplateConfigType
 from litestar.utils import ensure_async_callable, envflag, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
@@ -59,50 +97,7 @@ from litestar.utils.predicates import is_async_callable, is_class_and_subclass
 from litestar.utils.warnings import warn_pdb_on_exception
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Callable, Generator, Iterable, Mapping, Sequence
-    from typing import Self
-
-    from litestar.config.compression import CompressionConfig
-    from litestar.config.cors import CORSConfig
-    from litestar.config.csrf import CSRFConfig
-    from litestar.datastructures import CacheControlHeader, ETag
-    from litestar.di import DependencyKey, DIContext, Provider
-    from litestar.dto import AbstractDTO
-    from litestar.events.listener import EventListener
-    from litestar.openapi.spec import SecurityRequirement
-    from litestar.openapi.spec.open_api import OpenAPI
     from litestar.plugins.opentelemetry import OpenTelemetryPlugin
-    from litestar.response import Response
-    from litestar.stores.base import Store
-    from litestar.types import (
-        AfterExceptionHookHandler,
-        AfterRequestHookHandler,
-        AfterResponseHookHandler,
-        ASGIApp,
-        BeforeMessageSendHookHandler,
-        BeforeRequestHookHandler,
-        ControllerRouterHandler,
-        Debugger,
-        Dependencies,
-        EmptyType,
-        ExceptionHandlersMap,
-        Guard,
-        LifeSpanReceive,
-        LifeSpanScope,
-        LifeSpanSend,
-        Message,
-        Middleware,
-        OnAppInitHandler,
-        ParametersMap,
-        Receive,
-        ResponseCookies,
-        ResponseHeaders,
-        RouteHandlerType,
-        Scope,
-        Send,
-        TypeEncodersMap,
-    )
-    from litestar.types.callable_types import LifespanHook
 
 
 __all__ = ("DEFAULT_OPENAPI_CONFIG", "HandlerIndex", "Litestar")
@@ -228,13 +223,13 @@ class Litestar(Router):
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
-        lifespan: Sequence[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager]
+        lifespan: Sequence[Callable[["Litestar"], AbstractAsyncContextManager] | AbstractAsyncContextManager]
         | None = None,
         pdb_on_exception: bool | None = None,
         debugger_module: Debugger = pdb,
         experimental_features: Iterable[ExperimentalFeatures] | None = None,
         di_check_graph_divergence: Literal["warn", "raise", False] = "warn",
-        di_check_graph_divergence_ignore: Iterable[DependencyKey | Provider] | None = None,
+        di_check_graph_divergence_ignore: Iterable["DependencyKey | Provider"] | None = None,
     ) -> None:
         """Initialize a ``Litestar`` application.
 
@@ -343,6 +338,8 @@ class Litestar(Router):
             di_check_graph_divergence_ignore: Dependency keys or provider instances to ignore when running the DI graph
                 divergence check.
         """
+
+        from litestar._layers.utils import narrow_dependencies
 
         if debug is None:
             debug = envflag("LITESTAR_DEBUG")
@@ -630,7 +627,7 @@ class Litestar(Router):
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
     @classmethod
-    def from_scope(cls, scope: Scope) -> Litestar:
+    def from_scope(cls, scope: Scope) -> "Litestar":
         """Retrieve the Litestar application from the current ASGI scope"""
         return scope["litestar_app"]
 

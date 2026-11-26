@@ -1,21 +1,19 @@
-from __future__ import annotations
-
+from collections.abc import Callable, Mapping, Sequence
 from typing import TYPE_CHECKING, Any
 
 from litestar._request_parameters.validation import create_request_param_validaton_fn
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
+from litestar.router import Router
+from litestar.routes import BaseRoute
+from litestar.types import AsyncAnyCallable, Dependencies, ExceptionHandler, Guard, Middleware, ParametersMap
 from litestar.types.builtin_types import NoneType
 from litestar.utils import deprecated
 from litestar.utils.predicates import is_async_callable
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Mapping, Sequence
-
-    from litestar import Litestar, Router
-    from litestar.routes import BaseRoute
-    from litestar.types import AsyncAnyCallable, Dependencies, ExceptionHandler, Guard, Middleware, ParametersMap
+    from litestar import Litestar
 
 
 class WebsocketRouteHandler(BaseRouteHandler):
@@ -109,7 +107,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         if not is_async_callable(self.fn):
             raise ImproperlyConfiguredException(f"{self}: WebSocket handler functions must be asynchronous")
 
-    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+    def on_registration(self, route: BaseRoute, app: "Litestar") -> None:
         super().on_registration(route=route, app=app)
 
         from litestar.di._route_handler import create_handler_injection_setup
