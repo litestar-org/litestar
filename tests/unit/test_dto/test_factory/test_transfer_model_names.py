@@ -49,7 +49,7 @@ class Node:
 @dataclass
 class Cafe:
     id: int = 0
-    adresse: Address = field(default_factory=Address)
+    address: Address = field(default_factory=Address)
 
 
 Cafe.__name__ = "Café"
@@ -319,9 +319,9 @@ def transfer_models(app: Litestar) -> set[type[Any]]:
             unusual_class_names,
             [
                 "Caf_e9ResponseBody",
-                "Caf_e9ResponseBody.adresse",
+                "Caf_e9ResponseBody.address",
                 "CafeDTOResponseBody",
-                "CafeDTOResponseBody.adresse",
+                "CafeDTOResponseBody.address",
                 "SnakeDTOResponseBody",
                 "UniDTOResponseBody",
                 "UniDTOResponseBody.gr_f6_dfe",
