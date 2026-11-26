@@ -46,6 +46,11 @@ if TYPE_CHECKING:
 
 __all__ = ("BaseRouteHandler",)
 
+# Process-wide source of instance numbers for ``BaseRouteHandler.handler_id``. ``id(self)`` is not
+# usable for that: CPython reuses the address of a garbage collected handler, so two handlers
+# built from same-named functions could share the DTO and signature caches keyed by handler_id.
+_instance_ids = iter(range(1 << 63))
+
 
 class BaseRouteHandler:
     """Base route handler.
@@ -56,6 +61,7 @@ class BaseRouteHandler:
     __slots__ = (
         "_dto",
         "_injection_setup",
+        "_instance_id",
         "_parameter_field_definitions",
         "_parsed_data_field",
         "_parsed_fn_signature",
@@ -138,6 +144,7 @@ class BaseRouteHandler:
         self._parsed_return_field: FieldDefinition | EmptyType = Empty
         self._parsed_data_field: FieldDefinition | None = None
         self._parameter_field_definitions: dict[str, FieldDefinition] | EmptyType = Empty
+        self._instance_id: int | EmptyType = Empty
 
         self.dependencies = narrow_dependencies(dependencies)
         self._dto = dto
@@ -233,7 +240,9 @@ class BaseRouteHandler:
     @property
     def handler_id(self) -> str:
         """A unique identifier used for generation of DTOs."""
-        return f"{self!s}::{id(self)}"
+        if self._instance_id is Empty:
+            self._instance_id = next(_instance_ids)
+        return f"{self!s}::{self._instance_id}"
 
     @property
     def default_deserializer(self) -> Callable[[Any, Any], Any]:
