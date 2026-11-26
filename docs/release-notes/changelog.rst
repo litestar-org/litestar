@@ -8,6 +8,7 @@
 
     .. change:: DTO: Use a DTO backend without a request
         :type: feature
+        :pr: 5270
 
         The backend returned by ``AbstractDTO.create_for_field_definition`` decodes and
         encodes data with no application or request. ``handler_id`` and the connection
