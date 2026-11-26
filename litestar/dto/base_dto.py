@@ -32,6 +32,7 @@ if TYPE_CHECKING:
     from litestar.dto.data_structures import DTOFieldDefinition
     from litestar.handlers.base import BaseRouteHandler
     from litestar.openapi.spec import Reference, Schema
+    from litestar.types import TypeDecodersSequence
     from litestar.types.serialization import LitestarEncodableType
 
 __all__ = ("AbstractDTO",)
@@ -163,22 +164,24 @@ class AbstractDTO(Generic[T]):
     def create_for_field_definition(
         cls,
         field_definition: FieldDefinition,
-        handler_id: str,
+        handler_id: str | None = None,
         backend_cls: type[DTOBackend] | None = None,
         *,
         transfer_models: TransferModelRegistry | None = None,
+        type_decoders: TypeDecodersSequence | None = None,
     ) -> DTOBackend:
         """Creates a DTO backend for a field definition.
 
         Args:
             field_definition: A :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance. Declared as a
                 body, e.g. ``JSONBody[Model]``, it is the data the handler receives, otherwise the data it returns.
-            handler_id: ID of the route handler for which to create a DTO instance.
+            handler_id: ID of the route handler for which to create a DTO instance, if any.
             backend_cls: Alternative DTO backend class to use
             transfer_models: The transfer models of the application, shared by the backends that build the same one.
+            type_decoders: Type decoders used by the backend when it parses data without a connection.
 
         Returns:
-            The DTO backend, to be stored on the route handler.
+            The DTO backend, stored on the route handler or used on its own.
         """
 
         is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg)
@@ -206,6 +209,7 @@ class AbstractDTO(Generic[T]):
             is_data_field=is_data_field,
             handler_id=handler_id,
             transfer_models=transfer_models,
+            type_decoders=type_decoders,
         )
 
     @classmethod

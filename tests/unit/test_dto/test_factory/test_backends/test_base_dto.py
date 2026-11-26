@@ -107,7 +107,9 @@ def fx_backend(
             """
             return Model
 
-        def parse_raw(self, raw: bytes, asgi_connection: ASGIConnection) -> Any:
+        def parse_raw(
+            self, raw: bytes, asgi_connection: ASGIConnection | None = None, media_type: str | None = None
+        ) -> Any:
             """Parse raw bytes into transfer model type.
 
             Args:
@@ -119,7 +121,7 @@ def fx_backend(
             """
             return None
 
-        def parse_builtins(self, builtins: Any, asgi_connection: ASGIConnection) -> Any:
+        def parse_builtins(self, builtins: Any, asgi_connection: ASGIConnection | None = None) -> Any:
             """Parse builtin types into transfer model type.
 
             Args:
