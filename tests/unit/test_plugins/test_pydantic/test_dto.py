@@ -112,7 +112,7 @@ app = Litestar(route_handlers=[get_user])
     app = cast(Litestar, module.app)
     schema = app.openapi_schema
     assert schema.components.schemas is not None
-    component_schema = schema.components.schemas["GetUserUserResponseBody"]
+    component_schema = schema.components.schemas["DataCollectionDTOResponseBody"]
     assert component_schema.properties is not None
     assert component_schema.properties["id"].description == "This is a test (id description)."
     assert component_schema.properties["id"].exclusive_minimum == 1  # type: ignore[union-attr]
