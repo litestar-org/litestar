@@ -39,7 +39,12 @@ from litestar.dto._types import (
 from litestar.dto.data_structures import DTOData, DTOFieldDefinition
 from litestar.dto.field import Mark
 from litestar.enums import RequestEncodingType
-from litestar.exceptions import DTOTransferTypeError, ImproperlyConfiguredException, SerializationException
+from litestar.exceptions import (
+    DTOFactoryException,
+    DTOTransferTypeError,
+    ImproperlyConfiguredException,
+    SerializationException,
+)
 from litestar.params import KwargDefinition
 from litestar.serialization import decode_json, decode_msgpack, default_deserializer
 from litestar.types import Empty
@@ -201,18 +206,25 @@ class DTOBackend:
 
         self.annotation = build_annotation_for_backend(model_type, field_definition, self.transfer_model_type)
         self._transfer_function_cache: TransferFunctionCache = {}
-        self._transfer_to_dict = self._create_transfer_data_fn(
-            destination_type=dict,
-            field_definition=self.field_definition,
-        )
-        self._transfer_to_model_type = self._create_transfer_data_fn(
-            destination_type=self.model_type,
-            field_definition=self.field_definition,
-        )
-        self._encode_data = self._create_transfer_data_fn(
-            destination_type=self.transfer_model_type,
-            field_definition=self.field_definition,
-        )
+        unbuilt = _unbuilt_transfer(is_data_field)
+        self._encode_data = unbuilt
+        self._transfer_to_model_type = unbuilt
+        self._transfer_to_dict = unbuilt
+        if not is_data_field:
+            self._encode_data = self._create_transfer_data_fn(
+                destination_type=self.transfer_model_type,
+                field_definition=self.field_definition,
+            )
+        else:
+            self._transfer_to_model_type = self._create_transfer_data_fn(
+                destination_type=self.model_type,
+                field_definition=self.field_definition,
+            )
+            if self.dto_data_type:
+                self._transfer_to_dict = self._create_transfer_data_fn(
+                    destination_type=dict,
+                    field_definition=self.field_definition,
+                )
         if self.is_data_field and self._decodes_with_annotation():
             try:
                 msgspec.json.Decoder(self.annotation, strict=False)
@@ -900,6 +912,16 @@ def _create_struct_for_field_definitions(
         rename=rename_strategy,
         forbid_unknown_fields=forbid_unknown_fields,
     )
+
+
+def _unbuilt_transfer(is_data_field: bool) -> Callable[[Any], Any]:
+    def transfer(data: Any) -> Any:
+        raise DTOFactoryException(
+            f"This DTO backend was created for {'request' if is_data_field else 'return'} data "
+            f"(is_data_field={is_data_field}) and does not build the transfer function this call needs"
+        )
+
+    return transfer
 
 
 def build_annotation_for_backend(

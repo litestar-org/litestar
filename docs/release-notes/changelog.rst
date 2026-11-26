@@ -6,6 +6,13 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: Faster startup and responses
+        :type: misc
+
+        Applications with many DTO handlers start faster and use less memory, and DTO handlers decode
+        request bodies and encode responses faster. An object that lacks an attribute whose default
+        is a factory or a mutable value is encoded more slowly than before.
+
     .. change:: DTO: A DTO declared on a route handler must apply
         :type: feature
         :breaking:
