@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import copy
 import dataclasses
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Annotated, Generic, TypeVar, Union
 
 import pytest
 
-from litestar import Request
+from litestar import Litestar, Request, post
 from litestar.dto import DataclassDTO, DTOConfig
 from litestar.exceptions.dto_exceptions import InvalidAnnotationException
 from litestar.params import JSONBody
@@ -17,14 +18,7 @@ from . import Model
 if TYPE_CHECKING:
     from typing import Any
 
-    from litestar.dto._backend import DTOBackend
-
 T = TypeVar("T", bound=Model)
-
-
-def get_backend(dto_type: type[DataclassDTO[Any]]) -> DTOBackend:
-    value = next(iter(dto_type._dto_backends.values()))
-    return value["data_backend"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
 
 
 def test_forward_referenced_type_argument_raises_exception() -> None:
@@ -101,7 +95,7 @@ def test_config_assigned_via_subclassing() -> None:
 
 async def test_from_bytes(asgi_connection: Request[Any, Any, Any]) -> None:
     dto_type = DataclassDTO[Model]
-    dto_type.create_for_field_definition(
+    asgi_connection.route_handler._dto_data_backend = dto_type.create_for_field_definition(
         FieldDefinition.from_annotation(JSONBody[Model]), handler_id=asgi_connection.route_handler.handler_id
     )
     assert dto_type(asgi_connection).decode_bytes(b'{"a":1,"b":"two"}') == Model(a=1, b="two")
@@ -109,10 +103,11 @@ async def test_from_bytes(asgi_connection: Request[Any, Any, Any]) -> None:
 
 def test_config_field_rename(asgi_connection: Request[Any, Any, Any]) -> None:
     config = DTOConfig(rename_fields={"a": "z"})
-    DataclassDTO._dto_backends = {}
     dto_type = DataclassDTO[Annotated[Model, config]]
-    dto_type.create_for_field_definition(FieldDefinition.from_annotation(JSONBody[Model]), handler_id="handler_id")
-    field_definitions = dto_type._dto_backends["handler_id"]["data_backend"].parsed_field_definitions  # pyright: ignore[reportTypedDictNotRequiredAccess]
+    backend = dto_type.create_for_field_definition(
+        FieldDefinition.from_annotation(JSONBody[Model]), handler_id="handler_id"
+    )
+    field_definitions = backend.parsed_field_definitions
     assert field_definitions[0].serialization_name == "z"
 
 
@@ -147,19 +142,51 @@ def test_raises_invalid_annotation_for_mismatched_types() -> None:
 
 
 def test_sub_types_supported() -> None:
-    DataclassDTO._dto_backends = {}
     dto_type = DataclassDTO[Model]
 
     @dataclass
     class SubType(Model):
         c: int
 
-    dto_type.create_for_field_definition(
+    backend = dto_type.create_for_field_definition(
         handler_id="handler_id", field_definition=FieldDefinition.from_annotation(JSONBody[SubType])
     )
-    assert (
-        dto_type._dto_backends["handler_id"]["data_backend"].parsed_field_definitions[-1].name == "c"  # pyright: ignore[reportTypedDictNotRequiredAccess]
-    )
+    assert backend.parsed_field_definitions[-1].name == "c"
+
+
+def test_dto_class_holds_no_handler_state() -> None:
+    dto_type = DataclassDTO[Model]
+
+    def class_state() -> dict[tuple[type, str], Any]:
+        return {
+            (cls, name): copy.copy(value)
+            for cls in dto_type.__mro__
+            for name, value in vars(cls).items()
+            if isinstance(value, (dict, list, set))
+        }
+
+    state_before = class_state()
+
+    @post("/one", dto=dto_type, name="one")
+    def one(data: JSONBody[Model]) -> Model:
+        return data
+
+    @post("/two", dto=dto_type, name="two")
+    def two(data: JSONBody[Model]) -> Model:
+        return data
+
+    handlers = [
+        app.get_handler_index_by_name(name)["handler"]  # type: ignore[index]
+        for app in (Litestar([one, two]), Litestar([one]))
+        for name in ("one", "two")
+        if app.get_handler_index_by_name(name)
+    ]
+    backends = [backend for handler in handlers for backend in (handler._dto_data_backend, handler._dto_return_backend)]
+
+    assert len(handlers) == 3
+    assert all(backend is not None for backend in backends)
+    assert len({id(backend) for backend in backends}) == 6
+    assert class_state() == state_before
 
 
 def test_get_config_for_model_type() -> None:

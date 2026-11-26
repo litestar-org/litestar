@@ -96,9 +96,7 @@ def test_dto_encode_list_100(benchmark: BenchmarkFixture, reset_dto_backends: No
     class PersonDTO(DataclassDTO[Person]):
         pass
 
-    PersonDTO.create_for_field_definition(FieldDefinition.from_annotation(list[Person]), handler_id="bench")
-    backend = PersonDTO._dto_backends["bench"].get("return_backend")
-    assert backend is not None
+    backend = PersonDTO.create_for_field_definition(FieldDefinition.from_annotation(list[Person]), handler_id="bench")
     people = make_people(100)
     encoded = benchmark(backend.encode_data, people)
     assert len(encoded) == 100

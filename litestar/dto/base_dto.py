@@ -7,9 +7,7 @@ import typing
 from abc import abstractmethod
 from collections.abc import Collection
 from inspect import getmodule
-from typing import TYPE_CHECKING, Generic, NotRequired, TypeVar, get_type_hints
-
-from typing_extensions import TypedDict
+from typing import TYPE_CHECKING, Generic, TypeVar, get_type_hints
 
 from litestar.dto._backend import DTOBackend
 from litestar.dto.config import DTOConfig
@@ -31,17 +29,13 @@ if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
     from litestar.connection import ASGIConnection
     from litestar.dto.data_structures import DTOFieldDefinition
+    from litestar.handlers.base import BaseRouteHandler
     from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
 
 __all__ = ("AbstractDTO",)
 
 T = TypeVar("T")
-
-
-class _BackendDict(TypedDict):
-    data_backend: NotRequired[DTOBackend]
-    return_backend: NotRequired[DTOBackend]
 
 
 class AbstractDTO(Generic[T]):
@@ -56,7 +50,6 @@ class AbstractDTO(Generic[T]):
     attribute_accessor: Callable[[object, str], Any] = getattr
     """:func:`getattr` like callable to access attributes on the data source"""
 
-    _dto_backends: ClassVar[dict[str, _BackendDict]] = {}
     __schema_name__: ClassVar[None | str] = None
 
     def __init__(self, asgi_connection: ASGIConnection) -> None:
@@ -113,17 +106,17 @@ class AbstractDTO(Generic[T]):
     def decode_builtins(self, value: dict[str, Any]) -> Any:
         """Decode a dictionary of Python values into an the DTO's datatype."""
 
-        backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["data_backend"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
+        backend = self.asgi_connection.route_handler._dto_data_backend
         return backend.populate_data_from_builtins(value, self.asgi_connection)
 
     def decode_bytes(self, value: bytes) -> Any:
         """Decode a byte string into an the DTO's datatype."""
 
-        backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["data_backend"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
+        backend = self.asgi_connection.route_handler._dto_data_backend
         return backend.populate_data_from_raw(value, self.asgi_connection)
 
     def data_to_encodable_type(self, data: T | Collection[T]) -> LitestarEncodableType:
-        backend = self._dto_backends[self.asgi_connection.route_handler.handler_id]["return_backend"]  # pyright: ignore[reportTypedDictNotRequiredAccess]
+        backend = self.asgi_connection.route_handler._dto_return_backend
         return backend.encode_data(data)
 
     @classmethod
@@ -171,8 +164,8 @@ class AbstractDTO(Generic[T]):
         field_definition: FieldDefinition,
         handler_id: str,
         backend_cls: type[DTOBackend] | None = None,
-    ) -> None:
-        """Creates a DTO subclass for a field definition.
+    ) -> DTOBackend:
+        """Creates a DTO backend for a field definition.
 
         Args:
             field_definition: A :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance. Declared as a
@@ -181,45 +174,38 @@ class AbstractDTO(Generic[T]):
             backend_cls: Alternative DTO backend class to use
 
         Returns:
-            None
+            The DTO backend, to be stored on the route handler.
         """
 
-        if handler_id not in cls._dto_backends:
-            cls._dto_backends[handler_id] = {}
-
-        backend_context = cls._dto_backends[handler_id]
         is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg)
-        key = "data_backend" if is_data_field else "return_backend"
+        model_type_field_definition = cls.resolve_model_type(field_definition=field_definition)
+        wrapper_attribute_name: str | None = None
 
-        if key not in backend_context:
-            model_type_field_definition = cls.resolve_model_type(field_definition=field_definition)
-            wrapper_attribute_name: str | None = None
+        if not model_type_field_definition.is_subclass_of(cls.model_type):
+            if resolved_generic_result := cls.resolve_generic_wrapper_type(
+                field_definition=model_type_field_definition
+            ):
+                model_type_field_definition, field_definition, wrapper_attribute_name = resolved_generic_result
+            else:
+                raise InvalidAnnotationException(
+                    f"DTO narrowed with '{cls.model_type}', handler type is '{field_definition.annotation}'"
+                )
 
-            if not model_type_field_definition.is_subclass_of(cls.model_type):
-                if resolved_generic_result := cls.resolve_generic_wrapper_type(
-                    field_definition=model_type_field_definition
-                ):
-                    model_type_field_definition, field_definition, wrapper_attribute_name = resolved_generic_result
-                else:
-                    raise InvalidAnnotationException(
-                        f"DTO narrowed with '{cls.model_type}', handler type is '{field_definition.annotation}'"
-                    )
+        if backend_cls is None:
+            backend_cls = DTOBackend
 
-            if backend_cls is None:
-                backend_cls = DTOBackend
-
-            backend_context[key] = backend_cls(  # type: ignore[literal-required]
-                dto_factory=cls,
-                field_definition=field_definition,
-                model_type=model_type_field_definition.annotation,
-                wrapper_attribute_name=wrapper_attribute_name,
-                is_data_field=is_data_field,
-                handler_id=handler_id,
-            )
+        return backend_cls(
+            dto_factory=cls,
+            field_definition=field_definition,
+            model_type=model_type_field_definition.annotation,
+            wrapper_attribute_name=wrapper_attribute_name,
+            is_data_field=is_data_field,
+            handler_id=handler_id,
+        )
 
     @classmethod
     def create_openapi_schema(
-        cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
+        cls, field_definition: FieldDefinition, route_handler: BaseRouteHandler, schema_creator: SchemaCreator
     ) -> Reference | Schema:
         """Create an OpenAPI request body.
 
@@ -227,15 +213,15 @@ class AbstractDTO(Generic[T]):
             field_definition: A parsed type annotation that represents the annotation used on the handler. Declared
                 as a body, e.g. ``JSONBody[Model]``, it is the data the handler receives, otherwise the data it
                 returns.
-            handler_id: ID of the route handler for which to create a DTO instance.
+            route_handler: The route handler holding the DTO backend.
             schema_creator: A factory for creating schemas. Has a ``for_field_definition()`` method that accepts a
                 :class:`~litestar.typing.FieldDefinition` instance.
 
         Returns:
             OpenAPI request body.
         """
-        key = "data_backend" if isinstance(field_definition.kwarg_definition, BodyKwarg) else "return_backend"
-        backend = cls._dto_backends[handler_id][key]  # type: ignore[literal-required]
+        is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg)
+        backend: DTOBackend = route_handler._dto_data_backend if is_data_field else route_handler._dto_return_backend  # type: ignore[assignment]
 
         if backend.wrapper_attribute_name and not field_definition.is_subclass_of(Response):
             # The DTO has been built for a handler that has a DTO supported type wrapped in a generic type.

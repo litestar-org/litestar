@@ -41,7 +41,7 @@ def create_request(openapi_context: OpenAPIContext) -> RequestBodyFactory:
     def _factory(route_handler: BaseRouteHandler, data_field: FieldDefinition) -> RequestBody:
         return create_request_body(
             context=openapi_context,
-            handler_id=route_handler.handler_id,
+            route_handler=route_handler,
             resolved_data_dto=route_handler.data_dto,
             data_field=data_field,
         )
@@ -175,7 +175,7 @@ def test_request_body_generation_with_dto(create_request: RequestBodyFactory) ->
     field_definition = FieldDefinition.from_annotation(dict[str, Any])
     create_request(resolved_handler, field_definition)
     mock_dto.create_openapi_schema.assert_called_once_with(
-        field_definition=field_definition, handler_id=resolved_handler.handler_id, schema_creator=ANY
+        field_definition=field_definition, route_handler=resolved_handler, schema_creator=ANY
     )
 
 

@@ -14,12 +14,13 @@ __all__ = ("create_request_body",)
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
     from litestar.dto import AbstractDTO
+    from litestar.handlers.base import BaseRouteHandler
     from litestar.typing import FieldDefinition
 
 
 def create_request_body(
     context: OpenAPIContext,
-    handler_id: str,
+    route_handler: BaseRouteHandler,
     resolved_data_dto: type[AbstractDTO] | None,
     data_field: FieldDefinition,
     signature_namespace: dict[str, Any] | None = None,
@@ -28,7 +29,7 @@ def create_request_body(
 
     Args:
         context: The OpenAPIContext instance.
-        handler_id: The handler id.
+        route_handler: The route handler.
         resolved_data_dto: The resolved data dto.
         data_field: The data field.
         signature_namespace: Additional names for forward reference resolution.
@@ -46,7 +47,7 @@ def create_request_body(
     if resolved_data_dto:
         schema = resolved_data_dto.create_openapi_schema(
             field_definition=data_field,
-            handler_id=handler_id,
+            route_handler=route_handler,
             schema_creator=schema_creator,
         )
     else:

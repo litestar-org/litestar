@@ -597,7 +597,7 @@ def test_response_generation_with_dto(create_factory: CreateFactoryFixture) -> N
     field_definition = FieldDefinition.from_annotation(dict[str, Any])
     factory.create_success_response()
     mock_dto.create_openapi_schema.assert_called_once_with(
-        field_definition=field_definition, handler_id=resolved_handler.handler_id, schema_creator=factory.schema_creator
+        field_definition=field_definition, route_handler=resolved_handler, schema_creator=factory.schema_creator
     )
 
 
