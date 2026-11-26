@@ -585,6 +585,7 @@ def handler() -> int:
 def test_response_generation_with_dto(create_factory: CreateFactoryFixture) -> None:
     mock_dto = MagicMock(spec=AbstractDTO)
     mock_dto.create_openapi_schema.return_value = Schema()
+    mock_dto.model_type = dict
 
     @post(path="/form-upload", return_dto=mock_dto)
     async def handler(data: JSONBody[dict[str, Any]]) -> dict[str, Any]:

@@ -19,7 +19,7 @@ from litestar.di.context import PreparedDIContext
 from litestar.di.exceptions import DIRegistrationError, MissingProviderError
 from litestar.di.provider import InjectionTarget, Provider, _CallableForm, _marked_dependency
 from litestar.di.registry import DIRegistry
-from litestar.exceptions import ImproperlyConfiguredException, LitestarDeprecationWarning
+from litestar.exceptions import DTOFactoryException, ImproperlyConfiguredException, LitestarDeprecationWarning
 from litestar.params import QueryParams, RawBody, RequestCookies
 from litestar.routes.base import BaseRoute
 from litestar.types import Scope
@@ -151,6 +151,11 @@ class HandlerErrorPrefix:
     paths: list[str]
     dependencies: tuple[DependencyKey, ...] = ()
 
+    @classmethod
+    def for_handler(cls, handler: BaseRouteHandler) -> HandlerErrorPrefix:
+        """Return the prefix naming ``handler`` by its ``name`` option, or its function's name, and its paths."""
+        return cls(handler=handler.name or handler.handler_name, paths=sorted(handler.paths))
+
     def format(self, msg: str | None = None) -> str:
         paths = ",".join(sorted(self.paths))
         out = f"[paths={paths!r}, handler={self.handler!r}"
@@ -170,6 +175,23 @@ class HandlerErrorPrefix:
             raise ImproperlyConfiguredException(new_msg) from exc
         except DIRegistrationError as exc:
             raise DIRegistrationError(self.format(str(exc))) from exc
+
+    @contextlib.contextmanager
+    def wrap_dto_exception(self) -> Generator[None]:
+        """Prefix the message of a :class:`~litestar.exceptions.DTOFactoryException` raised in the block and re-raise
+        the same exception, keeping its class, attributes and traceback.
+        """
+        try:
+            yield
+        except DTOFactoryException as exc:
+            detail = exc.detail
+            if not detail:
+                exc.detail = self.format()
+                raise
+            prefixed = self.format(detail)
+            exc.detail = prefixed
+            exc.args = tuple(arg.replace(detail, prefixed, 1) if isinstance(arg, str) else arg for arg in exc.args)
+            raise
 
 
 def _has_handler_scope(declaration: Provider | Provide | AnyCallable) -> bool:
@@ -321,7 +343,7 @@ def create_handler_injection_setup(
             without a provider, or a context of the registry cannot be nested in the app's
             context.
     """
-    prefix = HandlerErrorPrefix(handler=handler.name or handler.handler_name, paths=sorted(handler.paths))
+    prefix = HandlerErrorPrefix.for_handler(handler)
     with prefix.wrap_config_exception():
         target = _create_fn_injection_target(handler)
     reached: dict[DependencyKey, Provider] = {}

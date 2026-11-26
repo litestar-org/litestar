@@ -6,6 +6,7 @@ from dataclasses import replace
 from typing import (
     TYPE_CHECKING,
     Any,
+    Literal,
     Optional,
     overload,
 )
@@ -26,6 +27,7 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.utils import ensure_async_callable
+from litestar.utils.helpers import get_name, unwrap_partial
 from litestar.utils.signature import ParsedSignature, get_fn_type_hints
 
 from ._utils import (
@@ -271,6 +273,13 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             listener=self, fn=self.fn, parsed_signature=parsed_signature, namespace=self.signature_namespace
         )
 
+    @property
+    def handler_name(self) -> str:
+        """The name of the listener function, or of the :class:`WebsocketListener` class it is a method of."""
+        fn = unwrap_partial(self.fn._wrapped_fn if isinstance(self.fn, ListenerHandler) else self.fn)
+        owner = getattr(fn, "__self__", None)
+        return get_name(type(owner) if isinstance(owner, WebsocketListener) else fn)
+
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""
         # validation occurs in the call method
@@ -367,10 +376,12 @@ class WebsocketListener(ABC):
     def to_handler(self) -> WebsocketListenerRouteHandler:
         on_accept = self.on_accept if type(self).on_accept != WebsocketListener.on_accept else None
         on_disconnect = self.on_disconnect if type(self).on_disconnect != WebsocketListener.on_disconnect else None
+        dto, inherited_dto = self._own_and_inherited("dto")
+        return_dto, inherited_return_dto = self._own_and_inherited("return_dto")
 
-        return WebsocketListenerRouteHandler(
+        handler = WebsocketListenerRouteHandler(
             dependencies=self.dependencies,
-            dto=self.dto,
+            dto=dto,
             exception_handlers=self.exception_handlers,
             guards=self.guards,
             middleware=self.middleware,
@@ -381,13 +392,24 @@ class WebsocketListener(ABC):
             on_disconnect=on_disconnect,
             opt=self.opt,
             path=self.path,
-            return_dto=self.return_dto,
+            return_dto=return_dto,
             signature_namespace=self.signature_namespace,
             type_decoders=self.type_decoders,
             type_encoders=self.type_encoders,
             websocket_class=self.websocket_class,
             fn=self.on_receive,
         )
+        handler._inherited_dto = inherited_dto
+        handler._inherited_return_dto = inherited_return_dto
+        return handler
+
+    def _own_and_inherited(
+        self, option: Literal["dto", "return_dto"]
+    ) -> tuple[type[AbstractDTO] | None | EmptyType, type[AbstractDTO] | None | EmptyType]:
+        value = getattr(self, option)
+        if option in vars(self) or option in vars(type(self)):
+            return value, Empty
+        return Empty, value
 
     def on_accept(self, *args: Any, **kwargs: Any) -> Any:
         """Called after a :class:`WebSocket <.connection.WebSocket>` connection

@@ -165,6 +165,7 @@ def test_upload_file_model_schema_generation() -> None:
 
 def test_request_body_generation_with_dto(create_request: RequestBodyFactory) -> None:
     mock_dto = MagicMock(spec=AbstractDTO)
+    mock_dto.model_type = dict
 
     @post(path="/form-upload", dto=mock_dto)
     async def handler(data: JSONBody[dict[str, Any]]) -> None:

@@ -7,8 +7,8 @@ from functools import partial
 from typing import TYPE_CHECKING, Any, NoReturn, cast
 
 from litestar._layers.utils import narrow_dependencies
-from litestar.dto import DTOData
-from litestar.exceptions import ImproperlyConfiguredException, LitestarException
+from litestar.dto._applicability import read_dto_declaration, resolve_data_backend, resolve_return_backend
+from litestar.exceptions import LitestarException
 from litestar.middleware.constraints import check_middleware_constraints
 from litestar.serialization import default_deserializer, default_serializer
 from litestar.types import (
@@ -58,6 +58,8 @@ class BaseRouteHandler:
         "_dto",
         "_dto_data_backend",
         "_dto_return_backend",
+        "_inherited_dto",
+        "_inherited_return_dto",
         "_injection_setup",
         "_parameter_field_definitions",
         "_parsed_data_field",
@@ -153,6 +155,8 @@ class BaseRouteHandler:
         self.dependencies = narrow_dependencies(dependencies)
         self._dto = dto
         self._return_dto = return_dto
+        self._inherited_dto: type[AbstractDTO] | None | EmptyType = Empty
+        self._inherited_return_dto: type[AbstractDTO] | None | EmptyType = Empty
         self.exception_handlers = exception_handlers or {}
         self.guards: tuple[AsyncGuard, ...] = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()  # pyright: ignore[reportAttributeAccessIssue]
         self.middleware = tuple(middleware) if middleware else ()
@@ -177,6 +181,10 @@ class BaseRouteHandler:
 
         for other in others:
             handler = handler.merge(other)
+
+        The ``dto`` and ``return_dto`` of the closest layer in ``others`` that declares them are carried as
+        ``inherited_dto`` and ``inherited_return_dto``, which are not constructor keywords: :meth:`_from_merge_opts`
+        removes them from the opts and assigns them to the created handler.
 
         The downside of that approach is that it creates a bunch of intermediate
         instances requires every subclass that adds properties to re-implement all the
@@ -204,6 +212,8 @@ class BaseRouteHandler:
             "path": [join_paths([path, p]) for p in self.paths],
         }
 
+        inherited_dto = self._inherited_dto
+        inherited_return_dto = self._inherited_return_dto
         other: BaseRouteHandler | Router
         for other in (self, *others):  # type: ignore[assignment]
             merge_opts["dependencies"] = {**other.dependencies, **merge_opts.get("dependencies", {})}
@@ -224,11 +234,13 @@ class BaseRouteHandler:
             # the handler is stored under '._dto', so we have to do this little workaround
             if other is not self:
                 other = cast("Router", other)  # mypy cannot narrow with the 'is not self' check
-                merge_opts["dto"] = value_or_default(merge_opts.get("dto", Empty), other.dto)
-                merge_opts["return_dto"] = value_or_default(merge_opts.get("return_dto", Empty), other.return_dto)
+                inherited_dto = value_or_default(inherited_dto, other.dto)
+                inherited_return_dto = value_or_default(inherited_return_dto, other.return_dto)
 
-        merge_opts["dto"] = value_or_default(self._dto, merge_opts.get("dto", Empty))
-        merge_opts["return_dto"] = value_or_default(self._return_dto, merge_opts.get("return_dto", Empty))
+        merge_opts["dto"] = self._dto
+        merge_opts["return_dto"] = self._return_dto
+        merge_opts["inherited_dto"] = inherited_dto
+        merge_opts["inherited_return_dto"] = inherited_return_dto
 
         return merge_opts
 
@@ -236,10 +248,18 @@ class BaseRouteHandler:
         """Return a new instance of the handler, replacing attributes specified in **kwargs"""
         opts = self._get_merge_opts(())
         opts.update(kwargs)
-        return type(self)(**opts)
+        return self._from_merge_opts(opts)
 
     def merge(self, *others: Router) -> Self:
-        return type(self)(**self._get_merge_opts(others))
+        return self._from_merge_opts(self._get_merge_opts(others))
+
+    def _from_merge_opts(self, opts: dict[str, Any]) -> Self:
+        inherited_dto = opts.pop("inherited_dto", Empty)
+        inherited_return_dto = opts.pop("inherited_return_dto", Empty)
+        handler = type(self)(**opts)
+        handler._inherited_dto = inherited_dto
+        handler._inherited_return_dto = inherited_return_dto
+        return handler
 
     @property
     def handler_id(self) -> str:
@@ -378,92 +398,43 @@ class BaseRouteHandler:
 
     @property
     def data_dto(self) -> type[AbstractDTO] | None:
-        if self._dto is Empty:
+        if (declared := read_dto_declaration(self, is_data_field=True)[0]) is Empty:
             self._raise_not_registered()
-        return self._dto
+        return declared
 
     @deprecated("3.0", removal_in="4.0", alternative=".data_dto attribute")
     def resolve_data_dto(self) -> type[AbstractDTO] | None:
         return self.data_dto
 
     def _resolve_data_dto(self, app: Litestar) -> type[AbstractDTO] | None:
-        """Resolve the data_dto by starting from the route handler and moving up.
-        If a handler is found it is returned, otherwise None is set.
-        This method is memoized so the computation occurs only once.
+        """Resolve the data DTO from the handler's declaration, the layers above it and the serialization plugins,
+        and build :attr:`_dto_data_backend` if it applies to the handler's data.
 
         Returns:
             An optional :class:`DTO type <.dto.base_dto.AbstractDTO>`
         """
-        data_dto: type[AbstractDTO] | None = None
-        if (_data_dto := self._dto) is not Empty:
-            data_dto = _data_dto
-        elif self.parsed_data_field and (
-            plugin_for_data_type := next(
-                (
-                    plugin
-                    for plugin in app.plugins.serialization
-                    if self.parsed_data_field.match_predicate_recursively(plugin.supports_type)
-                ),
-                None,
-            )
-        ):
-            data_dto = plugin_for_data_type.create_dto_for_type(self.parsed_data_field)
-
-        if self.parsed_data_field and data_dto and self._dto_data_backend is None:
-            self._dto_data_backend = data_dto.create_for_field_definition(
-                field_definition=self.parsed_data_field,
-                handler_id=self.handler_id,
-                transfer_models=app._dto_transfer_models,
-            )
-
+        data_dto, self._dto_data_backend = resolve_data_backend(self, app)
         return data_dto
 
     @property
     def return_dto(self) -> type[AbstractDTO] | None:
-        if self._return_dto is Empty:
+        if (declared := read_dto_declaration(self, is_data_field=False)[0]) is Empty:
             self._raise_not_registered()
-        return self._return_dto
+        return declared
 
     @deprecated("3.0", removal_in="4.0", alternative=".return_dto attribute")
     def resolve_return_dto(self) -> type[AbstractDTO] | None:
         return self.return_dto
 
     def _resolve_return_dto(self, app: Litestar, data_dto: type[AbstractDTO] | None) -> type[AbstractDTO] | None:
-        """Resolve the return_dto by starting from the route handler and moving up.
-        If a handler is found it is returned, otherwise None is set.
-        This method is memoized so the computation occurs only once.
+        """Resolve the return DTO from the handler's declaration, the layers above it, ``data_dto`` and the
+        serialization plugins, and build :attr:`_dto_return_backend`.
 
         Returns:
-            An optional :class:`DTO type <.dto.base_dto.AbstractDTO>`
+            The :class:`DTO type <.dto.base_dto.AbstractDTO>` that applies to the return value, if any
         """
-        if (_return_dto := self._return_dto) is not Empty:
-            return_dto: type[AbstractDTO] | None = _return_dto
-        elif data_dto is not None and data_dto.is_supported_model_type_field(self.parsed_return_field):
-            return_dto = data_dto
-        elif plugin_for_return_type := next(
-            (
-                plugin
-                for plugin in app.plugins.serialization
-                if self.parsed_return_field.match_predicate_recursively(plugin.supports_type)
-            ),
-            None,
-        ):
-            return_dto = plugin_for_return_type.create_dto_for_type(self.parsed_return_field)
-        else:
-            return_dto = data_dto
-
-        if return_dto and return_dto.is_supported_model_type_field(self.parsed_return_field):
-            if self._dto_return_backend is None:
-                self._dto_return_backend = return_dto.create_for_field_definition(
-                    field_definition=self.parsed_return_field,
-                    handler_id=self.handler_id,
-                    transfer_models=app._dto_transfer_models,
-                )
-            resolved_return_dto = return_dto
-        else:
-            resolved_return_dto = None
-
-        return resolved_return_dto
+        return_dto, self._dto_return_backend = resolve_return_backend(self, app, data_dto)
+        return return_dto
 
     def _create_di_request_context(self, app_ctx: DIContext | None, scope: Scope) -> DIContext:
         """Return the request's dependency context, not yet entered: nested in ``app_ctx`` if the app has one, and
@@ -496,20 +467,21 @@ class BaseRouteHandler:
             None
         """
 
-        self._dto = self._resolve_data_dto(app=app)
-        self._return_dto = self._resolve_return_dto(app=app, data_dto=self._dto)
+        from litestar.di._route_handler import HandlerErrorPrefix
+
+        with HandlerErrorPrefix.for_handler(self).wrap_dto_exception():
+            data_dto = self._resolve_data_dto(app=app)
+            self._return_dto = self._resolve_return_dto(app=app, data_dto=data_dto)
+            self._dto = data_dto
 
         self._validate_handler_function()
 
         check_middleware_constraints(self.middleware)
 
     def _validate_handler_function(self) -> None:
-        """Validate the route handler function once set by inspecting its return annotations."""
-        if self.parsed_data_field is not None and self.parsed_data_field.is_subclass_of(DTOData) and not self.data_dto:
-            raise ImproperlyConfiguredException(
-                f"Handler function {self.handler_name} has a data parameter that is a subclass of DTOData but no "
-                "DTO has been registered for it."
-            )
+        """Hook to validate the route handler function when the handler is registered. It does nothing here;
+        subclasses override it.
+        """
 
     def __str__(self) -> str:
         """Return a unique identifier for the route handler.

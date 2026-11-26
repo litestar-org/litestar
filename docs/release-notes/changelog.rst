@@ -6,6 +6,61 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: A DTO declared on a route handler must apply
+        :type: feature
+        :breaking:
+        :pr: 5272
+        :issue: 3485, 3553
+
+        A ``dto`` or ``return_dto`` declared on a route handler, or in a ``WebsocketListener`` class
+        body, that cannot handle the annotation now raises
+        :exc:`~litestar.exceptions.DTONotApplicableError` at startup instead of being ignored. A DTO
+        from a layer, the ``dto`` used for the return value, or a serialization plugin's DTO is
+        skipped only when the annotation does not mention its model. A generic wrapper with more
+        than one attribute holding the model is refused. Declare ``dto=None`` or
+        ``return_dto=None`` on the handler to opt out. See
+        :ref:`usage/dto/0-basic-use:When a DTO applies`.
+
+    .. change:: DTO: Typed startup errors
+        :type: feature
+        :breaking:
+        :pr: 5272
+
+        DTO errors raised at startup start with ``[paths=..., handler=...]``.
+        ``DTONotApplicableError`` and ``DTOTransferTypeError`` subclass
+        :exc:`~litestar.exceptions.InvalidAnnotationException`; ``MissingDTOError``, raised for
+        ``DTOData`` without a DTO, subclasses ``DTOFactoryException`` and
+        ``ImproperlyConfiguredException``. A return DTO over a type msgspec rejects raises
+        ``DTOTransferTypeError`` when the OpenAPI schema is generated, instead of a ``TypeError``.
+        Websocket listeners are named by their function or class instead of ``ListenerHandler``.
+
+    .. change:: DTO: Unions of several types
+        :type: feature
+        :breaking:
+        :pr: 5272
+
+        A DTO no longer handles an optional union of several types holding its model, such as
+        ``User | int | None``, through its first member: it fails at startup. A return value
+        annotated with a union of generic wrappers holding the model in one attribute, such as
+        ``Page[User] | Cursor[User]``, is handled, and the OpenAPI schema of optional and nested
+        generic wrappers shows the filtered model, which changes their component names.
+
+    .. change:: DTO: Pass ``None`` through an optional annotation
+        :type: bugfix
+        :pr: 5272
+        :issue: 3428
+
+        With an optional annotation, ``None`` now passes through a DTO instead of causing a
+        ``500``: a handler can return ``None`` or ``Response(None)``, a ``null`` body is injected
+        as ``None``, also for ``Optional[DTOData[Model]]``, and a websocket listener sends nothing.
+
+    .. change:: DTO: Answer 400 for invalid form data
+        :type: bugfix
+        :pr: 5272
+
+        Invalid URL-encoded or multipart data decoded by a DTO now receives a ``400`` response, as
+        invalid JSON data does, instead of a ``500``.
+
     .. change:: DTO: Honour ``DTOField`` marks given as a string
         :type: bugfix
         :breaking:
@@ -44,7 +99,7 @@
         Constraints from ``msgspec.Meta``, ``annotated_types`` or parameter definitions are
         now enforced on every part of a field's type where msgspec can express them, also for
         partial DTOs; violating requests get a ``400``. An inbound DTO raises
-        :exc:`~litestar.exceptions.InvalidAnnotationException` at startup, naming the field,
+        :exc:`~litestar.exceptions.DTOTransferTypeError` at startup, naming the field,
         for a ``Meta`` msgspec does not support where it is placed, such as
         ``Annotated[Optional[str], Meta(min_length=1)]``, and for an untagged union of models.
         See :ref:`usage/dto/1-abstract-dto:Constraints`.

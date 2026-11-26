@@ -39,7 +39,7 @@ from litestar.dto._types import (
 from litestar.dto.data_structures import DTOData, DTOFieldDefinition
 from litestar.dto.field import Mark
 from litestar.enums import RequestEncodingType
-from litestar.exceptions import ImproperlyConfiguredException, InvalidAnnotationException
+from litestar.exceptions import DTOTransferTypeError, ImproperlyConfiguredException, SerializationException
 from litestar.params import KwargDefinition
 from litestar.serialization import decode_json, decode_msgpack, default_deserializer
 from litestar.types import Empty
@@ -47,7 +47,7 @@ from litestar.typing import FieldDefinition
 from litestar.utils import unique_name_for_scope
 
 if TYPE_CHECKING:
-    from collections.abc import Collection, Iterator, Sequence, Set
+    from collections.abc import Callable, Collection, Iterator, Sequence, Set
 
     from litestar.connection import ASGIConnection
     from litestar.dto import AbstractDTO, RenameStrategy
@@ -115,6 +115,7 @@ class DTOBackend:
     __slots__ = (
         "_encode_data",
         "_has_directional_fields",
+        "_passes_none",
         "_transfer_function_cache",
         "_transfer_model_names",
         "_transfer_to_dict",
@@ -169,6 +170,7 @@ class DTOBackend:
         self.attribute_accessor = dto_factory.attribute_accessor
         self._transfer_model_names: set[str] = set()
         self._has_directional_fields = False
+        self._passes_none = False
 
         name = self._create_transfer_model_name()
         self.parsed_field_definitions = self._parse_root_model(name)
@@ -191,6 +193,11 @@ class DTOBackend:
         if field_definition.is_subclass_of(DTOData):
             self.dto_data_type = field_definition.annotation
             field_definition = self.field_definition.inner_types[0]
+        elif field_definition.is_optional and (
+            dto_data := next((inner for inner in field_definition.inner_types if inner.is_subclass_of(DTOData)), None)
+        ):
+            self.dto_data_type = dto_data.annotation
+            field_definition = FieldDefinition.from_annotation(dto_data.inner_types[0].annotation | None)
 
         self.annotation = build_annotation_for_backend(model_type, field_definition, self.transfer_model_type)
         self._transfer_function_cache: TransferFunctionCache = {}
@@ -210,7 +217,7 @@ class DTOBackend:
             try:
                 msgspec.json.Decoder(self.annotation, strict=False)
             except TypeError as exc:
-                raise InvalidAnnotationException(self._startup_error_message(exc)) from exc
+                raise DTOTransferTypeError(self._startup_error_message(exc)) from exc
 
     def _startup_error_message(self, exc: TypeError) -> str:
         prefix = "msgspec cannot decode the transfer model of"
@@ -218,7 +225,7 @@ class DTOBackend:
             rejected = find_rejected_field(self.model_type, self.parsed_field_definitions, self.transfer_model_type)
             if rejected is not None:
                 owner, field_definition, field_exc = rejected
-                message = rejected_field_message(
+                return rejected_field_message(
                     prefix,
                     self.model_type,
                     field_definition,
@@ -226,7 +233,6 @@ class DTOBackend:
                     owner=owner,
                     hint=rejection_hint(field_definition),
                 )
-                return message if self.handler_id is None else f"{message} (handler {self.handler_id!r})"
         return f"{prefix} {self.model_type.__name__!r}: {exc}"
 
     def _decodes_with_annotation(self) -> bool:
@@ -415,15 +421,18 @@ class DTOBackend:
         Returns:
             The builtin type parsed into transfer model type.
         """
-        return convert(
-            obj=builtins,
-            type=self.annotation,
-            dec_hook=partial(default_deserializer, type_decoders=self.type_decoders)
-            if asgi_connection is None
-            else asgi_connection.route_handler.default_deserializer,
-            strict=False,
-            str_keys=True,
-        )
+        try:
+            return convert(
+                obj=builtins,
+                type=self.annotation,
+                dec_hook=partial(default_deserializer, type_decoders=self.type_decoders)
+                if asgi_connection is None
+                else asgi_connection.route_handler.default_deserializer,
+                strict=False,
+                str_keys=True,
+            )
+        except msgspec.ValidationError as exc:
+            raise SerializationException(str(exc)) from exc
 
     def populate_data_from_builtins(self, builtins: Any, asgi_connection: ASGIConnection | None = None) -> Any:
         """Populate model instance from builtin types.
@@ -435,12 +444,7 @@ class DTOBackend:
         Returns:
             Instance or collection of ``model_type`` instances.
         """
-        if self.dto_data_type:
-            return self.dto_data_type(
-                backend=self,
-                data_as_builtins=self._transfer_to_dict(self.parse_builtins(builtins, asgi_connection)),
-            )
-        return self.transfer_data_from_builtins(self.parse_builtins(builtins, asgi_connection))
+        return self._populate(self.parse_builtins(builtins, asgi_connection), self.transfer_data_from_builtins)
 
     def transfer_data_from_builtins(self, builtins: Any) -> Any:
         """Populate model instance from builtin types.
@@ -469,12 +473,14 @@ class DTOBackend:
         Returns:
             Instance or collection of ``model_type`` instances.
         """
+        return self._populate(self.parse_raw(raw, asgi_connection, media_type), self._transfer_to_model_type)
+
+    def _populate(self, parsed: Any, transfer: Callable[[Any], Any]) -> Any:
+        if parsed is None and self._passes_none:
+            return None
         if self.dto_data_type:
-            return self.dto_data_type(
-                backend=self,
-                data_as_builtins=self._transfer_to_dict(self.parse_raw(raw, asgi_connection, media_type)),
-            )
-        return self._transfer_to_model_type(self.parse_raw(raw, asgi_connection, media_type))
+            return self.dto_data_type(backend=self, data_as_builtins=self._transfer_to_dict(parsed))
+        return transfer(parsed)
 
     def encode_data(self, data: Any) -> LitestarEncodableType:
         """Encode data into a ``LitestarEncodableType``.
@@ -485,9 +491,13 @@ class DTOBackend:
         Returns:
             Encoded data.
         """
+        if data is None and self._passes_none:
+            return None
         if self.wrapper_attribute_name:
-            wrapped_transfer = self._encode_data(getattr(data, self.wrapper_attribute_name))
-            setattr(data, self.wrapper_attribute_name, wrapped_transfer)
+            wrapped = getattr(data, self.wrapper_attribute_name)
+            if wrapped is None and self.field_definition.is_optional:
+                return cast("LitestarEncodableType", data)
+            setattr(data, self.wrapper_attribute_name, self._encode_data(wrapped))
             return cast("LitestarEncodableType", data)
 
         return cast("LitestarEncodableType", self._encode_data(data))

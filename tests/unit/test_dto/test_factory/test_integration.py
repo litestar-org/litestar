@@ -1061,7 +1061,7 @@ def test_data_dto_raises_at_startup_when_msgspec_rejects_the_transfer_type(annot
         Litestar(route_handlers=[create_rejected], openapi_config=None)
 
     message = str(exc_info.value)
-    assert message.startswith("msgspec cannot decode the transfer model of ")
+    assert message.startswith("[paths='/', handler='create_rejected'] msgspec cannot decode the transfer model of ")
     assert "field 'f'" in message
     assert repr(annotation) in message
     assert "create_rejected" in message
@@ -1136,10 +1136,15 @@ def test_data_dto_with_own_decoding_is_not_checked_at_startup() -> None:
     [
         pytest.param(
             Annotated[Optional[str], Meta(min_length=5)],
-            r"^msgspec cannot inspect .*field 'f'.*min_length.*attach the constraint to the member type",
+            r"^\[paths='/', handler='read_rejected_struct'\] msgspec cannot inspect .*field 'f'.*min_length.*attach the "
+            r"constraint to the member type",
             id="optional_meta",
         ),
-        pytest.param(Literal[1, "a"], "^msgspec cannot inspect", id="mixed_literal"),
+        pytest.param(
+            Literal[1, "a"],
+            r"^\[paths='/', handler='read_rejected_struct'\] msgspec cannot inspect",
+            id="mixed_literal",
+        ),
     ],
 )
 def test_msgspec_dto_raises_invalid_annotation_when_msgspec_rejects_the_model(annotation: Any, match: str) -> None:
