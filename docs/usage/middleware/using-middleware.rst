@@ -3,12 +3,12 @@
 Using Middleware
 ================
 
-A middleware in Litestar is any callable that receives at least one kwarg called ``app`` and returns an
+A middleware in Litestar is any callable that receives the next ASGI app as its only argument and returns an
 :class:`ASGIApp <litestar.types.ASGIApp>`. An ``ASGIApp`` is nothing but an async function that receives the ASGI
 primitives ``scope`` , ``receive`` and ``send`` , and either calls the next ``ASGIApp`` or returns a response / handles
 the websocket connection.
 
-For example, the following function can be used as a middleware because it receives the ``app`` kwarg and returns
+For example, the following function can be used as a middleware because it receives the next ``app`` and returns
 an ``ASGIApp``:
 
 .. code-block:: python
@@ -45,7 +45,7 @@ every request:
    app = Litestar(route_handlers=[...], middleware=[middleware_factory])
 
 In the above example, Litestar will call the ``middleware_factory`` function and pass to it ``app``. It's important to
-understand that this kwarg does not designate the Litestar application but rather the next ``ASGIApp`` in the stack. It
+understand that this argument does not designate the Litestar application but rather the next ``ASGIApp`` in the stack. It
 will then insert the returned ``my_middleware`` function into the stack of every route in the application -
 because we declared it on the application level.
 

@@ -6,6 +6,19 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Remove ``AbstractMiddleware`` and ``MiddlewareProtocol``
+        :type: feature
+        :issue: 4009
+        :breaking:
+
+        The legacy middleware API has been removed, now that all built-in middleware use
+        :class:`~litestar.middleware.ASGIMiddleware`:
+
+        - ``AbstractMiddleware``, deprecated since ``2.15``: extend ``ASGIMiddleware``
+          instead.
+        - ``MiddlewareProtocol``: middleware classes that take the next ASGI app in their
+          constructor keep working without it.
+
     .. change:: Migrate ``OpenTelemetryInstrumentationMiddleware`` to ``ASGIMiddleware``
         :type: feature
         :issue: 4009
@@ -1577,9 +1590,6 @@
         functions. If a middleware had defined ``scopes = (ScopeType.HTTP,)``, it would
         still be called for *every* request, regardless of the scope type. Only for
         requests with the type ``HTTP``, it would then call the user's function.
-
-        .. note::
-            This behaviour is still true for the legacy ``AbstractMiddleware``
 
         With *zero cost exclusion*, the exclusion is being evaluated statically. At app
         creation time, when route handlers are registered and their middleware stacks

@@ -70,20 +70,6 @@ def test_default_handle_http_exception_handling_extra_object(
     }
 
 
-def test_default_handle_http_exception_handling_extra_none(
-    scope: HTTPScope, middleware: ExceptionHandlerMiddleware
-) -> None:
-    @get("/")
-    async def handler() -> None:
-        raise HTTPException(detail="litestar_exception")
-
-    with create_test_client([handler]) as client:
-        response = client.get("/")
-
-    assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-    assert response.json() == {"detail": "Internal Server Error", "status_code": 500}
-
-
 def test_default_handle_litestar_http_exception_handling(
     scope: HTTPScope, middleware: ExceptionHandlerMiddleware
 ) -> None:

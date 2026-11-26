@@ -3,6 +3,7 @@
 import logging
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
+from functools import partial
 from typing import TYPE_CHECKING, Any, cast
 
 import pytest
@@ -11,7 +12,7 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 
 from litestar import Controller, Request, Response, Router, get, post
 from litestar.enums import ScopeType
-from litestar.middleware import DefineMiddleware, MiddlewareProtocol
+from litestar.middleware import DefineMiddleware
 from litestar.params import JSONBody
 from litestar.testing import create_test_client
 
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class MiddlewareProtocolRequestLoggingMiddleware(MiddlewareProtocol):
+class RequestLoggingMiddleware:
     def __init__(self, app: "ASGIApp", kwarg: str = "") -> None:
         self.app = app
         self.kwarg = kwarg
@@ -55,10 +56,9 @@ class MiddlewareWithArgsAndKwargs(BaseHTTPMiddleware):
     "middleware",
     [
         BaseMiddlewareRequestLoggingMiddleware,
-        # Middleware(MiddlewareWithArgsAndKwargs, kwarg="123Jeronimo"),  # pyright: ignore[reportGeneralTypeIssues] # noqa: ERA001
-        # Middleware(MiddlewareProtocolRequestLoggingMiddleware, kwarg="123Jeronimo"),  # type: ignore[arg-type] # noqa: ERA001
         DefineMiddleware(MiddlewareWithArgsAndKwargs, 1, kwarg="123Jeronimo"),  # type: ignore[arg-type]
-        DefineMiddleware(MiddlewareProtocolRequestLoggingMiddleware, kwarg="123Jeronimo"),
+        DefineMiddleware(RequestLoggingMiddleware, kwarg="123Jeronimo"),
+        partial(RequestLoggingMiddleware, kwarg="123Jeronimo"),
     ],
 )
 def test_custom_middleware_processing(middleware: Any) -> None:
@@ -80,15 +80,11 @@ def test_custom_middleware_processing(middleware: Any) -> None:
 
         assert isinstance(
             middleware_instance,
-            (
-                MiddlewareProtocolRequestLoggingMiddleware,
-                BaseMiddlewareRequestLoggingMiddleware,
-                MiddlewareWithArgsAndKwargs,
-            ),
+            (RequestLoggingMiddleware, BaseMiddlewareRequestLoggingMiddleware, MiddlewareWithArgsAndKwargs),
         )
-        if isinstance(middleware_instance, (MiddlewareProtocolRequestLoggingMiddleware, MiddlewareWithArgsAndKwargs)):
+        if isinstance(middleware_instance, (RequestLoggingMiddleware, MiddlewareWithArgsAndKwargs)):
             assert middleware_instance.kwarg == "123Jeronimo"
-        if isinstance(middleware, DefineMiddleware) and isinstance(middleware_instance, MiddlewareWithArgsAndKwargs):
+        if isinstance(middleware_instance, MiddlewareWithArgsAndKwargs):
             assert middleware_instance.arg == 1
 
 
@@ -103,9 +99,7 @@ def test_request_body_logging_middleware(mocker: MockerFixture) -> None:
 
     mock_log_info = mocker.patch.object(logger, "info")
 
-    with create_test_client(
-        route_handlers=[post_handler], middleware=[MiddlewareProtocolRequestLoggingMiddleware]
-    ) as client:
+    with create_test_client(route_handlers=[post_handler], middleware=[RequestLoggingMiddleware]) as client:
         response = client.post("/", json={"name": "moishe zuchmir"})
         assert response.status_code == 201
     mock_log_info.assert_called_once_with("test logging: POST, http://testserver.local/, {'name': 'moishe zuchmir'}")
@@ -116,8 +110,8 @@ def test_middleware_call_order() -> None:
 
     results: list[int] = []
 
-    def create_test_middleware(middleware_id: int) -> "type[MiddlewareProtocol]":
-        class TestMiddleware(MiddlewareProtocol):
+    def create_test_middleware(middleware_id: int) -> type:
+        class TestMiddleware:
             def __init__(self, app: "ASGIApp") -> None:
                 self.app = app
 

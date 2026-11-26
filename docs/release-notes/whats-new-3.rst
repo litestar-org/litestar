@@ -429,7 +429,7 @@ callable as its only argument and returns another ASGI callable:
 Built-in middleware migrated to ``ASGIMiddleware``
 --------------------------------------------------
 
-Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
+Litestar's built-in middleware have been moved from the legacy ``AbstractMiddleware`` and
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
 ``CORSMiddleware``, ``ResponseCacheMiddleware``, ``CSRFMiddleware``,
 ``CompressionMiddleware``, ``AllowedHostsMiddleware``, ``RateLimitMiddleware``,
@@ -545,6 +545,25 @@ argument matches against the handler's path (e.g. ``/user/{user_id:int}``) at st
 ``middleware=[config.middleware]`` are unaffected. Subclasses set via
 :attr:`~litestar.plugins.opentelemetry.OpenTelemetryConfig.middleware_class` must rename
 ``__call__`` to ``handle``.
+
+.. seealso::
+    :ref:`asgi-middleware-migration`
+
+
+Removal of ``AbstractMiddleware`` and ``MiddlewareProtocol``
+------------------------------------------------------------
+
+The legacy middleware API has been removed in favour of
+:class:`~litestar.middleware.ASGIMiddleware`:
+
+- ``AbstractMiddleware``, deprecated since 2.15. Subclasses should extend
+  ``ASGIMiddleware`` instead, implementing ``handle`` rather than ``__call__``. Note that
+  ``exclude``, which was matched against the request path, has no direct equivalent:
+  ``exclude_path_pattern`` is matched against the handler's path on application startup,
+  and ``should_bypass_for_scope`` can be used to match the request path.
+- ``MiddlewareProtocol``. Middleware classes that take the next ASGI app in their
+  constructor and implement ``__call__`` keep working without it, but extending
+  ``ASGIMiddleware`` is recommended.
 
 .. seealso::
     :ref:`asgi-middleware-migration`
