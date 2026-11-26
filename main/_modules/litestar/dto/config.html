@@ -558,16 +558,14 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="54"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Allow transfer of partial data.&quot;&quot;&quot;</span>
 </span><span data-line="55">    <span class="n">underscore_fields_private</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 </span><span data-line="56"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Fields starting with an underscore are considered private and excluded from data transfer.&quot;&quot;&quot;</span>
-</span><span data-line="57">    <span class="n">experimental_codegen_backend</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="58"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Use the experimental codegen backend&quot;&quot;&quot;</span>
-</span><span data-line="59">    <span class="n">forbid_unknown_fields</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span data-line="60"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise an exception for fields present in the raw data that are not defined on the model&quot;&quot;&quot;</span>
-</span><span data-line="61">
-</span><span data-line="62">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="63">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">:</span>
-</span><span data-line="64">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
-</span><span data-line="65">                <span class="s2">&quot;&#39;include&#39; and &#39;exclude&#39; are mutually exclusive options, please use one of them&quot;</span>
-</span><span data-line="66">            <span class="p">)</span></div>
+</span><span data-line="57">    <span class="n">forbid_unknown_fields</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="58"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise an exception for fields present in the raw data that are not defined on the model&quot;&quot;&quot;</span>
+</span><span data-line="59">
+</span><span data-line="60">    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="61">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">:</span>
+</span><span data-line="62">            <span class="k">raise</span> <span class="n">ImproperlyConfiguredException</span><span class="p">(</span>
+</span><span data-line="63">                <span class="s2">&quot;&#39;include&#39; and &#39;exclude&#39; are mutually exclusive options, please use one of them&quot;</span>
+</span><span data-line="64">            <span class="p">)</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

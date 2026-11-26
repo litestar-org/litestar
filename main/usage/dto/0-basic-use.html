@@ -455,8 +455,6 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li><a class="reference internal" href="#defining-dtos-on-layers">Defining DTOs on layers</a></li>
 <li><a class="reference internal" href="#improving-performance-with-the-codegen-backend">Improving performance with the codegen backend</a><ul>
-<li><a class="reference internal" href="#disabling-the-backend">Disabling the backend</a></li>
-<li><a class="reference internal" href="#enabling-the-backend">Enabling the backend</a></li>
 <li><a class="reference internal" href="#performance-improvements">Performance improvements</a></li>
 </ul>
 </li>
@@ -728,8 +726,7 @@ the <code class="docutils literal notranslate"><span class="pre">delete()</span>
 <p class="admonition-title">Note</p>
 <p>This feature was introduced in <code class="docutils literal notranslate"><span class="pre">2.2.0</span></code> and was hidden behind the <code class="docutils literal notranslate"><span class="pre">DTO_CODEGEN</span></code>
 feature flag. As of <code class="docutils literal notranslate"><span class="pre">2.8.0</span></code> it is considered stable and is enabled by default.
-It can still be disabled selectively by using the
-<code class="docutils literal notranslate"><span class="pre">DTOConfig(experimental_codegen_backend=False)</span></code> override.</p>
+As of <code class="docutils literal notranslate"><span class="pre">3.0.0</span></code> it is the only DTO backend.</p>
 </div>
 <p>The DTO backend is the part that does the heavy lifting for all the DTO features. It
 is responsible for the transforming, validation and parsing. Because of this,
@@ -737,76 +734,6 @@ it is also the part with the most significant performance impact. To reduce the 
 introduced by the DTOs, the DTO codegen backend was introduced; A DTO backend that
 increases efficiency by generating optimized Python code at runtime to perform all the
 necessary operations.</p>
-<section id="disabling-the-backend">
-<h3>Disabling the backend<a class="headerlink" href="#disabling-the-backend" title="Link to this heading">¶</a></h3>
-<p>You can use <code class="docutils literal notranslate"><span class="pre">experimental_codegen_backend=False</span></code>
-to disable the codegen backend selectively:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
-</span><span data-line="3">
-</span><span data-line="4">
-</span><span data-line="5"><span class="nd">@dataclass</span>
-</span><span data-line="6"><span class="k">class</span><span class="w"> </span><span class="nc">Foo</span><span class="p">:</span>
-</span><span data-line="7">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="8">
-</span><span data-line="9">
-</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">FooDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Foo</span><span class="p">]):</span>
-</span><span data-line="11">    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">experimental_codegen_backend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span></pre></div>
-</div>
-</section>
-<section id="enabling-the-backend">
-<h3>Enabling the backend<a class="headerlink" href="#enabling-the-backend" title="Link to this heading">¶</a></h3>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This is a historical document meant for Litestar versions prior to 2.8.0
-This backend was enabled by default since 2.8.0</p>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p><code class="docutils literal notranslate"><span class="pre">ExperimentalFeatures.DTO_CODEGEN</span></code> is deprecated and will be removed in 3.0.0</p>
-</div>
-<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
-<summary class="sd-summary-title sd-card-header">
-<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-git-pull-request-closed" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.25 1A2.25 2.25 0 0 1 4 5.372v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.251 2.251 0 0 1 3.25 1Zm9.5 5.5a.75.75 0 0 1 .75.75v3.378a2.251 2.251 0 1 1-1.5 0V7.25a.75.75 0 0 1 .75-.75Zm-2.03-5.273a.75.75 0 0 1 1.06 0l.97.97.97-.97a.748.748 0 0 1 1.265.332.75.75 0 0 1-.205.729l-.97.97.97.97a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018l-.97-.97-.97.97a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734l.97-.97-.97-.97a.75.75 0 0 1 0-1.06ZM2.5 3.25a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0ZM3.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm9.5 0a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"></path></svg></span><span class="sd-summary-text">Enabling DTO codegen backend</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
-<p class="sd-card-text">You can enable this backend globally for all DTOs by passing the appropriate feature
-flag to your Litestar application:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar</span><span class="w"> </span><span class="kn">import</span> <span class="n">Litestar</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.config.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExperimentalFeatures</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">experimental_features</span><span class="o">=</span><span class="p">[</span><span class="n">ExperimentalFeatures</span><span class="o">.</span><span class="n">DTO_CODEGEN</span><span class="p">])</span>
-</span></pre></div>
-</div>
-<p class="sd-card-text">or selectively for individual DTOs:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
-</span><span data-line="3">
-</span><span data-line="4">
-</span><span data-line="5"><span class="nd">@dataclass</span>
-</span><span data-line="6"><span class="k">class</span><span class="w"> </span><span class="nc">Foo</span><span class="p">:</span>
-</span><span data-line="7">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="8">
-</span><span data-line="9">
-</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">FooDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Foo</span><span class="p">]):</span>
-</span><span data-line="11">    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">experimental_codegen_backend</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span></pre></div>
-</div>
-<p class="sd-card-text">The same flag can be used to disable the backend selectively:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.dto</span><span class="w"> </span><span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
-</span><span data-line="3">
-</span><span data-line="4">
-</span><span data-line="5"><span class="nd">@dataclass</span>
-</span><span data-line="6"><span class="k">class</span><span class="w"> </span><span class="nc">Foo</span><span class="p">:</span>
-</span><span data-line="7">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="8">
-</span><span data-line="9">
-</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">FooDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Foo</span><span class="p">]):</span>
-</span><span data-line="11">    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">experimental_codegen_backend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span></pre></div>
-</div>
-</div>
-</details></section>
 <section id="performance-improvements">
 <h3>Performance improvements<a class="headerlink" href="#performance-improvements" title="Link to this heading">¶</a></h3>
 <p>These are some preliminary numbers showing the performance increase for certain
