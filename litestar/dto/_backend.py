@@ -8,6 +8,7 @@ import hashlib
 import re
 from collections.abc import Mapping
 from dataclasses import fields, replace
+from functools import partial
 from typing import (
     TYPE_CHECKING,
     Annotated,
@@ -38,7 +39,7 @@ from litestar.dto.field import Mark
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import KwargDefinition
-from litestar.serialization import decode_json, decode_msgpack
+from litestar.serialization import decode_json, decode_msgpack, default_deserializer
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils import unique_name_for_scope
@@ -48,6 +49,7 @@ if TYPE_CHECKING:
 
     from litestar.connection import ASGIConnection
     from litestar.dto import AbstractDTO, RenameStrategy
+    from litestar.types import TypeDecodersSequence
     from litestar.types.serialization import LitestarEncodableType
 
 __all__ = ("DTOBackend", "TransferModelRegistry")
@@ -126,6 +128,7 @@ class DTOBackend:
         "parsed_field_definitions",
         "reverse_name_map",
         "transfer_model_type",
+        "type_decoders",
         "wrapper_attribute_name",
     )
 
@@ -133,29 +136,32 @@ class DTOBackend:
         self,
         dto_factory: type[AbstractDTO],
         field_definition: FieldDefinition,
-        handler_id: str,
         is_data_field: bool,
         model_type: type[Any],
         wrapper_attribute_name: str | None,
+        handler_id: str | None = None,
         *,
         transfer_models: TransferModelRegistry | None = None,
+        type_decoders: TypeDecodersSequence | None = None,
     ) -> None:
         """Create dto backend instance.
 
         Args:
             dto_factory: The DTO factory class calling this backend.
             field_definition: Parsed type.
-            handler_id: The name of the handler that this backend is for.
             is_data_field: Whether the field is a subclass of DTOData.
             model_type: Model type.
             wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure,
                 this is the name of the attribute that the data is stored in.
+            handler_id: The name of the handler that this backend is for, if any.
             transfer_models: The transfer models of the application, shared by the backends that build the same one.
+            type_decoders: Type decoders used when data is parsed without a connection.
         """
         self.dto_factory: Final[type[AbstractDTO]] = dto_factory
         self.field_definition: Final[FieldDefinition] = field_definition
         self.is_data_field: Final[bool] = is_data_field
-        self.handler_id: Final[str] = handler_id
+        self.handler_id: Final[str | None] = handler_id
+        self.type_decoders: Final[TypeDecodersSequence] = type_decoders or ()
         self.model_type: Final[type[Any]] = model_type
         self.wrapper_attribute_name: Final[str | None] = wrapper_attribute_name
         self.attribute_accessor = dto_factory.attribute_accessor
@@ -328,22 +334,32 @@ class DTOBackend:
         setattr(struct, "__schema_name__", model_name)
         return struct
 
-    def parse_raw(self, raw: bytes, asgi_connection: ASGIConnection) -> Struct | Collection[Struct]:
+    def parse_raw(
+        self,
+        raw: bytes,
+        asgi_connection: ASGIConnection | None = None,
+        media_type: RequestEncodingType | str | None = None,
+    ) -> Struct | Collection[Struct]:
         """Parse raw bytes into transfer model type.
 
         Args:
             raw: bytes
-            asgi_connection: The current ASGI Connection
+            asgi_connection: The current ASGI Connection, if any.
+            media_type: The media type of ``raw``. Defaults to the content type of ``asgi_connection``, or to JSON.
 
         Returns:
             The raw bytes parsed into transfer model type.
         """
-        request_encoding = RequestEncodingType.JSON
+        request_encoding = media_type or RequestEncodingType.JSON
 
-        if (content_type := getattr(asgi_connection, "content_type", None)) and (media_type := content_type[0]):
-            request_encoding = media_type
+        if (
+            media_type is None
+            and (content_type := getattr(asgi_connection, "content_type", None))
+            and (connection_media_type := content_type[0])
+        ):
+            request_encoding = connection_media_type
 
-        type_decoders = asgi_connection.route_handler.type_decoders
+        type_decoders = self.type_decoders if asgi_connection is None else asgi_connection.route_handler.type_decoders
 
         if request_encoding == RequestEncodingType.MESSAGEPACK:
             result = decode_msgpack(value=raw, target_type=self.annotation, type_decoders=type_decoders, strict=False)
@@ -352,12 +368,12 @@ class DTOBackend:
 
         return cast("Struct | Collection[Struct]", result)
 
-    def parse_builtins(self, builtins: Any, asgi_connection: ASGIConnection) -> Any:
+    def parse_builtins(self, builtins: Any, asgi_connection: ASGIConnection | None = None) -> Any:
         """Parse builtin types into transfer model type.
 
         Args:
             builtins: Builtin type.
-            asgi_connection: The current ASGI Connection
+            asgi_connection: The current ASGI Connection, if any.
 
         Returns:
             The builtin type parsed into transfer model type.
@@ -365,17 +381,19 @@ class DTOBackend:
         return convert(
             obj=builtins,
             type=self.annotation,
-            dec_hook=asgi_connection.route_handler.default_deserializer,
+            dec_hook=partial(default_deserializer, type_decoders=self.type_decoders)
+            if asgi_connection is None
+            else asgi_connection.route_handler.default_deserializer,
             strict=False,
             str_keys=True,
         )
 
-    def populate_data_from_builtins(self, builtins: Any, asgi_connection: ASGIConnection) -> Any:
+    def populate_data_from_builtins(self, builtins: Any, asgi_connection: ASGIConnection | None = None) -> Any:
         """Populate model instance from builtin types.
 
         Args:
             builtins: Builtin type.
-            asgi_connection: The current ASGI Connection
+            asgi_connection: The current ASGI Connection, if any.
 
         Returns:
             Instance or collection of ``model_type`` instances.
@@ -398,12 +416,18 @@ class DTOBackend:
         """
         return self._transfer_to_model_type(builtins)
 
-    def populate_data_from_raw(self, raw: bytes, asgi_connection: ASGIConnection) -> Any:
+    def populate_data_from_raw(
+        self,
+        raw: bytes,
+        asgi_connection: ASGIConnection | None = None,
+        media_type: RequestEncodingType | str | None = None,
+    ) -> Any:
         """Parse raw bytes into instance of `model_type`.
 
         Args:
             raw: bytes
-            asgi_connection: The current ASGI Connection
+            asgi_connection: The current ASGI Connection, if any.
+            media_type: The media type of ``raw``. Defaults to the content type of ``asgi_connection``, or to JSON.
 
         Returns:
             Instance or collection of ``model_type`` instances.
@@ -411,9 +435,9 @@ class DTOBackend:
         if self.dto_data_type:
             return self.dto_data_type(
                 backend=self,
-                data_as_builtins=self._transfer_to_dict(self.parse_raw(raw, asgi_connection)),
+                data_as_builtins=self._transfer_to_dict(self.parse_raw(raw, asgi_connection, media_type)),
             )
-        return self._transfer_to_model_type(self.parse_raw(raw, asgi_connection))
+        return self._transfer_to_model_type(self.parse_raw(raw, asgi_connection, media_type))
 
     def encode_data(self, data: Any) -> LitestarEncodableType:
         """Encode data into a ``LitestarEncodableType``.

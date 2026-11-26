@@ -6,6 +6,16 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: Use a DTO backend without a request
+        :type: feature
+        :pr: 5270
+
+        Add :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_annotation`, which
+        returns a backend that decodes and encodes data with no application or request,
+        e.g. ``UserDTO.create_for_annotation(JSONBody[User])``. Raw data is read as JSON
+        unless a ``media_type`` is passed, and ``type_decoders`` can be given when the
+        backend is created.
+
     .. change:: DTO: Fix slow startup for self-referential and deeply nested models
         :type: bugfix
         :pr: 5269
