@@ -7,7 +7,7 @@ import typing
 from abc import abstractmethod
 from collections.abc import Collection
 from inspect import getmodule
-from typing import TYPE_CHECKING, Generic, TypeVar, cast, get_type_hints
+from typing import TYPE_CHECKING, Generic, TypeVar, get_type_hints
 
 from litestar.dto._backend import DTOBackend
 from litestar.dto.config import DTOConfig
@@ -107,17 +107,17 @@ class AbstractDTO(Generic[T]):
     def decode_builtins(self, value: dict[str, Any]) -> Any:
         """Decode a dictionary of Python values into an the DTO's datatype."""
 
-        backend = cast("DTOBackend", self.asgi_connection.route_handler._dto_data_backend)
+        backend = self.asgi_connection.route_handler._dto_data_backend
         return backend.populate_data_from_builtins(value, self.asgi_connection)
 
     def decode_bytes(self, value: bytes) -> Any:
         """Decode a byte string into an the DTO's datatype."""
 
-        backend = cast("DTOBackend", self.asgi_connection.route_handler._dto_data_backend)
+        backend = self.asgi_connection.route_handler._dto_data_backend
         return backend.populate_data_from_raw(value, self.asgi_connection)
 
     def data_to_encodable_type(self, data: T | Collection[T]) -> LitestarEncodableType:
-        backend = cast("DTOBackend", self.asgi_connection.route_handler._dto_return_backend)
+        backend = self.asgi_connection.route_handler._dto_return_backend
         return backend.encode_data(data)
 
     @classmethod
@@ -225,12 +225,8 @@ class AbstractDTO(Generic[T]):
         Returns:
             OpenAPI request body.
         """
-        backend = cast(
-            "DTOBackend",
-            route_handler._dto_data_backend
-            if isinstance(field_definition.kwarg_definition, BodyKwarg)
-            else route_handler._dto_return_backend,
-        )
+        is_data_field = isinstance(field_definition.kwarg_definition, BodyKwarg)
+        backend: DTOBackend = route_handler._dto_data_backend if is_data_field else route_handler._dto_return_backend  # type: ignore[assignment]
 
         if backend.wrapper_attribute_name and not field_definition.is_subclass_of(Response):
             # The DTO has been built for a handler that has a DTO supported type wrapped in a generic type.
