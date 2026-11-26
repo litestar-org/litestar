@@ -6,6 +6,15 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: Apply field filtering to nested models in fixed-length tuples
+        :type: bugfix
+        :breaking:
+        :issue: 3342
+
+        DTOs now filter and rename models nested in fixed-length tuples such as
+        ``tuple[Model, int]``, and pass ``Model`` instances to handlers. Returning a tuple whose
+        length differs from the annotation now fails with a ``500``.
+
     .. change:: DTO: Enforce ``Annotated`` constraints on every type a DTO rewrites
         :type: bugfix
         :breaking:
