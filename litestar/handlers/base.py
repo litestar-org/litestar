@@ -56,6 +56,8 @@ class BaseRouteHandler:
 
     __slots__ = (
         "_dto",
+        "_dto_data_backend",
+        "_dto_return_backend",
         "_injection_setup",
         "_parameter_field_definitions",
         "_parsed_data_field",
@@ -63,7 +65,6 @@ class BaseRouteHandler:
         "_parsed_return_field",
         "_return_dto",
         "_validate_request_parameters",
-        "data_backend",
         "dependencies",
         "exception_handlers",
         "fn",
@@ -73,7 +74,6 @@ class BaseRouteHandler:
         "opt",
         "parameters",
         "paths",
-        "return_backend",
         "signature_namespace",
         "type_decoders",
         "type_encoders",
@@ -88,10 +88,10 @@ class BaseRouteHandler:
     there are none. Set on registration
     """
 
-    data_backend: DTOBackend | None
+    _dto_data_backend: DTOBackend | None
     """The backend of the handler's data DTO. Set on registration"""
 
-    return_backend: DTOBackend | None
+    _dto_return_backend: DTOBackend | None
     """The backend of the handler's return DTO. Set on registration"""
 
     def __init__(
@@ -147,8 +147,8 @@ class BaseRouteHandler:
         self._parsed_return_field: FieldDefinition | EmptyType = Empty
         self._parsed_data_field: FieldDefinition | None = None
         self._parameter_field_definitions: dict[str, FieldDefinition] | EmptyType = Empty
-        self.data_backend = None
-        self.return_backend = None
+        self._dto_data_backend = None
+        self._dto_return_backend = None
 
         self.dependencies = narrow_dependencies(dependencies)
         self._dto = dto
@@ -409,8 +409,8 @@ class BaseRouteHandler:
         ):
             data_dto = plugin_for_data_type.create_dto_for_type(self.parsed_data_field)
 
-        if self.parsed_data_field and data_dto and self.data_backend is None:
-            self.data_backend = data_dto.create_for_field_definition(
+        if self.parsed_data_field and data_dto and self._dto_data_backend is None:
+            self._dto_data_backend = data_dto.create_for_field_definition(
                 field_definition=self.parsed_data_field,
                 handler_id=self.handler_id,
             )
@@ -452,8 +452,8 @@ class BaseRouteHandler:
             return_dto = data_dto
 
         if return_dto and return_dto.is_supported_model_type_field(self.parsed_return_field):
-            if self.return_backend is None:
-                self.return_backend = return_dto.create_for_field_definition(
+            if self._dto_return_backend is None:
+                self._dto_return_backend = return_dto.create_for_field_definition(
                     field_definition=self.parsed_return_field,
                     handler_id=self.handler_id,
                 )
