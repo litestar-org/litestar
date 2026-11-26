@@ -21,7 +21,7 @@ from typing import (
 import msgspec
 from msgspec import UNSET, Struct, UnsetType, convert, defstruct, field
 
-from litestar.dto._codegen_backend import TransferFunctionFactory
+from litestar.dto._codegen_backend import TransferFunctionCache, TransferFunctionFactory
 from litestar.dto._types import (
     CollectionType,
     CompositeType,
@@ -111,6 +111,7 @@ class DTOBackend:
     __slots__ = (
         "_encode_data",
         "_has_directional_fields",
+        "_transfer_function_cache",
         "_transfer_model_names",
         "_transfer_to_dict",
         "_transfer_to_model_type",
@@ -184,6 +185,7 @@ class DTOBackend:
             field_definition = self.field_definition.inner_types[0]
 
         self.annotation = build_annotation_for_backend(model_type, field_definition, self.transfer_model_type)
+        self._transfer_function_cache: TransferFunctionCache = {}
         self._transfer_to_dict = self._create_transfer_data_fn(
             destination_type=dict,
             field_definition=self.field_definition,
@@ -449,6 +451,7 @@ class DTOBackend:
             is_data_field=self.is_data_field,
             field_definition=field_definition,
             attribute_accessor=self.attribute_accessor,
+            cache=self._transfer_function_cache,
         )
 
     def _get_handler_for_field_definition(self, field_definition: FieldDefinition) -> CompositeTypeHandler | None:

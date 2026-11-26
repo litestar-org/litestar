@@ -5,7 +5,7 @@ from __future__ import annotations
 import inspect
 import re
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, make_dataclass
 from types import ModuleType
 from typing import TYPE_CHECKING, Optional
 from unittest.mock import MagicMock
@@ -49,6 +49,17 @@ class OptionalNestedInner:
 class OptionalNestedOuter:
     name: str
     inner: Optional[OptionalNestedInner] = None
+
+
+@dataclass
+class DeepNestedMiddle:
+    inner: NestedDC
+
+
+@dataclass
+class DeepNestedOuter:
+    name: str
+    middle: DeepNestedMiddle
 
 
 @dataclass
@@ -348,6 +359,82 @@ def test_backend_encode_optional_nested_none() -> None:
     result = to_builtins(data)
     assert result["name"] == "test"
     assert result["inner"] is None
+
+
+def _custom_accessor(obj: object, attr: str) -> Any:
+    return getattr(obj, attr)
+
+
+@pytest.mark.parametrize("accessor", [getattr, _custom_accessor])
+def test_backend_transfer_nested_model_through_access_chain(
+    asgi_connection: Request[Any, Any, Any], accessor: Callable[[object, str], Any]
+) -> None:
+    class Factory(DataclassDTO):
+        config = DTOConfig(max_nested_depth=2)
+        attribute_accessor = accessor  # type: ignore[assignment]
+
+    backend = DTOBackend(
+        handler_id="test",
+        dto_factory=Factory,
+        field_definition=FieldDefinition.from_annotation(DeepNestedOuter),
+        model_type=DeepNestedOuter,
+        wrapper_attribute_name=None,
+        is_data_field=True,
+    )
+    structured = DeepNestedOuter(name="test", middle=DeepNestedMiddle(inner=NestedDC(a=1, b="two")))
+    destructured = {"name": "test", "middle": {"inner": {"a": 1, "b": "two"}}}
+
+    assert to_builtins(backend.encode_data(structured)) == destructured
+    assert backend.populate_data_from_builtins(destructured, asgi_connection) == structured
+
+
+def test_backend_transfer_nested_model_behind_non_word_field_name() -> None:
+    class Factory(DataclassDTO):
+        config = DTOConfig()
+
+    model_type = make_dataclass("NonWordFieldName", [("name", str), ("a\u00b7b", NestedDC)])
+    backend = DTOBackend(
+        handler_id="test",
+        dto_factory=Factory,
+        field_definition=FieldDefinition.from_annotation(model_type),
+        model_type=model_type,
+        wrapper_attribute_name=None,
+        is_data_field=False,
+    )
+
+    instance = model_type(name="test", **{"a\u00b7b": NestedDC(a=1, b="two")})
+
+    assert to_builtins(backend.encode_data(instance)) == {"name": "test", "a\u00b7b": {"a": 1, "b": "two"}}
+
+
+@pytest.mark.parametrize(
+    "field_names",
+    [
+        pytest.param(("class", "b"), id="keyword"),
+        pytest.param(("\u00b5", "\u03bc"), id="nfkc_pair"),
+        pytest.param(("\ufb01eld",), id="nfkc_unstable"),
+    ],
+)
+def test_backend_transfer_field_name_not_valid_as_attribute_syntax(
+    asgi_connection: Request[Any, Any, Any], field_names: tuple[str, ...]
+) -> None:
+    class Factory(MsgspecDTO):
+        config = DTOConfig()
+
+    model_type = msgspec.defstruct("AttributeSyntaxFieldNames", [(name, int) for name in field_names])
+    backend = DTOBackend(
+        handler_id="test",
+        dto_factory=Factory,
+        field_definition=FieldDefinition.from_annotation(model_type),
+        model_type=model_type,
+        wrapper_attribute_name=None,
+        is_data_field=True,
+    )
+    destructured = {name: index for index, name in enumerate(field_names, start=1)}
+    structured = model_type(**destructured)
+
+    assert to_builtins(backend.encode_data(structured)) == destructured
+    assert backend.populate_data_from_builtins(destructured, asgi_connection) == structured
 
 
 def test_transfer_only_touches_included_attributes() -> None:
