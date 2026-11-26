@@ -23,12 +23,12 @@ if TYPE_CHECKING:
     from pydantic import BaseModel
 
 
-def test_aware_datetime_serialization_v2(use_experimental_dto_backend: bool) -> None:
+def test_aware_datetime_serialization_v2() -> None:
     class PydanticAwareDatetimeModel(pydantic_v2.BaseModel):
         tz_aware_datetime: AwareDatetime
 
     class AwareDatetimeDTO(PydanticDTO[PydanticAwareDatetimeModel]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
+        pass
 
     @post(dto=AwareDatetimeDTO, signature_types=[PydanticAwareDatetimeModel])
     def handler(data: JSONBody[PydanticAwareDatetimeModel]) -> PydanticAwareDatetimeModel:
@@ -49,15 +49,13 @@ def test_aware_datetime_serialization_v2(use_experimental_dto_backend: bool) -> 
         assert response.json() == dict_payload
 
 
-def test_schema_required_fields_with_pydantic_dto(
-    use_experimental_dto_backend: bool, base_model: type[BaseModel]
-) -> None:
+def test_schema_required_fields_with_pydantic_dto(base_model: type[BaseModel]) -> None:
     class PydanticUser(base_model):  # type: ignore[misc, valid-type]
         age: int
         name: str
 
     class UserDTO(PydanticDTO[PydanticUser]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
+        pass
 
     @post(dto=UserDTO, return_dto=None, signature_types=[PydanticUser])
     def handler(data: JSONBody[PydanticUser], request: Request) -> dict:
@@ -132,7 +130,6 @@ app = Litestar(route_handlers=[get_user])
     ],
 )
 def test_forbid_unknown_fields_if_forbid_extra_is_set_v2(
-    use_experimental_dto_backend: bool,
     forbid_unknown_fields_default: bool,
     model_config_option: Literal["forbid", "allow", "ignore"],
     expected_dto_config_option: bool,
@@ -142,7 +139,7 @@ def test_forbid_unknown_fields_if_forbid_extra_is_set_v2(
         model_config = pydantic_v2.ConfigDict(extra=model_config_option)
 
     dto_config = DTOConfig(
-        experimental_codegen_backend=use_experimental_dto_backend,
+        max_nested_depth=2,
         # config set on the pydantic model should take precedence
         forbid_unknown_fields=forbid_unknown_fields_default,
     )
@@ -150,4 +147,4 @@ def test_forbid_unknown_fields_if_forbid_extra_is_set_v2(
 
     assert dto.config.forbid_unknown_fields is expected_dto_config_option
     # ensure the config is merged
-    assert dto.config.experimental_codegen_backend is use_experimental_dto_backend
+    assert dto.config.max_nested_depth == 2

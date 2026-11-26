@@ -54,8 +54,6 @@ class DTOConfig:
     """Allow transfer of partial data."""
     underscore_fields_private: bool = True
     """Fields starting with an underscore are considered private and excluded from data transfer."""
-    experimental_codegen_backend: bool | None = None
-    """Use the experimental codegen backend"""
     forbid_unknown_fields: bool = False
     """Raise an exception for fields present in the raw data that are not defined on the model"""
 

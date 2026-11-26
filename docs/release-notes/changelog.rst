@@ -6,6 +6,14 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: Remove the non-codegen DTO backend
+        :type: misc
+        :breaking:
+
+        DTOs always transfer data through the codegen backend, the default since
+        ``2.8.0``. The ``DTOConfig.experimental_codegen_backend`` option and the private
+        ``DTOCodegenBackend`` class are removed.
+
     .. change:: Add option to run the ASGI lifespan protocol for ``asgi`` handlers
         :type: feature
 
