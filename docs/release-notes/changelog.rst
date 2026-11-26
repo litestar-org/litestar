@@ -9,6 +9,7 @@
     .. change:: DTO: A DTO declared on a route handler must apply
         :type: feature
         :breaking:
+        :pr: 5272
         :issue: 3485, 3553
 
         A ``dto`` or ``return_dto`` declared on a route handler, or in a ``WebsocketListener`` class
@@ -23,6 +24,7 @@
     .. change:: DTO: Typed startup errors
         :type: feature
         :breaking:
+        :pr: 5272
 
         DTO errors raised at startup start with ``[paths=..., handler=...]``.
         ``DTONotApplicableError`` and ``DTOTransferTypeError`` subclass
@@ -35,6 +37,7 @@
     .. change:: DTO: Unions of several types
         :type: feature
         :breaking:
+        :pr: 5272
 
         A DTO no longer handles an optional union of several types holding its model, such as
         ``User | int | None``, through its first member: it fails at startup. A return value
@@ -44,6 +47,7 @@
 
     .. change:: DTO: Pass ``None`` through an optional annotation
         :type: bugfix
+        :pr: 5272
         :issue: 3428
 
         With an optional annotation, ``None`` now passes through a DTO instead of causing a
@@ -52,6 +56,7 @@
 
     .. change:: DTO: Answer 400 for invalid form data
         :type: bugfix
+        :pr: 5272
 
         Invalid URL-encoded or multipart data decoded by a DTO now receives a ``400`` response, as
         invalid JSON data does, instead of a ``500``.
@@ -67,6 +72,7 @@
     .. change:: DTO: Honour ``DTOField`` marks given as a string
         :type: bugfix
         :breaking:
+        :pr: 5271
 
         A mark given to :class:`~litestar.dto.field.DTOField` as a string, such as
         ``DTOField(mark="private")``, was ignored; it is now converted to
@@ -76,6 +82,7 @@
 
     .. change:: DTO: Stop requiring properties and computed fields in request data
         :type: bugfix
+        :pr: 5271
 
         ``DataclassDTO`` and ``MsgspecDTO`` required a model's properties in request data,
         and ``PydanticDTO`` its computed fields. Both are read-only and are no longer part of
@@ -84,6 +91,7 @@
     .. change:: DTO: Apply field filtering to nested models in fixed-length tuples
         :type: bugfix
         :breaking:
+        :pr: 5271
         :issue: 3342
 
         DTOs now filter and rename models nested in fixed-length tuples such as
@@ -93,6 +101,7 @@
     .. change:: DTO: Enforce ``Annotated`` constraints on every type a DTO rewrites
         :type: bugfix
         :breaking:
+        :pr: 5271
         :issue: 4181, 4195, 5025, 5031, 5051
 
         Constraints from ``msgspec.Meta``, ``annotated_types`` or parameter definitions are
@@ -106,6 +115,7 @@
     .. change:: DTO: ``MsgspecDTO.generate_field_definitions`` keeps the parsed ``kwarg_definition``
         :type: misc
         :breaking:
+        :pr: 5271
 
         :meth:`~litestar.dto.msgspec_dto.MsgspecDTO.generate_field_definitions` keeps the
         ``kwarg_definition`` parsed from the annotation instead of one built from ``msgspec.Meta``.
@@ -120,6 +130,7 @@
 
     .. change:: DTO: Use a DTO backend without a request
         :type: feature
+        :pr: 5270
 
         The backend returned by ``AbstractDTO.create_for_field_definition`` decodes and
         encodes data with no application or request. ``handler_id`` and the connection
@@ -128,6 +139,7 @@
 
     .. change:: DTO: Fix slow startup for self-referential and deeply nested models
         :type: bugfix
+        :pr: 5269
         :issue: 4235
 
         Fix slow startup and high memory use for DTOs of self-referential or deeply nested
@@ -136,6 +148,7 @@
 
     .. change:: DTO: Fix the backend crashing for nested models
         :type: bugfix
+        :pr: 5269
 
         Fix a :exc:`SyntaxError` or :exc:`ValueError` at startup for models nested behind a
         single-field intermediate model or a custom ``attribute_accessor``, and for field
@@ -145,6 +158,7 @@
     .. change:: DTO: Name transfer models after their DTO
         :type: feature
         :breaking:
+        :pr: 5268
         :issue: 4699, 5102
 
         A DTO transfer model is named ``<DTO><RequestBody|ResponseBody>``, or after the
@@ -161,12 +175,15 @@
     .. change:: DTO: Store DTO backends on the route handler
         :type: misc
         :breaking:
+        :pr: 5266
 
-        A route handler keeps the backends of its DTOs.
-        ``AbstractDTO.create_for_field_definition`` returns the backend
-        it builds instead of storing it on the DTO class, and
-        ``AbstractDTO.create_openapi_schema`` takes the ``route_handler`` instead of a
-        ``handler_id``.
+        A route handler keeps the backends of its DTOs, instead of the DTO class keeping
+        them for every handler. This changes two methods that custom DTOs may override
+        or call:
+        :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` returns
+        the backend it builds, where it returned ``None``, and
+        :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema` takes the
+        ``route_handler`` instead of a ``handler_id``.
 
     .. change:: DTO: Remove the non-codegen DTO backend
         :type: misc
