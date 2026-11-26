@@ -212,6 +212,16 @@ class NestingBar:
     foo: NestedFoo
 
 
+@dataclass
+class BasketItem:
+    name: str
+
+
+@dataclass
+class NestedBasket:
+    items: list[BasketItem]
+
+
 def test_dto_data_injection_with_nested_model() -> None:
     @post(
         dto=DataclassDTO[Annotated[NestingBar, DTOConfig(exclude={"foo.baz"})]],
@@ -225,6 +235,30 @@ def test_dto_data_injection_with_nested_model() -> None:
         resp = client.post("/", json={"foo": {"bar": "hello"}})
         assert resp.status_code == 201
         assert resp.json() == {"foo": {"bar": "hello"}}
+
+
+def test_dto_data_nested_collection_as_builtins() -> None:
+    """Nested collection items must remain builtins until create_instance().
+
+    Regression test for https://github.com/litestar-org/litestar/issues/3620
+    """
+
+    @post(
+        dto=DataclassDTO[NestedBasket],
+        return_dto=None,
+    )
+    def handler(data: JSONBody[DTOData[NestedBasket]]) -> dict[str, Any]:
+        builtins = cast("dict[str, Any]", data.as_builtins())
+        assert builtins == {"items": [{"name": "a"}, {"name": "b"}]}
+        instance = data.create_instance()
+        assert isinstance(instance.items[0], BasketItem)
+        assert instance.items[0].name == "a"
+        return builtins
+
+    with create_test_client(route_handlers=[handler]) as client:
+        resp = client.post("/", json={"items": [{"name": "a"}, {"name": "b"}]})
+        assert resp.status_code == 201
+        assert resp.json() == {"items": [{"name": "a"}, {"name": "b"}]}
 
 
 def test_dto_data_create_instance_nested_kwargs() -> None:
