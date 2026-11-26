@@ -281,7 +281,7 @@ def transfer_models(app: Litestar) -> set[type[Any]]:
         backend.transfer_model_type
         for route in app.routes
         for handler in getattr(route, "route_handler_map", {}).values()
-        for backend in (handler.data_backend, handler.return_backend)
+        for backend in (handler._dto_data_backend, handler._dto_return_backend)
         if backend is not None
     }
 
@@ -607,10 +607,10 @@ def test_backends_of_one_dto_model_and_direction_parse_the_model_once() -> None:
     parsed_by_one, CountingDTO.parsed = CountingDTO.parsed, []
     app = Litestar([handler("/a"), handler("/b"), handler("/c")])
     backends = [
-        h.return_backend
+        h._dto_return_backend
         for route in app.routes
         for h in getattr(route, "route_handler_map", {}).values()
-        if h.return_backend is not None
+        if h._dto_return_backend is not None
     ]
 
     assert CountingDTO.parsed == parsed_by_one
@@ -665,5 +665,5 @@ def test_anonymous_dto_classes_do_not_reuse_each_others_transfer_model(
 
     app = Litestar(handlers)
 
-    backends = [app.route_handler_method_map[path]["GET"].return_backend for path in ("/a", "/b")]
+    backends = [app.route_handler_method_map[path]["GET"]._dto_return_backend for path in ("/a", "/b")]
     assert [backend.transfer_model_type.__name__ for backend in backends if backend] == expected
