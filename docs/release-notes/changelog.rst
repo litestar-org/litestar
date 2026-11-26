@@ -9,6 +9,7 @@
     .. change:: DTO: Name transfer models after their DTO
         :type: feature
         :breaking:
+        :pr: 5268
         :issue: 4699, 5102
 
         A DTO transfer model is named ``<DTO><RequestBody|ResponseBody>``, or after the
