@@ -24,6 +24,9 @@ Thus, one does not have to exclude ``/schema/swagger`` as well — it is covered
     Passing ``/`` will disable authentication for all routes, since, as a regex, it
     matches *every* path.
 
+To match against the handler's path (e.g. ``/user/{user_id:int}``) instead of the request path, use
+``exclude_path_pattern``. Handlers excluded this way are skipped at startup and incur no cost per request.
+
 .. code-block:: python
 
     session_auth = SessionAuth[User, ServerSideSessionBackend](

@@ -21,7 +21,6 @@ RAISES_ON_PURPOSE = "docs.examples.dependency_injection.dependency_non_optional_
 BROKEN = {
     "docs.examples.channels.iter_stream": "creates the ChannelsPlugin without channels",
     "docs.examples.channels.put_history": "creates the ChannelsPlugin without channels",
-    "docs.examples.security.using_abstract_authentication_middleware": "registers two handlers for GET /",
 }
 
 IMPORT_EXAMPLES = """

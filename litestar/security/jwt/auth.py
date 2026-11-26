@@ -8,7 +8,6 @@ from typing_extensions import TypeVar
 
 from litestar.datastructures import Cookie
 from litestar.enums import MediaType
-from litestar.middleware import DefineMiddleware
 from litestar.openapi.spec import Components, OAuthFlow, OAuthFlows, SecurityRequirement, SecurityScheme
 from litestar.security.base import AbstractSecurityConfig
 from litestar.security.jwt.middleware import JWTAuthenticationMiddleware, JWTCookieAuthenticationMiddleware
@@ -129,18 +128,17 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
         return {self.openapi_security_scheme_name: []}
 
     @property
-    def middleware(self) -> DefineMiddleware:
-        """Create :class:`JWTAuthenticationMiddleware` wrapped in
-        :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
+    def middleware(self) -> JWTAuthenticationMiddleware:
+        """Create :class:`JWTAuthenticationMiddleware`.
 
         Returns:
-            An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
+            An instance of :class:`JWTAuthenticationMiddleware`.
         """
-        return DefineMiddleware(
-            self.authentication_middleware_class,
+        return self.authentication_middleware_class(
             algorithm=self.algorithm,
             auth_header=self.auth_header,
             exclude=self.exclude,
+            exclude_path_pattern=self.exclude_path_pattern,
             exclude_opt_key=self.exclude_opt_key,
             exclude_http_methods=self.exclude_http_methods,
             retrieve_user_handler=self.retrieve_user_handler,
@@ -290,7 +288,13 @@ class JWTAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
     exclude: str | list[str] | None = field(default=None)
-    """A pattern or list of patterns to skip in the authentication middleware."""
+    """A pattern or list of patterns to skip in the authentication middleware, matched against the request path."""
+    exclude_path_pattern: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns to skip in the authentication middleware, matched against the handler path at
+    startup.
+
+    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+    """
     exclude_opt_key: str = field(default="exclude_from_auth")
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
     exclude_http_methods: Sequence[Method] | None = field(
@@ -383,7 +387,13 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
     exclude: str | list[str] | None = field(default=None)
-    """A pattern or list of patterns to skip in the authentication middleware."""
+    """A pattern or list of patterns to skip in the authentication middleware, matched against the request path."""
+    exclude_path_pattern: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns to skip in the authentication middleware, matched against the handler path at
+    startup.
+
+    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+    """
     exclude_opt_key: str = field(default="exclude_from_auth")
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
     scopes: Scopes | None = field(default=None)
@@ -479,19 +489,18 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
         )
 
     @property
-    def middleware(self) -> DefineMiddleware:
-        """Create :class:`JWTCookieAuthenticationMiddleware` wrapped in
-            :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
+    def middleware(self) -> JWTCookieAuthenticationMiddleware:
+        """Create :class:`JWTCookieAuthenticationMiddleware`.
 
         Returns:
-            An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
+            An instance of :class:`JWTCookieAuthenticationMiddleware`.
         """
-        return DefineMiddleware(
-            self.authentication_middleware_class,
+        return self.authentication_middleware_class(
             algorithm=self.algorithm,
             auth_cookie_key=self.key,
             auth_header=self.auth_header,
             exclude=self.exclude,
+            exclude_path_pattern=self.exclude_path_pattern,
             exclude_opt_key=self.exclude_opt_key,
             exclude_http_methods=self.exclude_http_methods,
             retrieve_user_handler=self.retrieve_user_handler,
@@ -624,7 +633,13 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
     guards: Iterable[Guard] | None = field(default=None)
     """An iterable of guards to call for requests, providing authorization functionalities."""
     exclude: str | list[str] | None = field(default=None)
-    """A pattern or list of patterns to skip in the authentication middleware."""
+    """A pattern or list of patterns to skip in the authentication middleware, matched against the request path."""
+    exclude_path_pattern: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns to skip in the authentication middleware, matched against the handler path at
+    startup.
+
+    See :attr:`~litestar.middleware.ASGIMiddleware.exclude_path_pattern`.
+    """
     exclude_opt_key: str = field(default="exclude_from_auth")
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
     exclude_http_methods: Sequence[Method] | None = field(
@@ -702,19 +717,18 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
     """
 
     @property
-    def middleware(self) -> DefineMiddleware:
-        """Create ``JWTCookieAuthenticationMiddleware`` wrapped in
-            :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
+    def middleware(self) -> JWTCookieAuthenticationMiddleware:
+        """Create :class:`JWTCookieAuthenticationMiddleware`.
 
         Returns:
-            An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
+            An instance of :class:`JWTCookieAuthenticationMiddleware`.
         """
-        return DefineMiddleware(
-            self.authentication_middleware_class,
+        return self.authentication_middleware_class(
             algorithm=self.algorithm,
             auth_cookie_key=self.key,
             auth_header=self.auth_header,
             exclude=self.exclude,
+            exclude_path_pattern=self.exclude_path_pattern,
             exclude_opt_key=self.exclude_opt_key,
             exclude_http_methods=self.exclude_http_methods,
             retrieve_user_handler=self.retrieve_user_handler,

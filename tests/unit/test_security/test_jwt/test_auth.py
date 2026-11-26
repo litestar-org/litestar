@@ -16,7 +16,7 @@ from hypothesis.strategies import dictionaries, integers, none, one_of, sampled_
 
 from litestar import Litestar, Request, Response, get
 from litestar.params import FromPath
-from litestar.security.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
+from litestar.security.jwt import JWTAuth, JWTAuthenticationMiddleware, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from litestar.stores.memory import MemoryStore
 from litestar.testing import TestClient, create_test_client
@@ -410,6 +410,37 @@ async def test_path_exclusion() -> None:
 
         response = client.get("/west")
         assert response.status_code == HTTP_401_UNAUTHORIZED
+
+
+@pytest.mark.parametrize(
+    "auth_cls, extra_kwargs",
+    [(JWTAuth, {}), (JWTCookieAuth, {}), (OAuth2PasswordBearerAuth, {"token_url": "/login"})],
+)
+@pytest.mark.parametrize(
+    "exclude_kwargs, second_status",
+    [
+        ({"exclude": ["^/north/1$"]}, HTTP_401_UNAUTHORIZED),
+        ({"exclude_path_pattern": [r"^/north/\{value:int\}$"]}, HTTP_200_OK),
+    ],
+    ids=["request_path", "handler_path"],
+)
+def test_path_exclusion_dynamic_path(
+    auth_cls: Any, extra_kwargs: dict[str, Any], exclude_kwargs: dict[str, Any], second_status: int
+) -> None:
+    async def retrieve_user_handler(_: Token, __: "ASGIConnection") -> None:
+        return None
+
+    jwt_auth = auth_cls(
+        token_secret=secrets.token_hex(), retrieve_user_handler=retrieve_user_handler, **extra_kwargs, **exclude_kwargs
+    )
+
+    @get("/north/{value:int}")
+    def north_handler(value: FromPath[int]) -> dict[str, int]:
+        return {"value": value}
+
+    with create_test_client(route_handlers=[north_handler], on_app_init=[jwt_auth.on_app_init]) as client:
+        assert client.get("/north/1").status_code == HTTP_200_OK
+        assert client.get("/north/2").status_code == second_status
 
 
 def test_jwt_auth_openapi() -> None:
@@ -930,3 +961,40 @@ async def test_jwt_auth_leeway(
 
     response = client.get("/", headers={"Authorization": header})
     assert response.status_code == expected_status_code
+
+
+def test_middleware_accepts_sync_handlers() -> None:
+    user = UserFactory.build()
+    token_secret = secrets.token_hex()
+    revoked: set[str] = set()
+
+    def retrieve_user_handler(token: Token, _: "ASGIConnection") -> Any:
+        return user if token.sub == str(user.id) else None
+
+    def revoked_token_handler(token: Token, _: "ASGIConnection") -> bool:
+        return token.sub in revoked
+
+    auth_middleware = JWTAuthenticationMiddleware(
+        algorithm="HS256",
+        auth_header="Authorization",
+        exclude=None,
+        exclude_http_methods=None,
+        exclude_opt_key="exclude_from_auth",
+        retrieve_user_handler=retrieve_user_handler,
+        revoked_token_handler=revoked_token_handler,
+        scopes=None,
+        token_secret=token_secret,
+    )
+
+    @get("/")
+    def handler(request: "Request[User, Token, Any]") -> None:
+        assert request.user is user
+
+    encoded = Token(sub=str(user.id), exp=datetime.now(UTC) + timedelta(days=1)).encode(
+        secret=token_secret, algorithm="HS256"
+    )
+
+    with create_test_client(route_handlers=[handler], middleware=[auth_middleware]) as client:
+        assert client.get("/", headers={"Authorization": f"Bearer {encoded}"}).status_code == HTTP_200_OK
+        revoked.add(str(user.id))
+        assert client.get("/", headers={"Authorization": f"Bearer {encoded}"}).status_code == HTTP_401_UNAUTHORIZED
