@@ -398,7 +398,7 @@ def test_return_dto_declaration_origin(
 
     app = build()
     if expected is NOT_APPLIED:
-        assert registered(app, "GET").return_backend is None
+        assert registered(app, "GET")._dto_return_backend is None
         return
     with TestClient(app) as client:
         response = client.get("/")
@@ -414,7 +414,7 @@ def test_skipped_layer_data_dto_validates_body_and_is_reused_for_return() -> Non
         assert client.post("/", json=OTHER_FULL).json() == [USER_ENCODED]
         assert client.post("/", json={"a": "x"}).json() == plain.post("/", json={"a": "x"}).json()
     assert registered(app).data_dto is UserDTO
-    assert registered(app).data_backend is None
+    assert registered(app)._dto_data_backend is None
 
 
 class BaseUserListener(WebsocketListener):

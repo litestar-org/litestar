@@ -95,7 +95,7 @@ def test_config_assigned_via_subclassing() -> None:
 
 async def test_from_bytes(asgi_connection: Request[Any, Any, Any]) -> None:
     dto_type = DataclassDTO[Model]
-    asgi_connection.route_handler.data_backend = dto_type.create_for_field_definition(
+    asgi_connection.route_handler._dto_data_backend = dto_type.create_for_field_definition(
         FieldDefinition.from_annotation(JSONBody[Model]), handler_id=asgi_connection.route_handler.handler_id
     )
     assert dto_type(asgi_connection).decode_bytes(b'{"a":1,"b":"two"}') == Model(a=1, b="two")
@@ -181,7 +181,7 @@ def test_dto_class_holds_no_handler_state() -> None:
         for name in ("one", "two")
         if app.get_handler_index_by_name(name)
     ]
-    backends = [backend for handler in handlers for backend in (handler.data_backend, handler.return_backend)]
+    backends = [backend for handler in handlers for backend in (handler._dto_data_backend, handler._dto_return_backend)]
 
     assert len(handlers) == 3
     assert all(backend is not None for backend in backends)
