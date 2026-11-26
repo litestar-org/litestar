@@ -61,6 +61,15 @@
         Invalid URL-encoded or multipart data decoded by a DTO now receives a ``400`` response, as
         invalid JSON data does, instead of a ``500``.
 
+    .. change:: DTO: Apply a DTO to a handler annotation written as a type alias
+        :type: bugfix
+        :pr: 5273
+
+        When a DTO is declared or a serialization plugin provides one, a ``type`` statement or
+        ``TypeAliasType`` alias in a handler annotation is handled like the type it stands for, in
+        both directions and in the OpenAPI schema. With a declared DTO, an alias that cannot be
+        resolved fails at startup.
+
     .. change:: DTO: Honour ``DTOField`` marks given as a string
         :type: bugfix
         :breaking:
@@ -111,6 +120,15 @@
 
         :meth:`~litestar.dto.msgspec_dto.MsgspecDTO.generate_field_definitions` keeps the
         ``kwarg_definition`` parsed from the annotation instead of one built from ``msgspec.Meta``.
+
+    .. change:: DTO: Field paths reach through an optional field without an index
+        :type: bugfix
+        :breaking:
+        :pr: 5273
+
+        An ``exclude``, ``include`` or ``rename_fields`` entry such as ``"address.street"`` for a
+        field ``address: Optional[Address]`` was ignored unless written with the member index, such
+        as ``"address.0.street"``. It now applies to request data, responses and the OpenAPI schema.
 
     .. change:: DTO: Use a DTO backend without a request
         :type: feature

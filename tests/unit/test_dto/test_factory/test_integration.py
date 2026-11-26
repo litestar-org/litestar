@@ -334,6 +334,68 @@ def test_dto_fixed_length_tuple_inside_union_and_list(value: TupleHolder, expect
         assert client.get("/").json() == expected
 
 
+@dataclass
+class PathAddress:
+    street: str = "-"
+    city: str = "-"
+
+
+@dataclass
+class OptionalPathPerson:
+    work: Optional[PathAddress] = None
+    home: None | PathAddress = None
+    homes: Optional[list[PathAddress]] = None
+    either: Union[PathAddress, int, None] = None
+
+
+@pytest.mark.parametrize(
+    "config, work, home, homes, either",
+    [
+        pytest.param(
+            {"exclude": {"work.street", "home.street"}}, {"city": "c"}, {"city": "c"}, None, None, id="exclude"
+        ),
+        pytest.param({"exclude": {"homes.0.street"}}, None, None, [{"city": "c"}], None, id="exclude-optional-list"),
+        pytest.param(
+            {"exclude": {"work.0.street", "homes.0.0.street"}}, {"city": "c"}, None, [{"city": "c"}], None, id="index"
+        ),
+        pytest.param(
+            {"include": {"work.city", "home", "homes", "either"}}, {"city": "c"}, None, None, None, id="include"
+        ),
+        pytest.param(
+            {"rename_fields": {"work.street": "road"}}, {"road": "s", "city": "c"}, None, None, None, id="rename"
+        ),
+        pytest.param(
+            {"exclude": {"either.street", "either.0.city"}}, None, None, None, {"street": "s"}, id="multi-member-union"
+        ),
+    ],
+)
+def test_dto_config_paths_reach_through_optional(
+    config: dict[str, Any], work: Any, home: Any, homes: Any, either: Any
+) -> None:
+    full = {"street": "s", "city": "c"}
+    expected = {"work": work or full, "home": home or full, "homes": homes or [full], "either": either or full}
+    dto = DataclassDTO[Annotated[OptionalPathPerson, DTOConfig(**config)]]
+
+    @get("/", return_dto=dto, sync_to_thread=False)
+    def read_person() -> OptionalPathPerson:
+        address = PathAddress(street="s", city="c")
+        return OptionalPathPerson(work=address, home=address, homes=[address], either=address)
+
+    @post("/", dto=dto, return_dto=dto, sync_to_thread=False)
+    def echo_person(data: JSONBody[OptionalPathPerson]) -> OptionalPathPerson:
+        return data
+
+    with create_test_client(route_handlers=[read_person, echo_person]) as client:
+        response = client.get("/").json()
+        echoed = client.post("/", json=response).json()
+        schemas = client.get("/schema/openapi.json").json()["components"]["schemas"]
+
+    assert response == echoed == expected
+    root = next(name for name in schemas if name.startswith("OptionalPathPersonResponseBody") and "." not in name)
+    documented = [sorted(schemas[f"{root}.{key}"]["properties"]) for key in expected]
+    assert documented == [sorted(response[key][0] if key == "homes" else response[key]) for key in expected]
+
+
 @pytest.mark.parametrize("value", [(TupleMember(1),), (TupleMember(1), 2, 3)])
 def test_dto_fixed_length_tuple_of_wrong_length_fails(value: tuple[Any, ...]) -> None:
     @get("/", return_dto=DataclassDTO[TupleHolder])

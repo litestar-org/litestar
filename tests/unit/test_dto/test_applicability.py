@@ -1,14 +1,20 @@
+# pyright: reportUnnecessaryTypeIgnoreComment=false
+
 import copy
+import json
 import pickle
+import sys
 from collections.abc import AsyncGenerator, Callable, Iterable
-from dataclasses import dataclass
-from typing import Annotated, Any, Generic, Literal, NewType, Optional, TypeVar, Union
+from dataclasses import dataclass, field
+from typing import Annotated, Any, Generic, Literal, NewType, Optional, Union
 
 import pytest
+from typing_extensions import TypeAliasType, TypeVar, TypeVarTuple
 
 from litestar import Controller, Litestar, Response, Router, get, post, websocket_listener, websocket_stream
+from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.di._route_handler import HandlerErrorPrefix
-from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, DTOData
+from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, DTOData, dto_field
 from litestar.dto._applicability import resolve_dto_target
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import (
@@ -20,6 +26,7 @@ from litestar.exceptions import (
     MissingDTOError,
 )
 from litestar.handlers import WebsocketListener
+from litestar.openapi import OpenAPIConfig
 from litestar.params import BodyKwarg, JSONBody, MultipartBody, URLEncodedBody
 from litestar.plugins import SerializationPlugin
 from litestar.response import ServerSentEvent, Stream
@@ -167,6 +174,7 @@ def build_app(
     respond: Callable[[Any], Any] = lambda data: None,
     plugins: tuple[SerializationPlugin, ...] = (),
     handler_options: dict[str, Any] | None = None,
+    openapi_config: OpenAPIConfig | None = None,
     **options: Any,
 ) -> Litestar:
     decorator: Any = post if method == "POST" else get
@@ -184,7 +192,7 @@ def build_app(
         if placement == "router":
             route_handlers = [Router("/", route_handlers=route_handlers, **options)]
             options = {}
-    return Litestar(route_handlers, plugins=list(plugins), openapi_config=None, **options)
+    return Litestar(route_handlers, plugins=list(plugins), openapi_config=openapi_config, **options)
 
 
 def registered(app: Litestar, method: Any = "POST") -> Any:
@@ -766,6 +774,7 @@ def test_collection_like_model_is_the_model(placement: str) -> None:
 
 NewUser = NewType("NewUser", User)
 NewerUser = NewType("NewerUser", NewUser)
+NewUserAlias = TypeAliasType("NewUserAlias", NewUser)
 K = TypeVar("K")
 
 
@@ -820,6 +829,7 @@ def _stream(returns: Any, **options: Any) -> Any:
         pytest.param(
             {"plugins": (ModelPlugin(User, DataclassDTO[NewUser]),)}, None, NewUser, id="plugin-dto-of-the-new-type"
         ),
+        pytest.param(DTO, NewUserAlias, None, id="new-type-alias"),
     ],
 )
 def test_dto_mentioned_in_an_unsupported_shape_fails_at_startup(options: Any, body: Any, returns: Any) -> None:
@@ -873,3 +883,213 @@ def test_generic_wrapper_transfers_the_attribute_bound_to_the_model(returns: Any
     app = build_app("handler", method="GET", returns=returns, respond=lambda _: value, return_dto=UserDTO)
     with TestClient(app) as client:
         assert client.get("/").json() == expected
+
+
+UserAlias = TypeAliasType("UserAlias", User)
+UsersAlias = TypeAliasType("UsersAlias", list[User])
+UserAliasAlias = TypeAliasType("UserAliasAlias", UserAlias)
+ForwardAlias = TypeAliasType("ForwardAlias", list["User"])
+OptionalUserAlias = TypeAliasType("OptionalUserAlias", Optional[User])
+PageAlias = TypeAliasType("PageAlias", list[T], type_params=(T,))
+StringPageAlias = TypeAliasType("StringPageAlias", "list[T]", type_params=(T,))
+IdentAlias = TypeAliasType("IdentAlias", T, type_params=(T,))
+D = TypeVar("D", default=User)
+DefaultPageAlias = TypeAliasType("DefaultPageAlias", list[D], type_params=(D,))
+Ts = TypeVarTuple("Ts")
+TupleAlias = TypeAliasType("TupleAlias", tuple[*Ts], type_params=(Ts,))
+Json = TypeAliasType("Json", Union[dict[str, "Json"], list["Json"], str, int, None])  # type: ignore[misc]
+NEEDS_TYPE_STATEMENT = pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword needs 3.12")
+NEEDS_TYPE_PARAMETER_DEFAULTS = pytest.mark.skipif(sys.version_info < (3, 13), reason="defaults need 3.13")
+
+
+def type_statement(source: str) -> Any:
+    namespace: dict[str, Any] = {"User": User}
+    exec(source, namespace)
+    return namespace["Alias"]
+
+
+def alias_app(direction: str, annotation: Any, sent: Any) -> Litestar:
+    openapi_config = None if direction in {"layer", "plugin"} else DEFAULT_OPENAPI_CONFIG
+    if direction in {"data", "form"}:
+        body: Any = URLEncodedBody if direction == "form" else JSON_BODY
+        return build_app(
+            "app",
+            body=body[annotation],
+            returns=dict[str, Any],
+            respond=describe,
+            handler_options={"return_dto": None},
+            openapi_config=openapi_config,
+            signature_namespace={"HiddenUser": User},
+            dto=UserDTO,
+        )
+    options: dict[str, Any] = (
+        {"plugins": PLUGIN} if direction == "plugin" else DTO if direction in {"layer", "reused"} else RETURN_DTO
+    )
+    return build_app(
+        "app",
+        method="GET",
+        returns=annotation,
+        respond=lambda data: sent,
+        openapi_config=openapi_config,
+        signature_namespace={"HiddenUser": User, "User": Other, "T": T},
+        **options,
+    )
+
+
+@pytest.mark.parametrize(
+    ("direction", "alias", "expected", "sent"),
+    [
+        pytest.param("data", lambda: UserAlias, User, USER_IN, id="data-alias"),
+        pytest.param("data", lambda: UsersAlias, list[User], [USER_IN], id="data-alias-of-list"),
+        pytest.param("data", lambda: OptionalUserAlias, Optional[User], USER_IN, id="data-alias-of-optional"),
+        pytest.param("data", lambda: PageAlias[User], list[User], [USER_IN], id="data-generic-alias"),
+        pytest.param("data", lambda: IdentAlias[IdentAlias[User]], User, USER_IN, id="data-generic-alias-in-itself"),
+        pytest.param("form", lambda: OptionalUserAlias, Optional[User], None, id="empty-form-optional-alias"),
+        pytest.param(
+            "return",
+            lambda: type_statement("type Alias = User"),
+            User,
+            USER,
+            id="return-type-statement",
+            marks=NEEDS_TYPE_STATEMENT,
+        ),
+        pytest.param("return", lambda: list[UserAlias], list[User], [USER], id="return-list-of-alias"),
+        pytest.param("return", lambda: Optional[UserAlias], Optional[User], USER, id="return-optional-alias"),
+        pytest.param("return", lambda: Response[UsersAlias], Response[list[User]], Response([USER]), id="response"),
+        pytest.param("return", lambda: Wrapper[UserAlias], Wrapper[User], Wrapper(USER), id="return-wrapper"),
+        pytest.param("return", lambda: UserAliasAlias, User, USER, id="return-alias-of-alias"),
+        pytest.param("return", lambda: ForwardAlias, list[User], [USER], id="module-first"),
+        pytest.param(
+            "return",
+            lambda: TypeAliasType("A", list["HiddenUser"]),  # type: ignore[name-defined]  # noqa: F821
+            list[User],
+            [USER],
+            id="forward-reference-in-signature-namespace",
+        ),
+        pytest.param("return", lambda: DefaultPageAlias, list[User], [USER], id="bare-alias-with-defaults"),
+        pytest.param("return", lambda: StringPageAlias[User], list[User], [USER], id="generic-string-alias"),
+        pytest.param("reused", lambda: list[StringPageAlias[User]], list[list[User]], [[USER]], id="reused-dto"),
+        pytest.param("layer", lambda: Json, dict[str, Any], {"a": [1]}, id="recursive-alias"),
+        pytest.param(
+            "layer",
+            lambda: type_statement("type Alias = dict[str, Alias] | list[Alias] | str | int | None"),
+            dict[str, Any],
+            {"a": [1]},
+            id="recursive-type-statement",
+            marks=NEEDS_TYPE_STATEMENT,
+        ),
+        pytest.param("plugin", lambda: UsersAlias, list[User], [USER], id="plugin"),
+        pytest.param(
+            "plugin",
+            lambda: TypeAliasType("A", list["Missing"]),  # type: ignore[name-defined]  # noqa: F821
+            list[Any],
+            [],
+            id="plugin-skips-unresolvable",
+        ),
+        pytest.param(
+            "data",
+            lambda: type_statement("type Alias = list[Missing]"),
+            "name 'Missing' is not defined",
+            None,
+            id="name-error",
+            marks=NEEDS_TYPE_STATEMENT,
+        ),
+        pytest.param(
+            "return",
+            lambda: TypeAliasType("A", list["Missing"]),  # type: ignore[name-defined]  # noqa: F821
+            "name 'Missing' is not defined",
+            None,
+            id="forward-reference-error",
+        ),
+        pytest.param("return", lambda: PageAlias, "type parameters", None, id="bare-generic-alias"),
+        pytest.param(
+            "return",
+            lambda: TypeAliasType("A", list["1/0"]),  # type: ignore[valid-type]
+            "division by zero",
+            None,
+            id="forward-reference-exception",
+        ),
+        pytest.param("return", lambda: TupleAlias[User, int], "type parameters", None, id="type-var-tuple"),
+        pytest.param(
+            "return",
+            lambda: type_statement("type Alias = dict[str, list['User'] | 'Other']"),
+            "unsupported operand",
+            None,
+            id="value-error",
+            marks=NEEDS_TYPE_STATEMENT,
+        ),
+        pytest.param(
+            "return",
+            lambda: type_statement("type Alias[X = Missing] = list[X]"),
+            "name 'Missing' is not defined",
+            None,
+            id="type-parameter-default-error",
+            marks=NEEDS_TYPE_PARAMETER_DEFAULTS,
+        ),
+    ],
+)
+def test_type_alias_applies_like_its_value(direction: str, alias: Callable[[], Any], expected: Any, sent: Any) -> None:
+    if isinstance(expected, str):
+        pattern = rf"^\[paths='/', handler='handler\w*'\] Cannot resolve the type alias '.+': .*{expected}"
+        with pytest.raises(InvalidAnnotationException, match=pattern):
+            alias_app(direction, alias(), sent)
+        return
+
+    def observe(annotation: Any) -> tuple[int, str, str]:
+        app = alias_app(direction, annotation, sent)
+        with TestClient(app) as client:
+            if direction in {"data", "form"}:
+                response = client.post("/") if sent is None else client.post("/", json=sent)
+            else:
+                response = client.get("/")
+        schema = json.dumps(app.openapi_schema.to_schema()) if app.openapi_config else ""
+        return response.status_code, response.text, schema
+
+    observed = observe(alias())
+
+    assert observed == observe(expected)
+    assert '"secret":"x"' not in observed[1]
+    assert "secret" not in observed[2]
+
+
+@dataclass
+class Account:
+    name: str
+    secret: str = "s"
+    role: str = field(default="user", metadata=dto_field("read-only"))
+
+
+AccountAlias = TypeAliasType("AccountAlias", Account)
+AccountDTO = DataclassDTO[Annotated[Account, DTOConfig(exclude={"secret"})]]
+ACCOUNT_IN = {"name": "a", "secret": "x", "role": "admin"}
+FORM_BODY = BodyKwarg(media_type=RequestEncodingType.URL_ENCODED)
+
+
+@pytest.mark.parametrize(
+    ("data", "kind"),
+    [
+        pytest.param(AccountAlias, "websocket", id="listener"),
+        pytest.param(Optional[AccountAlias], "websocket", id="listener-optional"),
+        pytest.param(JSON_BODY[AccountAlias], "json", id="json-marker-outside"),
+        pytest.param(Annotated[AccountAlias, FORM_BODY], "form", id="form-marker-outside"),
+    ],
+)
+def test_aliased_request_data_never_sets_excluded_or_read_only_fields(data: Any, kind: str) -> None:
+    received: list[Any] = []
+
+    async def receive(data: Any) -> str:
+        received.append(data)
+        return "ok"
+
+    receive.__annotations__ = {"data": data, "return": str}
+    if kind == "websocket":
+        app = Litestar([websocket_listener("/", dto=AccountDTO, return_dto=None)(receive)], openapi_config=None)
+        with TestClient(app) as client, client.websocket_connect("/") as ws:
+            ws.send_json(ACCOUNT_IN)
+            assert ws.receive_text() == "ok"
+    else:
+        app = Litestar([post("/", dto=AccountDTO, return_dto=None)(receive)], openapi_config=None)
+        with TestClient(app) as client:
+            response = client.post("/", json=ACCOUNT_IN) if kind == "json" else client.post("/", data=ACCOUNT_IN)
+        assert response.status_code == 201
+    assert received[0] == Account(name="a")

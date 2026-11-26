@@ -295,13 +295,18 @@ class RequestParameterExtractor:
     __slots__ = ("_body", "_names_by_param_type", "_sequence_query_parameter_names")
 
     def __init__(
-        self, definitions: Iterable[RequestParameterDefinition], *, data_dto: type[AbstractDTO] | None = None
+        self,
+        definitions: Iterable[RequestParameterDefinition],
+        *,
+        data_dto: type[AbstractDTO] | None = None,
+        data_passes_none: bool = False,
     ) -> None:
         """Create an extractor of the request parameters ``definitions`` define.
 
         Args:
             definitions: The request parameters to read
             data_dto: The DTO decoding the body, if there is one
+            data_passes_none: Whether the DTO passes ``None`` for an empty form body
         """
         self._names_by_param_type: dict[ParamType, list[tuple[str, str]]] = {}
         self._body: tuple[str, Callable[[ASGIConnection], Coroutine[Any, Any, Any]]] | None = None
@@ -315,7 +320,7 @@ class RequestParameterExtractor:
                     create_request_body_extractor(
                         field_definition=field_definition,
                         body_kwarg=marker,
-                        is_data_optional=field_definition.is_optional,
+                        is_data_optional=field_definition.is_optional or data_passes_none,
                         data_dto=data_dto,
                     ),
                 )

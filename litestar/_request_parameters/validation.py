@@ -290,6 +290,7 @@ def create_request_param_validaton_fn(
     *,
     data_dto: type[AbstractDTO] | None,
     type_decoders: TypeDecodersSequence,
+    data_passes_none: bool = False,
 ) -> Callable[[ASGIConnection], Coroutine[Any, Any, dict[str, Any]]]:
     """Return the validation pass over the request parameters ``definitions`` define: a function
     that extracts them from a connection, validates them all and returns their values by key. It
@@ -300,8 +301,9 @@ def create_request_param_validaton_fn(
         definitions: The request parameters of a handler
         data_dto: The DTO decoding the body, if there is one
         type_decoders: The type decoders applied to each parameter
+        data_passes_none: Whether the DTO passes ``None`` for an empty form body
     """
-    extractor = RequestParameterExtractor(definitions, data_dto=data_dto)
+    extractor = RequestParameterExtractor(definitions, data_dto=data_dto, data_passes_none=data_passes_none)
     validator = RequestParameterValidator(
         definitions, type_decoders=type_decoders, skip_body_validation=data_dto is not None
     )

@@ -698,6 +698,12 @@ class DTOBackend:
         name: str,
         nested_depth: int,
     ) -> UnionType:
+        members = [i for i, inner_type in enumerate(field_definition.inner_types) if not inner_type.is_none_type]
+        if len(members) == 1:
+            prefix = f"{members[0]}."
+            exclude = {*exclude, *(prefix + path for path in exclude)}
+            include = {*include, *(prefix + path for path in include)}
+            rename_fields = {**{prefix + path: name for path, name in rename_fields.items()}, **rename_fields}
         inner_types = tuple(
             self._create_transfer_type(
                 field_definition=inner_type,

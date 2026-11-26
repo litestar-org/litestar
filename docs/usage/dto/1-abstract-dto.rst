@@ -100,7 +100,9 @@ represent fields of the ``Address`` object nested inside the ``User`` object, an
     we use the index of the type parameter to indicate which type the exclusion should refer to. For example, ``a.0.b``,
     excludes the ``b`` field from the first type parameter of ``a``, ``a.1.b`` excludes the ``b`` field from the second
     type parameter of ``a``, and so on. For a fixed-length tuple such as ``tuple[Dog, Cat]``, the index is the position
-    of the member: ``pets.0.id`` refers to ``Dog.id`` and ``pets.1.id`` to ``Cat.id``.
+    of the member: ``pets.0.id`` refers to ``Dog.id`` and ``pets.1.id`` to ``Cat.id``. An optional field such as
+    ``address: Optional[Address]`` needs no index: ``"address.street"`` is equivalent to the path with the index of the
+    member. A union with several members other than ``None`` keeps the index of the member.
 
 Renaming fields
 ---------------
