@@ -166,6 +166,20 @@ class AbstractDTO(Generic[T]):
         )
 
     @classmethod
+    def create_for_annotation(cls, annotation: Any, *, type_decoders: TypeDecodersSequence | None = None) -> DTOBackend:
+        """Create a DTO backend for a type annotation, to use the DTO outside a request.
+
+        Args:
+            annotation: The annotation of the data. Declared as a body, e.g. ``JSONBody[Model]``, it is data to decode
+                the way a handler receives it, otherwise data to encode the way a handler returns it.
+            type_decoders: Type decoders used by the backend when it parses data.
+
+        Returns:
+            The DTO backend.
+        """
+        return cls.create_for_field_definition(FieldDefinition.from_annotation(annotation), type_decoders=type_decoders)
+
+    @classmethod
     def create_for_field_definition(
         cls,
         field_definition: FieldDefinition,
