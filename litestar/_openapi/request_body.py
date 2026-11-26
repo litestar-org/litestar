@@ -51,7 +51,7 @@ def create_request_body(
             route_handler=route_handler,
             schema_creator=schema_creator,
         )
-        required = not (route_handler.data_backend and route_handler.data_backend._passes_none)
+        required = not (route_handler._dto_data_backend and route_handler._dto_data_backend._passes_none)
     else:
         schema = schema_creator.for_field_definition(data_field)
 

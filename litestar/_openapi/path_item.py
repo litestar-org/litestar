@@ -65,7 +65,7 @@ class PathItemFactory:
             request_body = create_request_body(
                 self.context,
                 route_handler,
-                route_handler.data_dto if route_handler.data_backend else None,
+                route_handler.data_dto if route_handler._dto_data_backend else None,
                 data_field,
                 signature_namespace=route_handler.signature_namespace,
             )

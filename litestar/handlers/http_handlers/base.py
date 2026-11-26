@@ -549,9 +549,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._validate_request_parameters = (
             create_request_param_validaton_fn(
                 definitions.values(),
-                data_dto=self.data_dto if self.data_backend else None,
+                data_dto=self.data_dto if self._dto_data_backend else None,
                 type_decoders=self.type_decoders,
-                data_passes_none=bool(self.data_backend and self.data_backend._passes_none),
+                data_passes_none=bool(self._dto_data_backend and self._dto_data_backend._passes_none),
             )
             if definitions
             else None
