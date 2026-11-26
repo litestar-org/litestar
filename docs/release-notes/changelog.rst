@@ -9,6 +9,7 @@
     .. change:: DTO: A DTO declared on a route handler must apply
         :type: feature
         :breaking:
+        :pr: 5272
         :issue: 3485, 3553
 
         A ``dto`` or ``return_dto`` declared on a route handler, or in a ``WebsocketListener`` class
@@ -23,6 +24,7 @@
     .. change:: DTO: Typed startup errors
         :type: feature
         :breaking:
+        :pr: 5272
 
         DTO errors raised at startup start with ``[paths=..., handler=...]``.
         ``DTONotApplicableError`` and ``DTOTransferTypeError`` subclass
@@ -35,6 +37,7 @@
     .. change:: DTO: Unions of several types
         :type: feature
         :breaking:
+        :pr: 5272
 
         A DTO no longer handles an optional union of several types holding its model, such as
         ``User | int | None``, through its first member: it fails at startup. A return value
@@ -44,6 +47,7 @@
 
     .. change:: DTO: Pass ``None`` through an optional annotation
         :type: bugfix
+        :pr: 5272
         :issue: 3428
 
         With an optional annotation, ``None`` now passes through a DTO instead of causing a
@@ -52,6 +56,7 @@
 
     .. change:: DTO: Answer 400 for invalid form data
         :type: bugfix
+        :pr: 5272
 
         Invalid URL-encoded or multipart data decoded by a DTO now receives a ``400`` response, as
         invalid JSON data does, instead of a ``500``.
