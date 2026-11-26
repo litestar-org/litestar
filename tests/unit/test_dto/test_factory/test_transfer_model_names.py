@@ -1,12 +1,13 @@
-from collections.abc import Callable
+from collections.abc import Callable, Generator
 from dataclasses import dataclass, field
-from typing import Annotated, Any, Generic, Optional, TypeVar
+from typing import Annotated, Any, ClassVar, Generic, Optional, TypeVar
 
+import msgspec
 import pytest
 
 from litestar import Controller, Litestar, get, patch, post, put
-from litestar.dto import DataclassDTO, DTOConfig, DTOData, dto_field
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.dto import DataclassDTO, DTOConfig, DTOData, DTOFieldDefinition, dto_field
+from litestar.exceptions import DTOTransferTypeError, ImproperlyConfiguredException
 from litestar.handlers import HTTPRouteHandler
 from litestar.params import JSONBody
 from litestar.typing import FieldDefinition
@@ -584,3 +585,85 @@ def test_generic_wrapper_component_is_named_without_module_paths() -> None:
     schemas = Litestar([handler]).openapi_schema.components.schemas
 
     assert set(schemas) == {"UserDTOResponseBody", "Page_UserDTOResponseBody_"}
+
+
+def test_backends_of_one_dto_model_and_direction_parse_the_model_once() -> None:
+    class CountingDTO(DataclassDTO[Customer]):
+        parsed: ClassVar[list[Any]] = []
+
+        @classmethod
+        def generate_field_definitions(cls, model_type: Any) -> Generator[DTOFieldDefinition, None, None]:
+            cls.parsed.append(model_type)
+            return super().generate_field_definitions(model_type)
+
+    def handler(path: str) -> HTTPRouteHandler:
+        @get(path, return_dto=CountingDTO, sync_to_thread=False)
+        def read() -> list[Customer]:
+            return []
+
+        return read
+
+    Litestar([handler("/")])
+    parsed_by_one, CountingDTO.parsed = CountingDTO.parsed, []
+    app = Litestar([handler("/a"), handler("/b"), handler("/c")])
+    backends = [
+        h.return_backend
+        for route in app.routes
+        for h in getattr(route, "route_handler_map", {}).values()
+        if h.return_backend is not None
+    ]
+
+    assert CountingDTO.parsed == parsed_by_one
+    assert len(backends) == 3
+    assert len({(id(b.transfer_model_type), id(b.parsed_field_definitions)) for b in backends}) == 1
+
+
+@dataclass
+class Unenforceable:
+    x: Annotated[int, msgspec.Meta(min_length=1)] = 0
+
+
+class UnenforceableDTO(DataclassDTO[Unenforceable]):
+    __schema_name__ = "Unenforceable"
+
+
+@pytest.mark.parametrize("response_first", [False, True])
+def test_request_backend_sharing_a_response_model_checks_its_own_at_startup(response_first: bool) -> None:
+    @get("/", return_dto=UnenforceableDTO, sync_to_thread=False)
+    def read() -> Unenforceable:
+        return Unenforceable()
+
+    @post("/", dto=UnenforceableDTO, return_dto=None, sync_to_thread=False)
+    def write(data: JSONBody[Unenforceable]) -> None:
+        return None
+
+    with pytest.raises(DTOTransferTypeError, match=r"handler='write'\] msgspec cannot decode .* field 'x'"):
+        Litestar([read, write] if response_first else [write, read])
+
+
+@pytest.mark.parametrize(
+    ("names", "expected"),
+    [
+        pytest.param(("First", "Second"), ["First", "Second"], id="schema-name-set-after-creation"),
+        pytest.param((None, None), ["CustomerResponseBody", "CustomerResponseBody"], id="unnamed"),
+    ],
+)
+def test_anonymous_dto_classes_do_not_reuse_each_others_transfer_model(
+    names: tuple[Optional[str], Optional[str]], expected: list[str]
+) -> None:
+    handlers = []
+    for path, name in zip(("/a", "/b"), names, strict=True):
+        dto = DataclassDTO[Customer]
+        if name is not None:
+            dto.__schema_name__ = name
+
+        @get(path, return_dto=dto, sync_to_thread=False)
+        def read() -> Customer:
+            return Customer()
+
+        handlers.append(read)
+
+    app = Litestar(handlers)
+
+    backends = [app.route_handler_method_map[path]["GET"].return_backend for path in ("/a", "/b")]
+    assert [backend.transfer_model_type.__name__ for backend in backends if backend] == expected
