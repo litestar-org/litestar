@@ -115,6 +115,18 @@ def test_get_normalized_schema_key() -> None:
         FieldDefinition.from_annotation(generic_str)
     )
 
+    class Named:
+        __schema_name__ = "Named"
+
+    assert _get_normalized_schema_key(FieldDefinition.from_annotation(LocalGeneric[Named])) == (
+        "tests",
+        "unit",
+        "test_openapi",
+        "test_datastructures",
+        "test_get_normalized_schema_key.LocalGeneric_tests.unit.test_openapi.test_datastructures."
+        "test_get_normalized_schema_key.Named_",
+    )
+
 
 def test_raise_on_override_for_same_field_definition() -> None:
     registry = SchemaRegistry()

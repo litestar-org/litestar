@@ -348,8 +348,8 @@ def test_dto_openapi_with_unique_handler_names() -> None:
         response = client.get("/schema/openapi.json")
         schemas = list(response.json()["components"]["schemas"].values())
         assert len(schemas) == 2
-        assert schemas[0]["title"] == "HandlerUniqueModelNameRequestBody"
-        assert schemas[1]["title"] == "HandlerUniqueModelNameResponseBody"
+        assert schemas[0]["title"] == "UniqueModelNameRequestBody_fb568797"
+        assert schemas[1]["title"] == "UniqueModelNameResponseBody"
 
 
 @dataclass
@@ -376,17 +376,9 @@ def test_dto_openapi_without_unique_handler_names() -> None:
     with create_test_client(route_handlers=[handler, MyController]) as client:
         response = client.get("/schema/openapi.json")
         schemas = list(response.json()["components"]["schemas"].values())
-        assert len(schemas) == 4
-        assert schemas[0]["title"] == "HandlerSharedModelNameRequestBody"
-        assert schemas[1]["title"] == "HandlerSharedModelNameResponseBody"
-        assert (
-            schemas[2]["title"]
-            == "tests.unit.test_dto.test_factory.test_integration.test_dto_openapi_without_unique_handler_names.<locals>.MyController.handlerSharedModelNameRequestBody"
-        )
-        assert (
-            schemas[3]["title"]
-            == "tests.unit.test_dto.test_factory.test_integration.test_dto_openapi_without_unique_handler_names.<locals>.MyController.handlerSharedModelNameResponseBody"
-        )
+        assert len(schemas) == 2
+        assert schemas[0]["title"] == "SharedModelNameRequestBody_fb568797"
+        assert schemas[1]["title"] == "SharedModelNameResponseBody"
 
 
 def test_url_encoded_form_data_patch_request() -> None:
@@ -594,7 +586,7 @@ def test_dto_response_wrapped_scalar_return_type() -> None:
         schema_response = client.get("/schema/openapi.json")
         schemas = list(schema_response.json()["components"]["schemas"].values())
         assert len(schemas) == 1
-        assert schemas[0]["title"] == "HandlerWrappedUserResponseBody"
+        assert schemas[0]["title"] == "WrappedUserResponseBody_af598c51"
 
 
 def test_dto_response_wrapped_collection_return_type() -> None:
@@ -609,7 +601,7 @@ def test_dto_response_wrapped_collection_return_type() -> None:
         schema_response = client.get("/schema/openapi.json")
         schemas = list(schema_response.json()["components"]["schemas"].values())
         assert len(schemas) == 1
-        assert schemas[0]["title"] == "HandlerWrappedUserResponseBody"
+        assert schemas[0]["title"] == "WrappedUserResponseBody_af598c51"
 
 
 def test_schema_required_fields_with_msgspec_dto() -> None:
@@ -849,9 +841,9 @@ app = Litestar(route_handlers=[get_users])
 """
     )
     openapi = cast("Litestar", module.app).openapi_schema
-    schema = openapi.components.schemas["WithCount_litestar.dto._backend.GetUsersUserResponseBody_"]
+    schema = openapi.components.schemas["WithCount_UserDTOResponseBody_"]
     assert not_none(schema.properties).keys() == {"count", "data"}
-    model_schema = openapi.components.schemas["GetUsersUserResponseBody"]
+    model_schema = openapi.components.schemas["UserDTOResponseBody"]
     assert not_none(model_schema.properties).keys() == {"id", "name"}
 
 
@@ -891,7 +883,7 @@ app = Litestar(route_handlers=[get_items])
 """)
 
     openapi = cast("Litestar", module.app).openapi_schema
-    schema = openapi.components.schemas["GetItemsItemResponseBody"]
+    schema = openapi.components.schemas["ItemReadDTOResponseBody"]
     assert not_none(schema.properties).keys() == {"id", "name"}
 
 
@@ -946,7 +938,7 @@ app = Litestar(route_handlers=[create_item, create_item_with_dto])
 
     openapi_schema = module.app.openapi_schema
     item_schema = openapi_schema.components.schemas["Item"]
-    item_with_dto_schema = openapi_schema.components.schemas["CreateItemWithDtoItemRequestBody"]
+    item_with_dto_schema = openapi_schema.components.schemas["ItemRequestBody"]
     assert item_schema.examples == item_with_dto_schema.examples
 
 

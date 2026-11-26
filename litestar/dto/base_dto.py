@@ -28,6 +28,7 @@ if TYPE_CHECKING:
 
     from litestar._openapi.schema_generation import SchemaCreator
     from litestar.connection import ASGIConnection
+    from litestar.dto._backend import TransferModelRegistry
     from litestar.dto.data_structures import DTOFieldDefinition
     from litestar.handlers.base import BaseRouteHandler
     from litestar.openapi.spec import Reference, Schema
@@ -164,6 +165,8 @@ class AbstractDTO(Generic[T]):
         field_definition: FieldDefinition,
         handler_id: str,
         backend_cls: type[DTOBackend] | None = None,
+        *,
+        transfer_models: TransferModelRegistry | None = None,
     ) -> DTOBackend:
         """Creates a DTO backend for a field definition.
 
@@ -172,6 +175,7 @@ class AbstractDTO(Generic[T]):
                 body, e.g. ``JSONBody[Model]``, it is the data the handler receives, otherwise the data it returns.
             handler_id: ID of the route handler for which to create a DTO instance.
             backend_cls: Alternative DTO backend class to use
+            transfer_models: The transfer models of the application, shared by the backends that build the same one.
 
         Returns:
             The DTO backend, to be stored on the route handler.
@@ -201,6 +205,7 @@ class AbstractDTO(Generic[T]):
             wrapper_attribute_name=wrapper_attribute_name,
             is_data_field=is_data_field,
             handler_id=handler_id,
+            transfer_models=transfer_models,
         )
 
     @classmethod

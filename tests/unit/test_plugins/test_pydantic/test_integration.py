@@ -326,7 +326,7 @@ def test_v2_computed_fields(with_dto: bool) -> None:
     async def handler() -> Model:
         return Model()
 
-    component_name = "HandlerModelResponseBody" if with_dto else "test_v2_computed_fields.Model"
+    component_name = "ModelResponseBody" if with_dto else "test_v2_computed_fields.Model"
 
     with create_test_client([handler]) as client:
         schema = client.app.openapi_schema.components.schemas[component_name]

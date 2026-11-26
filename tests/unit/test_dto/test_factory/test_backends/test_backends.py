@@ -219,7 +219,7 @@ def test_backend_create_openapi_schema(dto_factory: type[DataclassDTO]) -> None:
     schemas = creator.schema_registry.generate_components_schemas()
     assert isinstance(ref, Reference)
     schema = schemas[ref.value]
-    assert schema.title == "HandlerDCResponseBody"
+    assert schema.title == "FactoryResponseBody"
     assert schema.properties is not None
     a, b, c = schema.properties["a"], schema.properties["b"], schema.properties["c"]
     assert isinstance(a, Schema)
@@ -232,7 +232,7 @@ def test_backend_create_openapi_schema(dto_factory: type[DataclassDTO]) -> None:
     assert c.items.type == "integer"
     assert isinstance(nested := schema.properties["nested"], Reference)  # noqa: RUF018
     nested_schema = schemas[nested.value]
-    assert nested_schema.title == "HandlerDCNestedDCResponseBody"
+    assert nested_schema.title == "FactoryResponseBody.nested"
     assert nested_schema.properties is not None
     nested_a, nested_b = nested_schema.properties["a"], nested_schema.properties["b"]
     assert isinstance(nested_a, Schema)
@@ -250,7 +250,6 @@ def test_backend_model_name_uniqueness(dto_factory: type[DataclassDTO]) -> None:
         wrapper_attribute_name=None,
         is_data_field=True,
     )
-    backend._seen_model_names.clear()
     unique_names: set = set()
 
     field_definition = TransferDTOFieldDefinition.from_dto_field_definition(
@@ -271,7 +270,6 @@ def test_backend_model_name_uniqueness(dto_factory: type[DataclassDTO]) -> None:
         unique_names.add(model_class.__name__)
 
     assert len(unique_names) == 100
-    assert backend._seen_model_names == unique_names
 
 
 def test_backend_populate_data_from_raw(

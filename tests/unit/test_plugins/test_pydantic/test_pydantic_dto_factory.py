@@ -157,11 +157,11 @@ def test_dto_field_via_pydantic_field_extra_is_ignored() -> None:
         "schemas"
     ]
 
-    assert components["HandlerModelResponseBody"] == {
+    assert components["ModelResponseBody"] == {
         "properties": {"a": {"type": "integer"}, "b": {"deprecated": True, "type": "integer"}},
         "type": "object",
         "required": ["a", "b"],
-        "title": "HandlerModelResponseBody",
+        "title": "ModelResponseBody",
     }
 
     assert Model.model_fields["a"].json_schema_extra == {}

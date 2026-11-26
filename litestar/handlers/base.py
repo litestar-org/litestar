@@ -413,6 +413,7 @@ class BaseRouteHandler:
             self._dto_data_backend = data_dto.create_for_field_definition(
                 field_definition=self.parsed_data_field,
                 handler_id=self.handler_id,
+                transfer_models=app._dto_transfer_models,
             )
 
         return data_dto
@@ -456,6 +457,7 @@ class BaseRouteHandler:
                 self._dto_return_backend = return_dto.create_for_field_definition(
                     field_definition=self.parsed_return_field,
                     handler_id=self.handler_id,
+                    transfer_models=app._dto_transfer_models,
                 )
             resolved_return_dto = return_dto
         else:

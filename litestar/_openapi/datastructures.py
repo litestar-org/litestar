@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from collections import defaultdict
-from typing import TYPE_CHECKING, _GenericAlias  # type: ignore[attr-defined]
+from typing import TYPE_CHECKING, Any, _GenericAlias  # type: ignore[attr-defined]
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Reference, Schema
@@ -49,6 +49,12 @@ def _get_component_key_override(field: FieldDefinition) -> str | None:
     return None
 
 
+def _iter_type_arguments(annotation: Any) -> Iterator[Any]:
+    for argument in getattr(annotation, "__args__", ()):
+        yield argument
+        yield from _iter_type_arguments(argument)
+
+
 def _get_normalized_schema_key(field_definition: FieldDefinition) -> tuple[str, ...]:
     """Create a key for a type annotation.
 
@@ -65,9 +71,21 @@ def _get_normalized_schema_key(field_definition: FieldDefinition) -> tuple[str, 
 
     annotation = field_definition.annotation
     module = getattr(annotation, "__module__", "")
-    name = str(annotation)[len(module) + 1 :] if isinstance(annotation, _GenericAlias) else annotation.__qualname__
+    argument_modules: list[str] = []
+    if isinstance(annotation, _GenericAlias):
+        from litestar.dto import _backend
+
+        name = str(annotation)[len(module) + 1 :]
+        for argument in _iter_type_arguments(annotation):
+            if isinstance(argument, type) and argument.__module__.startswith(f"{_backend.__name__}."):
+                qualified_name = f"{argument.__module__}.{argument.__qualname__}"
+                if qualified_name in name:
+                    name = name.replace(qualified_name, argument.__qualname__)
+                    argument_modules.extend(argument.__module__.split("."))
+    else:
+        name = annotation.__qualname__
     name = name.replace(".<locals>.", ".")
-    return *module.split("."), re.sub(INVALID_KEY_CHARACTER_PATTERN, "_", name)
+    return *module.split("."), *argument_modules, re.sub(INVALID_KEY_CHARACTER_PATTERN, "_", name)
 
 
 class RegisteredSchema:
