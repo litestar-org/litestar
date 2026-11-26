@@ -63,6 +63,7 @@
 
     .. change:: DTO: Apply a DTO to a handler annotation written as a type alias
         :type: bugfix
+        :pr: 5273
 
         When a DTO is declared or a serialization plugin provides one, a ``type`` statement or
         ``TypeAliasType`` alias in a handler annotation is handled like the type it stands for, in
@@ -123,6 +124,7 @@
     .. change:: DTO: Field paths reach through an optional field without an index
         :type: bugfix
         :breaking:
+        :pr: 5273
 
         An ``exclude``, ``include`` or ``rename_fields`` entry such as ``"address.street"`` for a
         field ``address: Optional[Address]`` was ignored unless written with the member index, such
