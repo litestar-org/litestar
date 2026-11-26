@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.utils.deprecation import warn_deprecation
 
 if TYPE_CHECKING:
     from typing import AbstractSet
@@ -57,7 +58,11 @@ class DTOConfig:
     underscore_fields_private: bool = True
     """Fields starting with an underscore are considered private and excluded from data transfer."""
     experimental_codegen_backend: bool | None = None
-    """Use the experimental codegen backend"""
+    """Use the experimental codegen backend
+
+    .. deprecated:: 2.26.0
+        The codegen backend is the only DTO backend in Litestar 3.0, where this option is removed.
+    """
     forbid_unknown_fields: bool = False
     """Raise an exception for fields present in the raw data that are not defined on the model"""
 
@@ -65,4 +70,12 @@ class DTOConfig:
         if self.include and self.exclude:
             raise ImproperlyConfiguredException(
                 "'include' and 'exclude' are mutually exclusive options, please use one of them"
+            )
+        if self.experimental_codegen_backend is not None:
+            warn_deprecation(
+                version="2.26.0",
+                deprecated_name="DTOConfig.experimental_codegen_backend",
+                kind="parameter",
+                removal_in="3.0",
+                info="The codegen backend is the only DTO backend in Litestar 3.0",
             )

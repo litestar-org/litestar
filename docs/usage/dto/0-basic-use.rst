@@ -85,6 +85,11 @@ Improving performance with the codegen backend
     It can still be disabled selectively by using the
     ``DTOConfig(experimental_codegen_backend=False)`` override.
 
+.. deprecated:: 2.26.0
+
+    ``DTOConfig.experimental_codegen_backend`` is deprecated. The codegen backend is the
+    only DTO backend in Litestar 3.0, where the option is removed.
+
 The DTO backend is the part that does the heavy lifting for all the DTO features. It
 is responsible for the transforming, validation and parsing. Because of this,
 it is also the part with the most significant performance impact. To reduce the overhead
