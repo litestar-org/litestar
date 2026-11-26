@@ -6,12 +6,13 @@ import dataclasses
 import typing
 from abc import abstractmethod
 from collections.abc import Collection
+from contextlib import suppress
 from inspect import getmodule
 from typing import TYPE_CHECKING, Generic, TypeVar, cast, get_type_hints
 
 import msgspec
 
-from litestar.dto._applicability import build_schema_annotation, resolve_dto_target
+from litestar.dto._applicability import _without_type_aliases, build_schema_annotation, resolve_dto_target
 from litestar.dto._backend import DTOBackend
 from litestar.dto._msgspec_rejection import qualified_name
 from litestar.dto.config import DTOConfig
@@ -233,6 +234,8 @@ class AbstractDTO(Generic[T]):
             if isinstance(field_definition.kwarg_definition, BodyKwarg)
             else route_handler.return_backend,
         )
+        with suppress(InvalidAnnotationException):
+            field_definition = _without_type_aliases(field_definition, route_handler.signature_namespace)
 
         try:
             return schema_creator.for_field_definition(

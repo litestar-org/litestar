@@ -1,17 +1,21 @@
+import sys
 from collections.abc import AsyncGenerator, AsyncIterator, Generator, Iterator
+from contextlib import suppress
 from dataclasses import dataclass
 from types import NoneType
-from typing import TYPE_CHECKING, Any, Literal, Union
+from typing import TYPE_CHECKING, Annotated, Any, ForwardRef, Literal, TypeVar, Union, get_args, get_origin
 
 from litestar.di._helpers import _format_key
 from litestar.dto._backend import build_annotation_for_backend
 from litestar.dto.data_structures import DTOData
 from litestar.enums import RequestEncodingType
-from litestar.exceptions.dto_exceptions import DTONotApplicableError, MissingDTOError
+from litestar.exceptions.dto_exceptions import DTONotApplicableError, InvalidAnnotationException, MissingDTOError
 from litestar.params import BodyKwarg
 from litestar.response.base import Response
 from litestar.types import Empty
-from litestar.typing import FieldDefinition
+from litestar.types.builtin_types import UnionTypes
+from litestar.typing import FieldDefinition, TypeAliasTypes
+from litestar.utils.typing import _substitute_typevars
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
@@ -76,6 +80,12 @@ def resolve_data_backend(
         MissingDTOError: If the data is annotated with ``DTOData`` and no DTO decodes it
     """
     data_field = handler.parsed_data_field
+    declared, _ = read_dto_declaration(handler, is_data_field=True)
+    if data_field is not None and declared is not None and declared is not Empty:
+        data_field = _without_type_aliases(data_field, handler.signature_namespace)
+    elif data_field is not None and declared is Empty and app.plugins.serialization:
+        with suppress(InvalidAnnotationException):
+            data_field = _without_type_aliases(data_field, handler.signature_namespace)
     dto, target = _resolve_data_dto(handler, app, data_field)
     backend = None
     if data_field is not None and dto is not None and target is not None:
@@ -104,6 +114,13 @@ def resolve_return_backend(
         DTONotApplicableError: If the DTO cannot be applied
     """
     return_field = handler.parsed_return_field
+    declared, _ = read_dto_declaration(handler, is_data_field=False)
+    declared_data, _ = read_dto_declaration(handler, is_data_field=True)
+    if declared is not None and (declared is not Empty or declared_data not in (None, Empty)):
+        return_field = _without_type_aliases(return_field, handler.signature_namespace)
+    elif declared is Empty and app.plugins.serialization:
+        with suppress(InvalidAnnotationException):
+            return_field = _without_type_aliases(return_field, handler.signature_namespace)
     if resolved := _resolve_return_dto(handler, app, return_field, data_dto):
         return resolved[0], _create_backend(resolved[0], return_field, handler, app)
     return None, None
@@ -114,6 +131,66 @@ def _create_backend(
 ) -> "DTOBackend":
     return dto.create_for_field_definition(
         field_definition=field_definition, handler_id=handler.handler_id, transfer_models=app._dto_transfer_models
+    )
+
+
+def _unresolvable_alias(annotation: Any, reason: object) -> InvalidAnnotationException:
+    return InvalidAnnotationException(f"Cannot resolve the type alias {_format_annotation(annotation)!r}: {reason}")
+
+
+def _resolve_type_aliases(annotation: Any, namespace: dict[str, Any], expanding: tuple[Any, ...] = ()) -> Any:
+    origin = get_origin(annotation)
+    if isinstance(alias := annotation if origin is None else origin, TypeAliasTypes):
+        if alias in expanding:
+            return annotation
+        params = alias.__type_params__
+        args = () if get_args(annotation) == params else get_args(annotation)
+        try:
+            args += tuple(
+                param.__default__
+                for param in params[len(args) :]
+                if hasattr(param, "has_default") and param.has_default()
+            )
+            value = alias.__value__
+        except Exception as exc:
+            raise _unresolvable_alias(annotation, exc) from exc
+        if len(params) != len(args) or not all(isinstance(param, TypeVar) for param in params):
+            raise _unresolvable_alias(annotation, f"each of its type parameters {params!r} needs one type argument")
+        mapping = dict(zip(params, (_resolve_type_aliases(arg, namespace, expanding) for arg in args), strict=True))
+        if mapping:
+            value = _substitute_typevars(value, mapping)
+        value = _resolve_type_aliases(value, namespace, (*expanding, alias))
+        return _substitute_typevars(value, mapping) if mapping else value
+    if expanding and isinstance(annotation, (str, ForwardRef)):
+        module = getattr(annotation, "__forward_module__", None) or expanding[-1].__module__
+        source = annotation.__forward_arg__ if isinstance(annotation, ForwardRef) else annotation
+        try:
+            value = eval(source, {**namespace, **getattr(sys.modules.get(module), "__dict__", {})})  # noqa: S307
+        except Exception as exc:
+            raise _unresolvable_alias(expanding[-1], exc) from exc
+        return _resolve_type_aliases(value, namespace, expanding)
+    args = get_args(annotation)
+    if not args or origin is Literal:
+        return annotation
+    if origin is Annotated:
+        inner = _resolve_type_aliases(args[0], namespace, expanding)
+        return annotation if inner is args[0] else Annotated[(inner, *args[1:])]
+    if (resolved := tuple(_resolve_type_aliases(arg, namespace, expanding) for arg in args)) == args:
+        return annotation
+    if origin in UnionTypes:
+        return Union[resolved]
+    return annotation.copy_with(resolved) if hasattr(annotation, "copy_with") else origin[resolved]
+
+
+def _without_type_aliases(field_definition: FieldDefinition, namespace: dict[str, Any]) -> FieldDefinition:
+    if (raw := _resolve_type_aliases(field_definition.raw, namespace)) is field_definition.raw:
+        return field_definition
+    return FieldDefinition.from_kwarg(
+        annotation=raw,
+        name=field_definition.name,
+        default=field_definition.default,
+        kwarg_definition=field_definition.kwarg_definition,
+        extra=dict(field_definition.extra),
     )
 
 

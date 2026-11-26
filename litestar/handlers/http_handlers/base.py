@@ -551,6 +551,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 definitions.values(),
                 data_dto=self.data_dto if self.data_backend else None,
                 type_decoders=self.type_decoders,
+                data_passes_none=bool(self.data_backend and self.data_backend._passes_none),
             )
             if definitions
             else None
