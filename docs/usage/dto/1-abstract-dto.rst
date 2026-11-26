@@ -44,6 +44,9 @@ configuration.
 Fields marked as ``"private"`` or ``"read-only"`` will not be parsed from client data into the user model, and
 ``"private"`` fields are never serialized into return data.
 
+A mark can also be declared in the annotation with :class:`DTOField <litestar.dto.field.DTOField>`, as a
+:class:`Mark <litestar.dto.field.Mark>` member or as its string value: ``Annotated[str, DTOField(mark="private")]``.
+
 .. literalinclude:: /examples/data_transfer_objects/factory/marking_fields.py
     :caption: Marking fields
     :language: python

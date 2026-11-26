@@ -21,7 +21,7 @@ from typing_extensions import TypeAliasType as TeTypeAliasType
 from litestar import Controller, Litestar, Response, get, patch, post
 from litestar.connection.request import Request
 from litestar.datastructures import UploadFile
-from litestar.dto import DataclassDTO, DTOConfig, DTOData, MsgspecDTO, dto_field
+from litestar.dto import DataclassDTO, DTOConfig, DTOData, DTOField, MsgspecDTO, dto_field
 from litestar.dto.types import RenameStrategy
 from litestar.enums import MediaType
 from litestar.exceptions import InvalidAnnotationException
@@ -1153,6 +1153,82 @@ def test_msgspec_dto_raises_invalid_annotation_when_msgspec_rejects_the_model(an
         Litestar(route_handlers=[read_rejected_struct], openapi_config=None)
 
     assert isinstance(exc_info.value.__cause__, TypeError)
+
+
+@pytest.mark.parametrize(
+    "mark, config, token_default, expected_body, post_status, expected_seen",
+    [
+        pytest.param("private", DTOConfig(), {"default": "t"}, {"name": "a"}, 201, "t", id="private"),
+        pytest.param("read-only", DTOConfig(), {"default": "t"}, {"name": "a", "token": "x"}, 201, "t", id="read_only"),
+        pytest.param("write-only", DTOConfig(), {"default": "t"}, {"name": "a"}, 201, "x", id="write_only"),
+        pytest.param(
+            "private", DTOConfig(forbid_unknown_fields=True), {"default": "t"}, {"name": "a"}, 400, None, id="forbid"
+        ),
+        pytest.param("private", DTOConfig(), {}, {"name": "a"}, 500, None, id="private_without_default"),
+    ],
+)
+def test_dto_honours_mark_given_as_string(
+    mark: Any,
+    config: DTOConfig,
+    token_default: dict[str, Any],
+    expected_body: dict[str, Any],
+    post_status: int,
+    expected_seen: str | None,
+) -> None:
+    model = make_dataclass(
+        "Item", [("name", str), ("token", Annotated[str, DTOField(mark=mark)], field(**token_default))]
+    )
+    seen: dict[str, Any] = {}
+
+    @get("/", return_dto=DataclassDTO[Annotated[model, config]], signature_namespace={"model": model})  # type: ignore[valid-type]
+    def read_string_mark() -> model:  # type: ignore[valid-type]
+        return model(name="a", token="x")  # type: ignore[no-any-return]
+
+    @post(
+        "/",
+        dto=DataclassDTO[Annotated[model, config]],  # type: ignore[valid-type]
+        return_dto=None,
+        signature_namespace={"model": model},
+    )
+    def create_string_mark(data: JSONBody[model]) -> None:  # type: ignore[valid-type]
+        seen["token"] = data.token  # type: ignore[attr-defined]
+
+    with create_test_client(
+        [read_string_mark, create_string_mark], openapi_config=None, raise_server_exceptions=False
+    ) as client:
+        assert client.get("/").json() == expected_body
+        assert client.post("/", json={"name": "a", "token": "x"}).status_code == post_status
+
+    assert seen.get("token") == expected_seen
+
+
+@dataclass
+class Shout:
+    name: str
+
+    @property
+    def loud(self) -> str:
+        return self.name.upper()
+
+
+class ShoutStruct(Struct):
+    name: str
+
+    @property
+    def loud(self) -> str:
+        return self.name.upper()
+
+
+@pytest.mark.parametrize("dto_type, model", [(DataclassDTO, Shout), (MsgspecDTO, ShoutStruct)])
+def test_dto_does_not_require_properties_in_request_data(dto_type: Any, model: Any) -> None:
+    @post("/", dto=dto_type[model], signature_namespace={"model": model})
+    def create_shout(data: JSONBody[model]) -> model:  # pyright: ignore[reportInvalidTypeForm]
+        return data
+
+    with create_test_client([create_shout], openapi_config=None) as client:
+        response = client.post("/", json={"name": "a"})
+        assert response.status_code == 201
+        assert response.json() == {"name": "a", "loud": "A"}
 
 
 def test_openapi_schema_for_type_with_custom_generic_type(create_module: Callable[[str], ModuleType]) -> None:
