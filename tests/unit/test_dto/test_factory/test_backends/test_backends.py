@@ -814,3 +814,20 @@ def test_backend_type_decoders_given_at_construction(populate: Callable[[DTOBack
     )
 
     assert populate(backend) == Price(amount=Cents(1250))
+
+
+def test_create_for_annotation() -> None:
+    data_backend = DataclassDTO[DC].create_for_annotation(JSONBody[DC])
+    return_backend = DataclassDTO[DC].create_for_annotation(DC)
+
+    assert data_backend.populate_data_from_raw(RAW) == STRUCTURED
+    assert to_builtins(return_backend.encode_data(STRUCTURED)) == DESTRUCTURED
+
+
+def test_create_for_annotation_type_decoders() -> None:
+    backend = DataclassDTO[Price].create_for_annotation(
+        JSONBody[Price],
+        type_decoders=[(lambda target_type: target_type is Cents, lambda target_type, value: target_type(value))],
+    )
+
+    assert backend.populate_data_from_raw(b'{"amount":1250}') == Price(amount=Cents(1250))

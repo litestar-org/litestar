@@ -10,10 +10,11 @@
         :type: feature
         :pr: 5270
 
-        The backend returned by ``AbstractDTO.create_for_field_definition`` decodes and
-        encodes data with no application or request. ``handler_id`` and the connection
-        are optional, raw data is read as JSON unless a ``media_type`` is passed, and
-        ``type_decoders`` can be given when the backend is created.
+        Add :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_annotation`, which
+        returns a backend that decodes and encodes data with no application or request,
+        e.g. ``UserDTO.create_for_annotation(JSONBody[User])``. Raw data is read as JSON
+        unless a ``media_type`` is passed, and ``type_decoders`` can be given when the
+        backend is created.
 
     .. change:: DTO: Fix slow startup for self-referential and deeply nested models
         :type: bugfix
