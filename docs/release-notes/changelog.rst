@@ -6,6 +6,16 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: Faster startup and responses
+        :type: misc
+        :pr: 5275
+
+        Applications with many DTO handlers start faster and use less memory, and DTO handlers decode
+        request bodies and encode responses faster. An object that lacks an attribute whose default
+        is a factory or a mutable value is encoded more slowly than before. A DTO with
+        ``__schema_name__`` whose request model has a constraint msgspec cannot enforce now fails at
+        startup regardless of which handler is registered first.
+
     .. change:: DTO: A DTO declared on a route handler must apply
         :type: feature
         :breaking:

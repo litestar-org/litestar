@@ -8,12 +8,13 @@ from collections.abc import Callable
 from dataclasses import dataclass, field, make_dataclass
 from datetime import date
 from decimal import Decimal
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 from typing import TYPE_CHECKING, Annotated, Optional, Union
 from unittest.mock import MagicMock
 
 import annotated_types
 import msgspec
+import pydantic
 import pytest
 from msgspec import Meta, Struct, to_builtins
 
@@ -24,11 +25,12 @@ from litestar.dto._backend import DTOBackend, _constraints_for_field_definition,
 from litestar.dto._types import CollectionType, SimpleType, TransferDTOFieldDefinition
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.enums import MediaType, RequestEncodingType
-from litestar.exceptions import InvalidAnnotationException, SerializationException
+from litestar.exceptions import DTOFactoryException, InvalidAnnotationException, SerializationException
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.reference import Reference
 from litestar.openapi.spec.schema import Schema
 from litestar.params import JSONBody, KwargDefinition
+from litestar.plugins.pydantic import PydanticDTO
 from litestar.serialization import encode_json
 from litestar.testing import RequestFactory
 from litestar.typing import FieldDefinition
@@ -323,7 +325,7 @@ def test_backend_encode_data(dto_factory: type[DataclassDTO], asgi_connection: R
         field_definition=FieldDefinition.from_annotation(DC),
         model_type=DC,
         wrapper_attribute_name=None,
-        is_data_field=True,
+        is_data_field=False,
     )
     data = backend.encode_data(STRUCTURED)
     assert encode_json(data) == RAW
@@ -338,7 +340,7 @@ def test_backend_encode_collection_data(
         field_definition=FieldDefinition.from_annotation(list[DC]),
         model_type=DC,
         wrapper_attribute_name=None,
-        is_data_field=True,
+        is_data_field=False,
     )
     data = backend.encode_data([STRUCTURED])
     assert encode_json(data) == COLLECTION_RAW
@@ -364,6 +366,147 @@ def test_backend_encode_optional_nested_none() -> None:
     assert result["inner"] is None
 
 
+@dataclass
+class DefaultsDC:
+    a: int
+    b: str
+    c: Optional[str] = None
+    d: int = 5
+
+
+class RaisingAttribute:
+    a = 1
+    b = "two"
+
+    def __init__(self, raising: str) -> None:
+        self.raising = raising
+
+    def __getattribute__(self, name: str) -> Any:
+        if name == object.__getattribute__(self, "raising"):
+            raise AttributeError(name)
+        return object.__getattribute__(self, name)
+
+
+class PartialDefaultsDTO(DataclassDTO[DefaultsDC]):
+    config = DTOConfig(partial=True)
+
+
+class DefaultingAccessorDTO(DataclassDTO[DefaultsDC]):
+    attribute_accessor = staticmethod(lambda obj, attr: getattr(obj, attr, "default"))
+
+
+def _defaults_backend(
+    dto_factory: type[DataclassDTO] = DataclassDTO[DefaultsDC], is_data_field: bool = False
+) -> DTOBackend:
+    return DTOBackend(
+        handler_id="test",
+        dto_factory=dto_factory,
+        field_definition=FieldDefinition.from_annotation(DefaultsDC),
+        model_type=DefaultsDC,
+        wrapper_attribute_name=None,
+        is_data_field=is_data_field,
+    )
+
+
+@pytest.mark.parametrize(
+    ("dto_factory", "source", "expected"),
+    [
+        pytest.param(DataclassDTO[DefaultsDC], SimpleNamespace(a=1, b="two"), {"c": None, "d": 5}, id="absent"),
+        pytest.param(DataclassDTO[DefaultsDC], RaisingAttribute("c"), {"c": None, "d": 5}, id="raising"),
+        pytest.param(PartialDefaultsDTO, SimpleNamespace(a=1, b="two"), {}, id="partial"),
+        pytest.param(DefaultingAccessorDTO, SimpleNamespace(a=1, b="two"), {"c": None, "d": "default"}, id="accessor"),
+    ],
+)
+def test_backend_encode_object_lacking_defaulted_attribute(
+    dto_factory: type[DataclassDTO], source: Any, expected: dict[str, Any]
+) -> None:
+    assert to_builtins(_defaults_backend(dto_factory).encode_data(source)) == {"a": 1, "b": "two", **expected}
+
+
+def test_backend_encode_reads_defaulted_attribute_with_its_default() -> None:
+    source = inspect.getsource(_defaults_backend()._encode_data)
+
+    assert re.search(r"\(a=(\w+)\.a, b=\1\.b, c=getattr\(\1, 'c', None\), d=getattr\(\1, 'd', \w+\)\)", source)
+
+
+@pytest.mark.parametrize(
+    "source", [pytest.param(SimpleNamespace(a=1), id="absent"), pytest.param(RaisingAttribute("b"), id="raising")]
+)
+def test_backend_encode_object_lacking_required_attribute(source: Any) -> None:
+    with pytest.raises(TypeError, match="Missing required argument 'b'"):
+        _defaults_backend().encode_data(source)
+
+
+class FactoryValue:
+    pass
+
+
+class MutableDefaultsModel(pydantic.BaseModel):
+    a: int
+    factory: object = pydantic.Field(default_factory=FactoryValue)
+    mutable: object = []
+
+
+@pytest.mark.parametrize(("field_name", "default_type"), [("factory", FactoryValue), ("mutable", list)])
+def test_backend_encode_objects_lacking_mutable_default_attribute_do_not_share_it(
+    field_name: str, default_type: type
+) -> None:
+    backend = DTOBackend(
+        handler_id="test",
+        dto_factory=PydanticDTO[MutableDefaultsModel],
+        field_definition=FieldDefinition.from_annotation(MutableDefaultsModel),
+        model_type=MutableDefaultsModel,
+        wrapper_attribute_name=None,
+        is_data_field=False,
+    )
+    sources = [SimpleNamespace(a=1, factory=[1], mutable=[1]) for _ in range(2)]
+    for source in sources:
+        delattr(source, field_name)
+
+    first, second = (getattr(backend.encode_data(source), field_name) for source in sources)
+
+    assert type(first) is type(second) is default_type
+    assert first is not second
+
+
+@pytest.mark.parametrize(
+    ("is_data_field", "use"),
+    [
+        pytest.param(True, lambda backend: backend.encode_data(DefaultsDC(a=1, b="two")), id="request"),
+        pytest.param(False, lambda backend: backend.transfer_data_from_builtins({"a": 1}), id="return"),
+    ],
+)
+def test_backend_used_in_the_other_direction_raises(is_data_field: bool, use: Callable[[DTOBackend], Any]) -> None:
+    with pytest.raises(
+        DTOFactoryException,
+        match=rf"^This DTO backend was created for {'request' if is_data_field else 'return'} data ",
+    ):
+        use(_defaults_backend(is_data_field=is_data_field))
+
+
+class SubDC(DC):
+    pass
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        pytest.param(STRUCTURED, id="instance"),
+        pytest.param(SubDC(**vars(STRUCTURED)), id="subclass"),
+        pytest.param(DESTRUCTURED, id="mapping"),
+        pytest.param(
+            SimpleNamespace(**{k: v for k, v in vars(STRUCTURED).items() if k not in {"b", "c"}}), id="defaults"
+        ),
+    ],
+)
+def test_backend_encode_model_with_nested_fields(source: Any) -> None:
+    backend = DTOBackend(DataclassDTO[DC], FieldDefinition.from_annotation(DC), False, DC, None, handler_id="test")
+
+    assert encode_json(backend.encode_data(source)) == RAW
+    with pytest.raises(TypeError, match="Missing required argument 'nested'"):
+        backend.encode_data(SimpleNamespace(a=1, nested_list=[], nested_mapping={}, integer=1))
+
+
 def _custom_accessor(obj: object, attr: str) -> Any:
     return getattr(obj, attr)
 
@@ -376,19 +519,22 @@ def test_backend_transfer_nested_model_through_access_chain(
         config = DTOConfig(max_nested_depth=2)
         attribute_accessor = accessor  # type: ignore[assignment]
 
-    backend = DTOBackend(
-        handler_id="test",
-        dto_factory=Factory,
-        field_definition=FieldDefinition.from_annotation(DeepNestedOuter),
-        model_type=DeepNestedOuter,
-        wrapper_attribute_name=None,
-        is_data_field=True,
+    return_backend, data_backend = (
+        DTOBackend(
+            handler_id="test",
+            dto_factory=Factory,
+            field_definition=FieldDefinition.from_annotation(DeepNestedOuter),
+            model_type=DeepNestedOuter,
+            wrapper_attribute_name=None,
+            is_data_field=is_data_field,
+        )
+        for is_data_field in (False, True)
     )
     structured = DeepNestedOuter(name="test", middle=DeepNestedMiddle(inner=NestedDC(a=1, b="two")))
     destructured = {"name": "test", "middle": {"inner": {"a": 1, "b": "two"}}}
 
-    assert to_builtins(backend.encode_data(structured)) == destructured
-    assert backend.populate_data_from_builtins(destructured, asgi_connection) == structured
+    assert to_builtins(return_backend.encode_data(structured)) == destructured
+    assert data_backend.populate_data_from_builtins(destructured, asgi_connection) == structured
 
 
 def test_backend_transfer_nested_model_behind_non_word_field_name() -> None:
@@ -416,28 +562,32 @@ def test_backend_transfer_nested_model_behind_non_word_field_name() -> None:
         pytest.param(("class", "b"), id="keyword"),
         pytest.param(("\u00b5", "\u03bc"), id="nfkc_pair"),
         pytest.param(("\ufb01eld",), id="nfkc_unstable"),
+        pytest.param(("__debug__",), id="debug"),
     ],
 )
 def test_backend_transfer_field_name_not_valid_as_attribute_syntax(
     asgi_connection: Request[Any, Any, Any], field_names: tuple[str, ...]
 ) -> None:
     class Factory(MsgspecDTO):
-        config = DTOConfig()
+        config = DTOConfig(underscore_fields_private=False)
 
     model_type = msgspec.defstruct("AttributeSyntaxFieldNames", [(name, int) for name in field_names])
-    backend = DTOBackend(
-        handler_id="test",
-        dto_factory=Factory,
-        field_definition=FieldDefinition.from_annotation(model_type),
-        model_type=model_type,
-        wrapper_attribute_name=None,
-        is_data_field=True,
+    return_backend, data_backend = (
+        DTOBackend(
+            handler_id="test",
+            dto_factory=Factory,
+            field_definition=FieldDefinition.from_annotation(model_type),
+            model_type=model_type,
+            wrapper_attribute_name=None,
+            is_data_field=is_data_field,
+        )
+        for is_data_field in (False, True)
     )
     destructured = {name: index for index, name in enumerate(field_names, start=1)}
     structured = model_type(**destructured)
 
-    assert to_builtins(backend.encode_data(structured)) == destructured
-    assert backend.populate_data_from_builtins(destructured, asgi_connection) == structured
+    assert to_builtins(return_backend.encode_data(structured)) == destructured
+    assert data_backend.populate_data_from_builtins(destructured, asgi_connection) == structured
 
 
 def test_transfer_only_touches_included_attributes() -> None:
@@ -514,17 +664,20 @@ def test_codegen_attribute_accessor_not_used_when_default() -> None:
     class Factory(DataclassDTO):
         config = DTOConfig()
 
-    backend = DTOBackend(
-        handler_id="test",
-        dto_factory=Factory,
-        field_definition=TransferDTOFieldDefinition.from_annotation(Foo),
-        model_type=Foo,
-        wrapper_attribute_name=None,
-        is_data_field=False,
+    return_backend, data_backend = (
+        DTOBackend(
+            handler_id="test",
+            dto_factory=Factory,
+            field_definition=TransferDTOFieldDefinition.from_annotation(Foo),
+            model_type=Foo,
+            wrapper_attribute_name=None,
+            is_data_field=is_data_field,
+        )
+        for is_data_field in (False, True)
     )
 
-    to_model_source = inspect.getsource(backend._transfer_to_model_type)
-    encode_source = inspect.getsource(backend._encode_data)
+    to_model_source = inspect.getsource(data_backend._transfer_to_model_type)
+    encode_source = inspect.getsource(return_backend._encode_data)
 
     assert ".some_field" in to_model_source
     assert ".some_field" in encode_source

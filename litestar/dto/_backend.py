@@ -39,7 +39,12 @@ from litestar.dto._types import (
 from litestar.dto.data_structures import DTOData, DTOFieldDefinition
 from litestar.dto.field import Mark
 from litestar.enums import RequestEncodingType
-from litestar.exceptions import DTOTransferTypeError, ImproperlyConfiguredException, SerializationException
+from litestar.exceptions import (
+    DTOFactoryException,
+    DTOTransferTypeError,
+    ImproperlyConfiguredException,
+    SerializationException,
+)
 from litestar.params import KwargDefinition
 from litestar.serialization import decode_json, decode_msgpack, default_deserializer
 from litestar.types import Empty
@@ -50,7 +55,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Collection, Iterator, Sequence, Set
 
     from litestar.connection import ASGIConnection
-    from litestar.dto import AbstractDTO, RenameStrategy
+    from litestar.dto import AbstractDTO, DTOConfig, RenameStrategy
     from litestar.types import TypeDecodersSequence
     from litestar.types.serialization import LitestarEncodableType
 
@@ -71,15 +76,34 @@ class CompositeTypeHandler(Protocol):
     ) -> CompositeType: ...
 
 
+_BuiltTransferModel = tuple[
+    tuple[TransferDTOFieldDefinition, ...], type[Struct], tuple[TransferDTOFieldDefinition, ...], type[Struct]
+]
+
+
 class TransferModelRegistry:
     """The DTO transfer models of an application, by name"""
 
-    __slots__ = ("_models",)
+    __slots__ = ("_built", "_models")
 
     def __init__(self) -> None:
         self._models: dict[
             tuple[str, str], tuple[Any, type[AbstractDTO], tuple[TransferDTOFieldDefinition, ...], type[Struct]]
         ] = {}
+        self._built: dict[Any, list[tuple[DTOConfig, _BuiltTransferModel]]] = {}
+
+    def get_built(self, key: Any, config: DTOConfig) -> _BuiltTransferModel | None:
+        """Return the registered and the own transfer model of the first backend added with ``key`` and ``config``."""
+        with suppress(TypeError):
+            for registered_config, built in self._built.get(key, ()):
+                if registered_config == config:
+                    return built
+        return None
+
+    def add_built(self, key: Any, config: DTOConfig, built: _BuiltTransferModel) -> None:
+        """Remember the registered and the own transfer model of a backend for :meth:`get_built`."""
+        with suppress(TypeError):
+            self._built.setdefault(key, []).append((config, built))
 
     def get_or_add(
         self,
@@ -172,22 +196,38 @@ class DTOBackend:
         self._has_directional_fields = False
         self._passes_none = False
 
-        name = self._create_transfer_model_name()
-        self.parsed_field_definitions = self._parse_root_model(name)
-        if self.dto_factory.__schema_name__ and self._has_directional_fields:
-            name = f"{name}{self._direction_suffix}"
-            self._transfer_model_names.clear()
-            self.parsed_field_definitions = self._parse_root_model(name)
-        self.transfer_model_type = self.create_transfer_model_type(
-            model_name=name, field_definitions=self.parsed_field_definitions
+        built_key = (
+            type(self),
+            dto_factory.__bases__[0] if _is_anonymous(dto_factory) else dto_factory,
+            dto_factory.__schema_name__,
+            model_type,
+            is_data_field,
         )
-        if transfer_models is not None:
-            self.parsed_field_definitions, self.transfer_model_type = transfer_models.get_or_add(
-                key=(_dto_identity(dto_factory), model_type, _shape(self.parsed_field_definitions)),
-                dto_factory=dto_factory,
-                field_definitions=self.parsed_field_definitions,
-                transfer_model_type=self.transfer_model_type,
+        built = transfer_models.get_built(built_key, dto_factory.config) if transfer_models is not None else None
+        if built is None:
+            name = self._create_transfer_model_name()
+            own_field_definitions = self._parse_root_model(name)
+            if self.dto_factory.__schema_name__ and self._has_directional_fields:
+                name = f"{name}{self._direction_suffix}"
+                self._transfer_model_names.clear()
+                own_field_definitions = self._parse_root_model(name)
+            own_transfer_model_type = self.create_transfer_model_type(
+                model_name=name, field_definitions=own_field_definitions
             )
+            built = (own_field_definitions, own_transfer_model_type, own_field_definitions, own_transfer_model_type)
+            if transfer_models is not None:
+                built = (
+                    *transfer_models.get_or_add(
+                        key=(_dto_identity(dto_factory), model_type, _shape(own_field_definitions)),
+                        dto_factory=dto_factory,
+                        field_definitions=own_field_definitions,
+                        transfer_model_type=own_transfer_model_type,
+                    ),
+                    own_field_definitions,
+                    own_transfer_model_type,
+                )
+                transfer_models.add_built(built_key, dto_factory.config, built)
+        self.parsed_field_definitions, self.transfer_model_type, own_field_definitions, own_transfer_model_type = built
         self.dto_data_type: type[DTOData] | None = None
 
         if field_definition.is_subclass_of(DTOData):
@@ -201,28 +241,47 @@ class DTOBackend:
 
         self.annotation = build_annotation_for_backend(model_type, field_definition, self.transfer_model_type)
         self._transfer_function_cache: TransferFunctionCache = {}
-        self._transfer_to_dict = self._create_transfer_data_fn(
-            destination_type=dict,
-            field_definition=self.field_definition,
-        )
-        self._transfer_to_model_type = self._create_transfer_data_fn(
-            destination_type=self.model_type,
-            field_definition=self.field_definition,
-        )
-        self._encode_data = self._create_transfer_data_fn(
-            destination_type=self.transfer_model_type,
-            field_definition=self.field_definition,
-        )
+        unbuilt = _unbuilt_transfer(is_data_field)
+        self._encode_data = unbuilt
+        self._transfer_to_model_type = unbuilt
+        self._transfer_to_dict = unbuilt
+        if not is_data_field:
+            self._encode_data = self._create_transfer_data_fn(
+                destination_type=self.transfer_model_type,
+                field_definition=self.field_definition,
+            )
+        else:
+            self._transfer_to_model_type = self._create_transfer_data_fn(
+                destination_type=self.model_type,
+                field_definition=self.field_definition,
+            )
+            if self.dto_data_type:
+                self._transfer_to_dict = self._create_transfer_data_fn(
+                    destination_type=dict,
+                    field_definition=self.field_definition,
+                )
         if self.is_data_field and self._decodes_with_annotation():
             try:
-                msgspec.json.Decoder(self.annotation, strict=False)
+                msgspec.json.Decoder(
+                    self.annotation
+                    if own_transfer_model_type is self.transfer_model_type
+                    else build_annotation_for_backend(model_type, field_definition, own_transfer_model_type),
+                    strict=False,
+                )
             except TypeError as exc:
-                raise DTOTransferTypeError(self._startup_error_message(exc)) from exc
+                raise DTOTransferTypeError(
+                    self._startup_error_message(exc, own_field_definitions, own_transfer_model_type)
+                ) from exc
 
-    def _startup_error_message(self, exc: TypeError) -> str:
+    def _startup_error_message(
+        self,
+        exc: TypeError,
+        field_definitions: tuple[TransferDTOFieldDefinition, ...],
+        transfer_model_type: type[Struct],
+    ) -> str:
         prefix = "msgspec cannot decode the transfer model of"
         with suppress(Exception):
-            rejected = find_rejected_field(self.model_type, self.parsed_field_definitions, self.transfer_model_type)
+            rejected = find_rejected_field(self.model_type, field_definitions, transfer_model_type)
             if rejected is not None:
                 owner, field_definition, field_exc = rejected
                 return rejected_field_message(
@@ -523,6 +582,7 @@ class DTOBackend:
             field_definition=field_definition,
             attribute_accessor=self.attribute_accessor,
             cache=self._transfer_function_cache,
+            source_type=self.model_type,
         )
 
     def _get_handler_for_field_definition(self, field_definition: FieldDefinition) -> CompositeTypeHandler | None:
@@ -900,6 +960,16 @@ def _create_struct_for_field_definitions(
         rename=rename_strategy,
         forbid_unknown_fields=forbid_unknown_fields,
     )
+
+
+def _unbuilt_transfer(is_data_field: bool) -> Callable[[Any], Any]:
+    def transfer(data: Any) -> Any:
+        raise DTOFactoryException(
+            f"This DTO backend was created for {'request' if is_data_field else 'return'} data "
+            f"(is_data_field={is_data_field}) and does not build the transfer function this call needs"
+        )
+
+    return transfer
 
 
 def build_annotation_for_backend(
