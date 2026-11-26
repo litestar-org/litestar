@@ -289,9 +289,13 @@ def _union_members(field_definition: FieldDefinition) -> tuple[FieldDefinition, 
 def _match_wrapper(
     dto: "type[AbstractDTO[Any]]", field_definition: FieldDefinition
 ) -> tuple[FieldDefinition, FieldDefinition, str] | None:
-    if field_definition.is_union:
+    if field_definition.is_union or not (wrapped := dto.resolve_generic_wrapper_type(field_definition)):
         return None
-    return dto.resolve_generic_wrapper_type(field_definition)
+    model_field, transfer_field, wrapper_attribute_name = wrapped
+    attribute = dto.get_model_type_hints(field_definition.origin).get(wrapper_attribute_name)
+    if attribute is not None and attribute.is_optional and not transfer_field.is_optional:
+        transfer_field = FieldDefinition.from_annotation(Union[transfer_field.annotation, None])
+    return model_field, transfer_field, wrapper_attribute_name
 
 
 def _wrapper_rejection(dto: "type[AbstractDTO[Any]]", field_definition: FieldDefinition) -> str | None:

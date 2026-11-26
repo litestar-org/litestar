@@ -255,6 +255,10 @@ class TransferFunctionFactory:
         attribute_accessor: Callable[[object, str], Any],
         cache: TransferFunctionCache,
     ) -> Callable[[Any], Any]:
+        if field_definition and field_definition.is_optional:
+            non_none = [inner for inner in field_definition.inner_types if not inner.is_none_type]
+            if len(non_none) == 1:
+                field_definition = non_none[0]
         if field_definition and field_definition.is_non_string_collection and field_definition.inner_types:
             factory = cls(
                 is_data_field=is_data_field,
@@ -291,23 +295,25 @@ class TransferFunctionFactory:
         assignment_target: str,
     ) -> None:
         origin_name = self._add_to_fn_globals("origin", field_definition.instantiable_origin)
+        item_definition = field_definition.inner_types[1 if field_definition.is_mapping else 0]
         transfer_func = TransferFunctionFactory.create_transfer_data(
             is_data_field=self.is_data_field,
             destination_type=destination_type,
-            field_definition=field_definition.inner_types[0],
+            field_definition=item_definition,
             field_definitions=field_definitions,
             attribute_accessor=self.attribute_accessor,
             cache=self._cache,
         )
         transfer_func_name = self._add_to_fn_globals("transfer_data", transfer_func)
+        item_expr = f"{transfer_func_name}(item)"
+        if item_definition.is_optional:
+            item_expr = f"None if item is None else {item_expr}"
         if field_definition.is_mapping:
             self._add_stmt(
-                f"{assignment_target} = {origin_name}((key, {transfer_func_name}(item)) for key, item in {source_data_name}.items())"
+                f"{assignment_target} = {origin_name}((key, {item_expr}) for key, item in {source_data_name}.items())"
             )
         else:
-            self._add_stmt(
-                f"{assignment_target} = {origin_name}({transfer_func_name}(item) for item in {source_data_name})"
-            )
+            self._add_stmt(f"{assignment_target} = {origin_name}({item_expr} for item in {source_data_name})")
 
     def _create_transfer_instance_data(
         self,
