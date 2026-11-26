@@ -255,6 +255,96 @@ def test_dto_data_create_instance_nested_kwargs() -> None:
 
 
 @dataclass
+class Dog:
+    id: int
+    nick_name: str
+    secret: str = field(default="s", metadata=dto_field("private"))
+
+
+@dataclass
+class Cat:
+    id: int
+    color: str
+
+
+@dataclass
+class Person:
+    id: int
+    name: str
+    pets: tuple[Dog, Cat]
+
+
+def test_dto_fixed_length_tuple_excludes_and_renames_nested_fields() -> None:
+    received: dict[str, Person] = {}
+
+    @get(
+        "/",
+        return_dto=DataclassDTO[
+            Annotated[Person, DTOConfig(exclude={"id", "pets.0.id", "pets.1.id"}, rename_strategy="camel")]
+        ],
+    )
+    def read_person() -> Person:
+        return Person(id=1, name="John", pets=(Dog(id=2, nick_name="Dog"), Cat(id=3, color="White")))
+
+    @post(
+        "/",
+        dto=DataclassDTO[Annotated[Person, DTOConfig(rename_fields={"pets.0.nick_name": "nn"})]],
+        return_dto=None,
+    )
+    def write_person(data: JSONBody[Person]) -> None:
+        received["data"] = data
+
+    with create_test_client(route_handlers=[read_person, write_person]) as client:
+        assert client.get("/").json() == {"name": "John", "pets": [{"nickName": "Dog"}, {"color": "White"}]}
+        response = client.post(
+            "/", json={"id": 1, "name": "n", "pets": [{"id": 7, "nn": "d"}, {"id": 8, "color": "c"}]}
+        )
+        assert response.status_code == 201
+        assert received["data"].pets == (Dog(id=7, nick_name="d"), Cat(id=8, color="c"))
+
+
+@dataclass
+class TupleMember:
+    y: int
+
+
+@dataclass
+class TupleHolder:
+    t: tuple[TupleMember, int] = (TupleMember(y=1), 2)
+    u: Optional[tuple[TupleMember, int]] = None
+    lt: list[tuple[TupleMember, str]] = field(default_factory=list)
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        (
+            TupleHolder(u=(TupleMember(y=3), 4), lt=[(TupleMember(y=9), "a")]),
+            {"t": [{}, 2], "u": [{}, 4], "lt": [[{}, "a"]]},
+        ),
+        (TupleHolder(), {"t": [{}, 2], "u": None, "lt": []}),
+    ],
+)
+def test_dto_fixed_length_tuple_inside_union_and_list(value: TupleHolder, expected: dict[str, Any]) -> None:
+    @get("/", return_dto=DataclassDTO[Annotated[TupleHolder, DTOConfig(exclude={"t.0.y", "u.0.0.y", "lt.0.0.y"})]])
+    def read_tuple_holder() -> TupleHolder:
+        return value
+
+    with create_test_client(route_handlers=[read_tuple_holder]) as client:
+        assert client.get("/").json() == expected
+
+
+@pytest.mark.parametrize("value", [(TupleMember(1),), (TupleMember(1), 2, 3)])
+def test_dto_fixed_length_tuple_of_wrong_length_fails(value: tuple[Any, ...]) -> None:
+    @get("/", return_dto=DataclassDTO[TupleHolder])
+    def read_wrong_length() -> TupleHolder:
+        return TupleHolder(t=value)
+
+    with create_test_client(route_handlers=[read_wrong_length], raise_server_exceptions=False) as client:
+        assert client.get("/").status_code == 500
+
+
+@dataclass
 class User:
     name: str
     age: int

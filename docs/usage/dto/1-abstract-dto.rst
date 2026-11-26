@@ -96,7 +96,8 @@ represent fields of the ``Address`` object nested inside the ``User`` object, an
     Given a generic type, with an arbitrary number of type parameters (e.g., ``GenericType[Type0, Type1, ..., TypeN]``),
     we use the index of the type parameter to indicate which type the exclusion should refer to. For example, ``a.0.b``,
     excludes the ``b`` field from the first type parameter of ``a``, ``a.1.b`` excludes the ``b`` field from the second
-    type parameter of ``a``, and so on.
+    type parameter of ``a``, and so on. For a fixed-length tuple such as ``tuple[Dog, Cat]``, the index is the position
+    of the member: ``pets.0.id`` refers to ``Dog.id`` and ``pets.1.id`` to ``Cat.id``.
 
 Renaming fields
 ---------------
