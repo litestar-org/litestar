@@ -8,6 +8,7 @@
 
     .. change:: DTO: Fix slow startup for self-referential and deeply nested models
         :type: bugfix
+        :pr: 5269
         :issue: 4235
 
         Fix slow startup and high memory use for DTOs of self-referential or deeply nested
@@ -16,6 +17,7 @@
 
     .. change:: DTO: Fix the backend crashing for nested models
         :type: bugfix
+        :pr: 5269
 
         Fix a :exc:`SyntaxError` or :exc:`ValueError` at startup for models nested behind a
         single-field intermediate model or a custom ``attribute_accessor``, and for field
