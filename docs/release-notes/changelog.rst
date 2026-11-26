@@ -8,6 +8,7 @@
 
     .. change:: DTO: Faster startup and responses
         :type: misc
+        :pr: 5275
 
         Applications with many DTO handlers start faster and use less memory, and DTO handlers decode
         request bodies and encode responses faster. An object that lacks an attribute whose default
