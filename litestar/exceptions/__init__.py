@@ -5,7 +5,13 @@ from .base_exceptions import (
     MissingDependencyException,
     SerializationException,
 )
-from .dto_exceptions import DTOFactoryException, InvalidAnnotationException
+from .dto_exceptions import (
+    DTOFactoryException,
+    DTONotApplicableError,
+    DTOTransferTypeError,
+    InvalidAnnotationException,
+    MissingDTOError,
+)
 from .http_exceptions import (
     ClientException,
     HTTPException,
@@ -26,6 +32,8 @@ from .websocket_exceptions import WebSocketDisconnect, WebSocketException
 __all__ = (
     "ClientException",
     "DTOFactoryException",
+    "DTONotApplicableError",
+    "DTOTransferTypeError",
     "HTTPException",
     "ImproperlyConfiguredException",
     "InternalServerException",
@@ -34,6 +42,7 @@ __all__ = (
     "LitestarException",
     "LitestarWarning",
     "MethodNotAllowedException",
+    "MissingDTOError",
     "MissingDependencyException",
     "NoRouteMatchFoundException",
     "NotAuthorizedException",

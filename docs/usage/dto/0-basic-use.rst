@@ -67,12 +67,43 @@ defined in the ownership chain, closest to the handler in question.
     :caption: Controller defined DTOs
     :language: python
 
-In this example, the ``User`` instance received by any handler that declares a ``data`` kwarg, is converted by the
-``UserDTO`` type, and all handler return values are converted into an encodable type by ``UserReturnDTO`` (except for
-the ``delete()`` route, which has the ``return_dto`` disabled).
+In this example, the ``User`` instance received by any handler that declares a ``data`` kwarg is converted by the
+``UserWriteDTO`` type, and the handler return values are converted into an encodable type by ``UserReadDTO``, except
+for ``delete_user()``, which returns ``None``, to which no DTO applies (see `When a DTO applies`_).
 
 DTOs can similarly be defined on :class:`Routers <litestar.router.Router>` and
 :class:`The application <litestar.app.Litestar>` itself.
+
+When a DTO applies
+~~~~~~~~~~~~~~~~~~
+
+A DTO narrowed with ``User`` handles ``User`` and collections or mappings of ``User`` such as ``list[User]``,
+``dict[str, User]`` or ``tuple[User, ...]``, optional or not. For request data it also handles ``DTOData[User]``; for a
+return value, one generic wrapper around these, such as ``Response[User]`` or a generic dataclass holding the data in
+an attribute typed with its type variable, or a union of generic wrappers holding the model in the same attribute, such
+as ``Page[User] | Cursor[User]``. An optional annotation is handled through its only member that is not ``None``; a
+union of several types, such as ``User | int | None``, is not handled.
+
+When a DTO cannot handle the annotation, the outcome depends on where it is declared:
+
+- on the route handler: an error when the application is created;
+- on a controller, a router or the application, the ``dto`` used for the return value when no ``return_dto`` is
+  declared, or created by a serialization plugin: an error if the annotation contains the DTO's model, such as
+  ``tuple[User, int]`` or a ``NewType`` of it, skipped otherwise.
+
+The decorator of a controller method declares on the handler, the controller's class attributes on a layer. For a
+:class:`~litestar.handlers.WebsocketListener` class, attributes defined in the class body are declared on the handler,
+inherited ones on a layer. A skipped ``return_dto`` is not replaced by the ``dto`` or a serialization plugin, and a
+skipped ``dto`` is not replaced by a plugin. ``None`` disables DTOs for that direction.
+
+No DTO handles a return annotation of ``None``, ``Any``, a streamed response or server-sent events. With an optional
+annotation, ``None`` passes through the DTO in both directions. Form data is decoded into one model, never a
+collection.
+
+These errors start with ``[paths='/users', handler='create_user']``:
+:exc:`~litestar.exceptions.DTONotApplicableError` when a DTO cannot handle an annotation,
+:exc:`~litestar.exceptions.MissingDTOError` when request data is annotated with ``DTOData`` but no DTO decodes it, and
+:exc:`~litestar.exceptions.DTOTransferTypeError` when msgspec rejects the transferred type.
 
 
 Improving performance with the codegen backend

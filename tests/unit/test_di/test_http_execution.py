@@ -12,9 +12,9 @@ from litestar.datastructures import UploadFile
 from litestar.di import DIContext, NamedDependency, PreparedDIContext, Provide
 from litestar.dto import AbstractDTO, DataclassDTO, DTOConfig, DTOData
 from litestar.exceptions import (
+    DTONotApplicableError,
     HTTPException,
     ImproperlyConfiguredException,
-    InvalidAnnotationException,
     ValidationException,
 )
 from litestar.params import Body, FromQuery, JSONBody, MultipartBody, QueryParameter
@@ -353,7 +353,7 @@ def test_dto_data_declared_under_other_name_than_data_without_dto_raises() -> No
     @post("/")
     async def handler(payload: JSONBody[DTOData[Person]]) -> None: ...
 
-    with pytest.raises(ImproperlyConfiguredException, match="a subclass of DTOData but no DTO has been registered"):
+    with pytest.raises(ImproperlyConfiguredException, match="but no DTO decodes it"):
         Litestar([handler], openapi_config=None)
 
 
@@ -388,7 +388,7 @@ def test_dto_data_declared_only_by_dependency_without_dto_raises() -> None:
     async def handler(name: NamedDependency[str]) -> str:
         return name
 
-    with pytest.raises(ImproperlyConfiguredException, match="a subclass of DTOData but no DTO has been registered"):
+    with pytest.raises(ImproperlyConfiguredException, match="but no DTO decodes it"):
         Litestar([handler], openapi_config=None)
 
 
@@ -408,7 +408,7 @@ def test_dto_not_supporting_body_declared_only_by_dependency_raises() -> None:
     async def handler(value: NamedDependency[int]) -> int:
         return value
 
-    with pytest.raises(InvalidAnnotationException, match="DTO narrowed with"):
+    with pytest.raises(DTONotApplicableError, match="cannot decode its request body"):
         Litestar([handler], openapi_config=None)
 
 

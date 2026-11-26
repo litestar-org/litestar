@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 
 def create_handle_receive(listener: WebsocketListenerRouteHandler) -> Callable[[WebSocket], Coroutine[Any, None, None]]:
-    if data_dto := listener.data_dto:
+    if listener.data_backend and (data_dto := listener.data_dto):
 
         async def handle_receive(socket: WebSocket) -> Any:
             received_data = await socket.receive_data(mode=listener._receive_mode)
@@ -57,10 +57,12 @@ def create_handle_send(
     json_encoder = JsonEncoder(enc_hook=listener.default_serializer)
 
     if return_dto := listener.return_dto:
+        skip_none = listener.return_backend is not None and listener.return_backend._passes_none
 
         async def handle_send(socket: WebSocket, data: Any) -> None:
-            encoded_data = return_dto(socket).data_to_encodable_type(data)
-            data = json_encoder.encode(encoded_data)
+            if data is None and skip_none:
+                return
+            data = json_encoder.encode(return_dto(socket).data_to_encodable_type(data))
             await socket.send_data(data=data, mode=listener._send_mode)
 
     elif listener.parsed_return_field.is_subclass_of((str, bytes)) or (

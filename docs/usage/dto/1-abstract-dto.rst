@@ -140,11 +140,14 @@ to it, the DTO will only accept ``User`` types for "data" and return types.
     :linenos:
 
 In the above example, the handler is declared to use ``UserDTO`` which has been type-narrowed with the ``User`` type.
-However, we annotate the handler with the ``Foo`` type. This will raise an error such as this at runtime:
+However, we annotate the handler with the ``Foo`` type. This will raise an error such as this when the application is
+created:
 
-    litestar.exceptions.dto.InvalidAnnotationException: DTO narrowed with
-    '<class 'docs.examples.data_transfer_objects.factory.type_checking.User'>', handler type is
-    '<class 'docs.examples.data_transfer_objects.factory.type_checking.Foo'>'
+    litestar.exceptions.dto_exceptions.DTONotApplicableError: [paths='/users', handler='create_user']
+    'dto=SQLAlchemyDTO[User]' is declared on the handler, but cannot decode its request body annotated 'Foo': the DTO
+    handles 'User'.
+
+The rules are described in :ref:`usage/dto/0-basic-use:When a DTO applies`.
 
 Constraints
 -----------
@@ -172,7 +175,7 @@ validated. Data returned from a handler is not validated.
 
 A ``msgspec.Meta`` stays where it is written. If msgspec does not support it there, as in
 ``Annotated[str | None, Meta(min_length=2)]``, a DTO for inbound data raises
-:exc:`~litestar.exceptions.InvalidAnnotationException` at startup, naming the field: attach it to the member, as
+:exc:`~litestar.exceptions.DTOTransferTypeError` at startup, naming the field: attach it to the member, as
 ``nickname`` does. Other constraints are enforced where msgspec can express them, and not otherwise, such as ``gt`` on
 a ``Decimal``; a ``msgspec.Meta`` wins over a conflicting one. DTO classes that decode the request body themselves, by
 overriding ``decode_bytes`` or ``decode_builtins``, are not checked at startup.
