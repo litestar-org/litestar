@@ -1,7 +1,9 @@
 from typing import TYPE_CHECKING
 
+from litestar.enums import ScopeType
 from litestar.exceptions import MissingDependencyException
-from litestar.middleware.base import AbstractMiddleware
+from litestar.middleware._utils import build_exclude_path_pattern, should_bypass_middleware
+from litestar.middleware.base import ASGIMiddleware
 
 __all__ = ("OpenTelemetryInstrumentationMiddleware",)
 
@@ -16,22 +18,43 @@ from opentelemetry.util.http import get_excluded_urls
 
 if TYPE_CHECKING:
     from litestar.plugins.opentelemetry.config import OpenTelemetryConfig
-    from litestar.types import ASGIApp, Receive, Scope, Send
+    from litestar.types import ASGIApp, Receive, Scope, Scopes, Send
 
 
-class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
+class OpenTelemetryInstrumentationMiddleware(ASGIMiddleware):
     """OpenTelemetry Middleware."""
 
-    def __init__(self, app: "ASGIApp", config: "OpenTelemetryConfig") -> None:
+    def __init__(self, *, config: "OpenTelemetryConfig") -> None:
         """Middleware that adds OpenTelemetry instrumentation to the application.
 
         Args:
-            app: The ``next`` ASGI app to call.
             config: An instance of
                 :class:`OpenTelemetryConfig <litestar.plugins.opentelemetry.OpenTelemetryConfig>`.
         """
-        super().__init__(app=app, scopes=config.scopes, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key)
-        self.open_telemetry_middleware = OpenTelemetryMiddleware(
+        self.config = config
+        scope_types: Scopes = set(config.scopes or (ScopeType.HTTP, ScopeType.WEBSOCKET))
+        if config.scopes:
+            self.scopes = (*(s for s in (ScopeType.HTTP, ScopeType.WEBSOCKET) if s in scope_types), ScopeType.ASGI)
+        exclude_path_pattern = build_exclude_path_pattern(exclude=config.exclude or None, middleware_cls=type(self))
+        exclude_opt_key = config.exclude_opt_key
+        self.should_bypass_for_scope = lambda scope: should_bypass_middleware(
+            scope=scope,
+            scopes=scope_types,
+            exclude_opt_key=exclude_opt_key,
+            exclude_path_pattern=exclude_path_pattern,
+        )
+
+    def __call__(self, app: "ASGIApp") -> "ASGIApp":
+        """Wrap ``app`` in the OpenTelemetry ASGI middleware.
+
+        Args:
+            app: The next ASGI application in the middleware stack.
+
+        Returns:
+            An ASGI application.
+        """
+        config = self.config
+        instrumented: ASGIApp = OpenTelemetryMiddleware(  # type: ignore[assignment]
             app=app,
             client_request_hook=config.client_request_hook_handler,
             client_response_hook=config.client_response_hook_handler,
@@ -47,16 +70,24 @@ class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
             http_capture_headers_server_response=config.http_capture_headers_server_response,
             http_capture_headers_sanitize_fields=config.http_capture_headers_sanitize_fields,
         )
+        handle = self.handle
+        should_bypass_for_scope = self.should_bypass_for_scope
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """ASGI callable.
+        async def middleware(scope: "Scope", receive: "Receive", send: "Send") -> None:
+            if should_bypass_for_scope is not None and should_bypass_for_scope(scope):
+                await app(scope, receive, send)
+            else:
+                await handle(scope=scope, receive=receive, send=send, next_app=instrumented)
+
+        return middleware
+
+    async def handle(self, scope: "Scope", receive: "Receive", send: "Send", next_app: "ASGIApp") -> None:
+        """Handle ASGI call.
 
         Args:
             scope: The ASGI connection scope.
             receive: The ASGI receive function.
             send: The ASGI send function.
-
-        Returns:
-            None
+            next_app: The next ASGI application in the middleware stack, wrapped in the OpenTelemetry ASGI middleware.
         """
-        await self.open_telemetry_middleware(scope, receive, send)  # type: ignore[arg-type]
+        await next_app(scope, receive, send)

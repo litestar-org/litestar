@@ -18,12 +18,16 @@ from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 from opentelemetry.trace import Span
 
-from litestar import WebSocket, get, websocket
+from litestar import Router, WebSocket, get, websocket
 from litestar.config.app import AppConfig
 from litestar.enums import ScopeType
 from litestar.exceptions import http_exceptions
 from litestar.params import JSONBody
-from litestar.plugins.opentelemetry import OpenTelemetryConfig, OpenTelemetryPlugin
+from litestar.plugins.opentelemetry import (
+    OpenTelemetryConfig,
+    OpenTelemetryInstrumentationMiddleware,
+    OpenTelemetryPlugin,
+)
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 from litestar.types.asgi_types import ASGIApp, Receive, Scope, Send
@@ -499,3 +503,102 @@ def test_tracer_config_param_accepted() -> None:
     tracer = get_tracer("test")
     config = OpenTelemetryConfig(tracer=tracer)
     assert config.tracer is tracer
+
+
+def test_exclude_skips_tracing(config: OpenTelemetryConfig, exporter: InMemorySpanExporter) -> None:
+    config.exclude = "^/skip"
+
+    @get(["/", "/skip"])
+    def handler() -> None:
+        return None
+
+    with create_test_client(handler, plugins=[OpenTelemetryPlugin(config)]) as client:
+        client.get("/skip")
+        assert not exporter.get_finished_spans()
+
+        client.get("/")
+        assert exporter.get_finished_spans()
+
+
+def test_scopes_filter_websocket_at_app_level(config: OpenTelemetryConfig, exporter: InMemorySpanExporter) -> None:
+    config.scopes = {ScopeType.HTTP}
+
+    @get("/")
+    def http_handler() -> None:
+        return None
+
+    @websocket("/ws")
+    async def websocket_handler(socket: "WebSocket") -> None:
+        await socket.accept()
+        await socket.send_json({"hello": "world"})
+        await socket.close()
+
+    with create_test_client([http_handler, websocket_handler], plugins=[OpenTelemetryPlugin(config)]) as client:
+        with client.websocket_connect("/ws") as ws_client:
+            assert ws_client.receive_json() == {"hello": "world"}
+        assert not exporter.get_finished_spans()
+
+        client.get("/")
+        assert exporter.get_finished_spans()
+
+
+def test_upstream_middleware_built_once(config: OpenTelemetryConfig) -> None:
+    tracers: list[str] = []
+
+    class CountingTracerProvider(TracerProvider):
+        def get_tracer(self, instrumenting_module_name: str, *args: Any, **kwargs: Any) -> Any:
+            tracers.append(instrumenting_module_name)
+            return super().get_tracer(instrumenting_module_name, *args, **kwargs)
+
+    config.tracer_provider = CountingTracerProvider()
+
+    @get("/")
+    def handler() -> None:
+        return None
+
+    with create_test_client(handler, plugins=[OpenTelemetryPlugin(config)]) as client:
+        client.get("/")
+        client.get("/")
+
+    assert len(tracers) == 1
+
+
+def test_exclude_opt_key_skips_tracing_at_route_level(
+    config: OpenTelemetryConfig, exporter: InMemorySpanExporter
+) -> None:
+    config.exclude_opt_key = "skip_otel"
+
+    @get("/skip", skip_otel=True)
+    def skipped() -> None:
+        return None
+
+    @get("/")
+    def traced() -> None:
+        return None
+
+    with create_test_client(Router("/", route_handlers=[skipped, traced], middleware=[config.middleware])) as client:
+        client.get("/skip")
+        assert not exporter.get_finished_spans()
+
+        client.get("/")
+        assert exporter.get_finished_spans()
+
+
+def test_middleware_class_is_used(config: OpenTelemetryConfig) -> None:
+    handled: list[str] = []
+
+    class CustomMiddleware(OpenTelemetryInstrumentationMiddleware):
+        async def handle(self, scope: Scope, receive: Receive, send: Send, next_app: ASGIApp) -> None:
+            handled.append(scope["path"])
+            await super().handle(scope, receive, send, next_app)
+
+    config.middleware_class = CustomMiddleware
+
+    @get("/")
+    def handler() -> None:
+        return None
+
+    with create_test_client(handler, middleware=[config.middleware]) as client:
+        client.get("/missing")
+
+    assert handled == ["/missing"]

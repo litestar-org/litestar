@@ -6,6 +6,43 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Migrate ``OpenTelemetryInstrumentationMiddleware`` to ``ASGIMiddleware``
+        :type: feature
+        :issue: 4009
+        :breaking:
+
+        :class:`~litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware`
+        has been moved from the legacy ``AbstractMiddleware`` base to
+        :class:`~litestar.middleware.ASGIMiddleware`, as part of migrating all built-in
+        middleware off the legacy bases.
+
+        The middleware keeps its
+        :class:`~litestar.plugins.opentelemetry.OpenTelemetryConfig`-based constructor,
+        but no longer takes an ``app`` argument, and ``config`` is now keyword-only. Code
+        that wrapped an ASGI app directly must apply the instance to it instead:
+
+        .. code-block:: python
+
+            # before
+            asgi_app = OpenTelemetryInstrumentationMiddleware(next_app, config)
+
+            # after
+            asgi_app = OpenTelemetryInstrumentationMiddleware(config=config)(next_app)
+
+        ``OpenTelemetryConfig.middleware`` and ``OpenTelemetryPlugin.middleware`` return a
+        middleware instance instead of a ``DefineMiddleware``, and wrapping the middleware
+        in ``DefineMiddleware`` raises a ``TypeError`` at startup.
+
+        Subclasses set via
+        :attr:`~litestar.plugins.opentelemetry.OpenTelemetryConfig.middleware_class` must
+        rename ``__call__`` to ``handle``, which receives the OpenTelemetry-wrapped next
+        ASGI app as an additional ``next_app`` argument, and drop the ``app`` parameter
+        from an overridden ``__init__``. Class-level ``exclude``, ``exclude_opt_key`` and
+        ``scopes`` overrides are no longer read; set them on the ``OpenTelemetryConfig``
+        instead. The ``app``, ``exclude_pattern`` and ``open_telemetry_middleware``
+        attributes have been removed, and ``scopes`` is now a tuple that also includes
+        ``ScopeType.ASGI``.
+
     .. change:: Add option to run the ASGI lifespan protocol for ``asgi`` handlers
         :type: feature
 

@@ -433,7 +433,8 @@ Litestar's built-in middleware are being moved from the legacy ``AbstractMiddlew
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
 ``CORSMiddleware``, ``ResponseCacheMiddleware``, ``CSRFMiddleware``,
 ``CompressionMiddleware``, ``AllowedHostsMiddleware``, ``RateLimitMiddleware``,
-``PrometheusMiddleware``, ``SessionMiddleware`` and
+``PrometheusMiddleware``, ``SessionMiddleware``,
+``OpenTelemetryInstrumentationMiddleware`` and
 :class:`~litestar.middleware.authentication.AbstractAuthenticationMiddleware` with its
 JWT and session subclasses have made this move.
 ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved into
@@ -536,6 +537,14 @@ configured middleware instance to the middleware list instead, e.g.
 ``middleware=[RateLimitMiddleware(rate_limit=("minute", 10))]``. The ``exclude``
 patterns are still matched against the request path; the new ``exclude_path_pattern``
 argument matches against the handler's path (e.g. ``/user/{user_id:int}``) at startup.
+
+:class:`~litestar.plugins.opentelemetry.OpenTelemetryInstrumentationMiddleware` keeps its
+:class:`~litestar.plugins.opentelemetry.OpenTelemetryConfig`-based constructor (minus the
+``app`` argument), like ``CompressionMiddleware``. Applications that use
+:class:`~litestar.plugins.opentelemetry.OpenTelemetryPlugin` or
+``middleware=[config.middleware]`` are unaffected. Subclasses set via
+:attr:`~litestar.plugins.opentelemetry.OpenTelemetryConfig.middleware_class` must rename
+``__call__`` to ``handle``.
 
 .. seealso::
     :ref:`asgi-middleware-migration`
