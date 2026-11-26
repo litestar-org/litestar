@@ -141,6 +141,7 @@ class Litestar(Router):
         "_builtin_provider_factory",
         "_debug",
         "_dependency_scopes",
+        "_dto_transfer_models",
         "_is_using_litestar_test_client",
         "_lifespan_managers",
         "_logger_shutdown",
@@ -512,6 +513,7 @@ class Litestar(Router):
         from litestar.di import DIRegistry
         from litestar.di._builtin_providers import BuiltinProviderFactory
         from litestar.di._route_handler import ProvideConverter
+        from litestar.dto._backend import TransferModelRegistry
 
         self._builtin_provider_factory = BuiltinProviderFactory(self)
         scopes = self._dependency_scopes = config.dependency_scopes
@@ -522,6 +524,7 @@ class Litestar(Router):
             self.dependency_registry.freeze()
         self.dependency_context: DIContext | None = None
         self._provide_converter = ProvideConverter(self.plugins)
+        self._dto_transfer_models = TransferModelRegistry()
 
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute]
         self.routes, all_handlers = self._build_routes(self._reduce_handlers(self.route_handlers))

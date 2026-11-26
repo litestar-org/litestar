@@ -99,7 +99,7 @@ def fx_backend(
             """Create a model for data transfer.
 
             Args:
-            unique_name: name for the type that should be unique across all transfer types.
+            model_name: name of the transfer model.
             field_definitions: field definitions for the container type.
 
             Returns:
@@ -147,7 +147,7 @@ def create_transfer_type(
     exclude: Set[str] | None = None,
     include: Set[str] | None = None,
     field_name: str = "name",
-    unique_name: str = "some_module.SomeModel.name",
+    name: str = "SomeModelRequestBody.name",
     nested_depth: int = 0,
     rename_fields: dict[str, str] | None = None,
 ) -> TransferType:
@@ -156,7 +156,7 @@ def create_transfer_type(
         exclude=exclude or set(),
         include=include or set(),
         field_name=field_name,
-        unique_name=unique_name,
+        name=name,
         nested_depth=nested_depth,
         rename_fields=rename_fields or {},
     )

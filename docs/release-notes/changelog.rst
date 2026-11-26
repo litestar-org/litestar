@@ -6,6 +6,22 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: Name transfer models after their DTO
+        :type: feature
+        :breaking:
+        :issue: 4699, 5102
+
+        A DTO transfer model is named ``<DTO><RequestBody|ResponseBody>``, or after the
+        DTO's ``__schema_name__``, and a nested one appends its field path joined by ``.``.
+        Handlers using the same DTO share one model per application. A ``__schema_name__``
+        gets the direction suffix when the DTO's request and response fields differ. An
+        anonymous DTO such as ``DataclassDTO[Annotated[Model, DTOConfig(...)]]`` with a
+        non-default config appends ``_`` and a fingerprint of that config. Names used by
+        DTOs from different modules are qualified with their module in the OpenAPI schema.
+        Every generated DTO component name changes, and subclasses overriding
+        ``create_for_field_definition`` or passing a ``backend_cls`` must accept the new
+        keyword-only ``transfer_models`` argument.
+
     .. change:: DTO: Store DTO backends on the route handler
         :type: misc
         :breaking:

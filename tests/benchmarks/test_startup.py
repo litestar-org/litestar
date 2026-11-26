@@ -95,14 +95,13 @@ class Person:
     tags: list[str]
 
 
-def test_dto_backend_create(benchmark: BenchmarkFixture, reset_dto_backends: None) -> None:
+def test_dto_backend_create(benchmark: BenchmarkFixture) -> None:
     class PersonDTO(DataclassDTO[Person]):
         pass
 
     field_definition = FieldDefinition.from_annotation(list[Person])
 
     def create() -> DTOBackend:
-        DTOBackend._seen_model_names = set()
         return PersonDTO.create_for_field_definition(field_definition, handler_id="bench")
 
     backend = benchmark(create)

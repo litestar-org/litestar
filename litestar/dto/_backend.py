@@ -4,12 +4,14 @@ back again, to bytes.
 
 from __future__ import annotations
 
-from dataclasses import replace
+import hashlib
+import re
+from collections.abc import Mapping
+from dataclasses import fields, replace
 from typing import (
     TYPE_CHECKING,
     Annotated,
     Any,
-    ClassVar,
     Final,
     Protocol,
     Union,
@@ -34,6 +36,7 @@ from litestar.dto._types import (
 from litestar.dto.data_structures import DTOData, DTOFieldDefinition
 from litestar.dto.field import Mark
 from litestar.enums import RequestEncodingType
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import KwargDefinition
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
@@ -41,13 +44,15 @@ from litestar.typing import FieldDefinition
 from litestar.utils import unique_name_for_scope
 
 if TYPE_CHECKING:
-    from collections.abc import Collection, Mapping, Set
+    from collections.abc import Collection, Iterator, Sequence, Set
 
     from litestar.connection import ASGIConnection
     from litestar.dto import AbstractDTO, RenameStrategy
     from litestar.types.serialization import LitestarEncodableType
 
-__all__ = ("DTOBackend",)
+__all__ = ("DTOBackend", "TransferModelRegistry")
+
+_INVALID_NAME_CHARACTER = re.compile(r"[^A-Za-z0-9_]")
 
 
 class CompositeTypeHandler(Protocol):
@@ -57,14 +62,56 @@ class CompositeTypeHandler(Protocol):
         exclude: Set[str],
         include: Set[str],
         rename_fields: dict[str, str],
-        unique_name: str,
+        name: str,
         nested_depth: int,
     ) -> CompositeType: ...
+
+
+class TransferModelRegistry:
+    """The DTO transfer models of an application, by name"""
+
+    __slots__ = ("_models",)
+
+    def __init__(self) -> None:
+        self._models: dict[
+            tuple[str, str], tuple[Any, type[AbstractDTO], tuple[TransferDTOFieldDefinition, ...], type[Struct]]
+        ] = {}
+
+    def get_or_add(
+        self,
+        key: Any,
+        dto_factory: type[AbstractDTO],
+        field_definitions: tuple[TransferDTOFieldDefinition, ...],
+        transfer_model_type: type[Struct],
+    ) -> tuple[tuple[TransferDTOFieldDefinition, ...], type[Struct]]:
+        """Return the transfer model registered under the module and name of ``transfer_model_type``, registering it
+        with its nested transfer models if they are new.
+
+        Raises:
+            ImproperlyConfiguredException: If a transfer model of another shape is registered under the name.
+        """
+        name = transfer_model_type.__schema_name__  # type: ignore[attr-defined]
+        if (registered := self._models.get((transfer_model_type.__module__, name))) is not None:
+            registered_key, registered_dto, registered_field_definitions, registered_model = registered
+            if registered_key != key:
+                raise ImproperlyConfiguredException(
+                    f"DTO transfer model name {name!r} is used for two different shapes, by "
+                    f"{_describe_dto(registered_dto)} and {_describe_dto(dto_factory)}. Set '__schema_name__' on "
+                    "one of them, or on a DTO subclass replacing it."
+                )
+            return registered_field_definitions, registered_model
+
+        for nested in _iter_nested_field_info(field_definitions):
+            self.get_or_add((key, nested.model.__schema_name__), dto_factory, nested.field_definitions, nested.model)
+        self._models[transfer_model_type.__module__, name] = (key, dto_factory, field_definitions, transfer_model_type)
+        return field_definitions, transfer_model_type
 
 
 class DTOBackend:
     __slots__ = (
         "_encode_data",
+        "_has_directional_fields",
+        "_transfer_model_names",
         "_transfer_to_dict",
         "_transfer_to_model_type",
         "annotation",
@@ -81,8 +128,6 @@ class DTOBackend:
         "wrapper_attribute_name",
     )
 
-    _seen_model_names: ClassVar[set[str]] = set()
-
     def __init__(
         self,
         dto_factory: type[AbstractDTO],
@@ -91,6 +136,8 @@ class DTOBackend:
         is_data_field: bool,
         model_type: type[Any],
         wrapper_attribute_name: str | None,
+        *,
+        transfer_models: TransferModelRegistry | None = None,
     ) -> None:
         """Create dto backend instance.
 
@@ -102,6 +149,7 @@ class DTOBackend:
             model_type: Model type.
             wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure,
                 this is the name of the attribute that the data is stored in.
+            transfer_models: The transfer models of the application, shared by the backends that build the same one.
         """
         self.dto_factory: Final[type[AbstractDTO]] = dto_factory
         self.field_definition: Final[FieldDefinition] = field_definition
@@ -110,16 +158,25 @@ class DTOBackend:
         self.model_type: Final[type[Any]] = model_type
         self.wrapper_attribute_name: Final[str | None] = wrapper_attribute_name
         self.attribute_accessor = dto_factory.attribute_accessor
+        self._transfer_model_names: set[str] = set()
+        self._has_directional_fields = False
 
-        self.parsed_field_definitions = self.parse_model(
-            model_type=model_type,
-            exclude=self.dto_factory.config.exclude,
-            include=self.dto_factory.config.include,
-            rename_fields=self.dto_factory.config.rename_fields,
-        )
+        name = self._create_transfer_model_name()
+        self.parsed_field_definitions = self._parse_root_model(name)
+        if self.dto_factory.__schema_name__ and self._has_directional_fields:
+            name = f"{name}{self._direction_suffix}"
+            self._transfer_model_names.clear()
+            self.parsed_field_definitions = self._parse_root_model(name)
         self.transfer_model_type = self.create_transfer_model_type(
-            model_name=model_type.__name__, field_definitions=self.parsed_field_definitions
+            model_name=name, field_definitions=self.parsed_field_definitions
         )
+        if transfer_models is not None:
+            self.parsed_field_definitions, self.transfer_model_type = transfer_models.get_or_add(
+                key=(_dto_identity(dto_factory), model_type, _shape(self.parsed_field_definitions)),
+                dto_factory=dto_factory,
+                field_definitions=self.parsed_field_definitions,
+                transfer_model_type=self.transfer_model_type,
+            )
         self.dto_data_type: type[DTOData] | None = None
 
         if field_definition.is_subclass_of(DTOData):
@@ -140,6 +197,19 @@ class DTOBackend:
             field_definition=self.field_definition,
         )
 
+    @property
+    def _direction_suffix(self) -> str:
+        return "RequestBody" if self.is_data_field else "ResponseBody"
+
+    def _parse_root_model(self, name: str) -> tuple[TransferDTOFieldDefinition, ...]:
+        return self.parse_model(
+            model_type=self.model_type,
+            exclude=self.dto_factory.config.exclude,
+            include=self.dto_factory.config.include,
+            rename_fields=self.dto_factory.config.rename_fields,
+            name=name,
+        )
+
     def parse_model(
         self,
         model_type: Any,
@@ -147,12 +217,24 @@ class DTOBackend:
         include: Set[str],
         rename_fields: dict[str, str],
         nested_depth: int = 0,
+        name: str | None = None,
     ) -> tuple[TransferDTOFieldDefinition, ...]:
         """Reduce :attr:`model_type` to a tuple :class:`TransferDTOFieldDefinition` instances.
+
+        Args:
+            model_type: The model to reduce.
+            exclude: Names of the fields to exclude.
+            include: Names of the fields to include.
+            rename_fields: Serialization names by field name.
+            nested_depth: The nesting depth of ``model_type``.
+            name: The name of the transfer model of ``model_type``, prefix of the names of its nested transfer models.
+                Defaults to the name of the root transfer model.
 
         Returns:
         Fields for data transfer.
         """
+        if name is None:
+            name = self._create_transfer_model_name()
         defined_fields = []
         generic_field_definitions = list(FieldDefinition.from_annotation(model_type).generic_types or ())
         for field_definition in self.dto_factory.generate_field_definitions(model_type):
@@ -165,6 +247,7 @@ class DTOBackend:
             if _should_mark_private(field_definition, self.dto_factory.config.underscore_fields_private):
                 field_definition.dto_field.mark = Mark.PRIVATE
 
+            has_directional_fields = self._has_directional_fields
             try:
                 transfer_type = self._create_transfer_type(
                     field_definition=field_definition,
@@ -172,43 +255,47 @@ class DTOBackend:
                     include=include,
                     rename_fields=rename_fields,
                     field_name=field_definition.name,
-                    unique_name=field_definition.model_name,
+                    name=f"{name}.{_escape(field_definition.name)}",
                     nested_depth=nested_depth,
                 )
             except RecursionError:
                 continue
 
+            is_excluded = _should_exclude_field(
+                field_definition=field_definition, exclude=exclude, include=include, is_data_field=self.is_data_field
+            )
+            is_excluded_in_other_direction = _should_exclude_field(
+                field_definition=field_definition,
+                exclude=exclude,
+                include=include,
+                is_data_field=not self.is_data_field,
+            )
+            if is_excluded and is_excluded_in_other_direction:
+                self._has_directional_fields = has_directional_fields
+            elif is_excluded != is_excluded_in_other_direction:
+                self._has_directional_fields = True
             transfer_field_definition = TransferDTOFieldDefinition.from_dto_field_definition(
                 field_definition=field_definition,
                 serialization_name=rename_fields.get(field_definition.name),
                 transfer_type=transfer_type,
                 is_partial=self.dto_factory.config.partial,
-                is_excluded=_should_exclude_field(
-                    field_definition=field_definition,
-                    exclude=exclude,
-                    include=include,
-                    is_data_field=self.is_data_field,
-                ),
+                is_excluded=is_excluded,
             )
             defined_fields.append(transfer_field_definition)
         return tuple(defined_fields)
 
-    def _create_transfer_model_name(self, model_name: str) -> str:
-        long_name_prefix = self.handler_id.split("::")[0]
-        short_name_prefix = _camelize(long_name_prefix.split(".")[-1], True)
-
-        name_suffix = "RequestBody" if self.is_data_field else "ResponseBody"
-
-        if (short_name := f"{short_name_prefix}{model_name}{name_suffix}") not in self._seen_model_names:
-            name = short_name
-        elif (long_name := f"{long_name_prefix}{model_name}{name_suffix}") not in self._seen_model_names:
-            name = long_name
-        else:
-            name = unique_name_for_scope(long_name, self._seen_model_names)
-
-        self._seen_model_names.add(name)
-
-        return name
+    def _create_transfer_model_name(self) -> str:
+        if self.dto_factory.__schema_name__:
+            return self.dto_factory.__schema_name__
+        if _is_anonymous(self.dto_factory):
+            name = f"{_escape(self.model_type.__name__)}{self._direction_suffix}"
+            if fingerprint := _config_fingerprint(self.dto_factory, self.model_type):
+                name = f"{name}_{fingerprint}"
+            return name
+        name = _escape(self.dto_factory.__name__)
+        if self.model_type != getattr(self.dto_factory, "model_type", self.model_type):
+            name += _escape(self.model_type.__name__)
+        return f"{name}{self._direction_suffix}"
 
     def create_transfer_model_type(
         self,
@@ -218,30 +305,25 @@ class DTOBackend:
         """Create a model for data transfer.
 
         Args:
-            model_name: name for the type that should be unique across all transfer types.
+            model_name: name of the transfer model.
             field_definitions: field definitions for the container type.
 
         Returns:
             A ``BackendT`` class.
         """
-        # Only apply the custom __schema_name__ to the root transfer model.
-        # Nested models get their own generated name to avoid child $refs
-        # pointing to the parent's schema.
-        # model_name only equals model_type.__name__ for the root model.
-        # Nested models have a different name, so __schema_name__ won't
-        # override their generated schema name.
-        if model_name == self.model_type.__name__ and self.dto_factory.__schema_name__:
-            struct_name = self.dto_factory.__schema_name__
-        else:
-            struct_name = self._create_transfer_model_name(model_name)
+        if model_name in self._transfer_model_names:
+            model_name = unique_name_for_scope(model_name, self._transfer_model_names)
+        self._transfer_model_names.add(model_name)
 
+        owner = self.model_type if _is_anonymous(self.dto_factory) else self.dto_factory
         struct = _create_struct_for_field_definitions(
-            model_name=struct_name,
+            model_name=model_name,
+            module=f"{__name__}.{owner.__module__}",
             field_definitions=field_definitions,
             rename_strategy=self.dto_factory.config.rename_strategy,
             forbid_unknown_fields=self.dto_factory.config.forbid_unknown_fields,
         )
-        setattr(struct, "__schema_name__", struct_name)
+        setattr(struct, "__schema_name__", model_name)
         return struct
 
     def parse_raw(self, raw: bytes, asgi_connection: ASGIConnection) -> Struct | Collection[Struct]:
@@ -385,6 +467,16 @@ class DTOBackend:
             return self._create_collection_type
         return None
 
+    def _has_nested(self, field_definition: FieldDefinition) -> bool:
+        return self.dto_factory.detect_nested_field(field_definition) or any(
+            self._has_nested(inner_type) for inner_type in field_definition.inner_types
+        )
+
+    def _create_inner_names(self, name: str, inner_types: Sequence[FieldDefinition]) -> list[str]:
+        if sum(self._has_nested(inner_type) for inner_type in inner_types) > 1:
+            return [f"{name}.{i}" for i in range(len(inner_types))]
+        return [name] * len(inner_types)
+
     def _create_transfer_type(
         self,
         field_definition: FieldDefinition,
@@ -392,7 +484,7 @@ class DTOBackend:
         include: Set[str],
         rename_fields: dict[str, str],
         field_name: str,
-        unique_name: str,
+        name: str,
         nested_depth: int,
     ) -> CompositeType | SimpleType:
         exclude = _filter_nested_field(exclude, field_name)
@@ -405,7 +497,7 @@ class DTOBackend:
                 exclude=exclude,
                 include=include,
                 rename_fields=rename_fields,
-                unique_name=unique_name,
+                name=name,
                 nested_depth=nested_depth,
             )
 
@@ -415,18 +507,17 @@ class DTOBackend:
             if nested_depth == self.dto_factory.config.max_nested_depth:
                 raise RecursionError
 
-            unique_name = f"{unique_name}{field_definition.raw.__name__}"
-
             nested_field_definitions = self.parse_model(
                 model_type=field_definition.annotation,
                 exclude=exclude,
                 include=include,
                 rename_fields=rename_fields,
+                name=name,
                 nested_depth=nested_depth + 1,
             )
 
             transfer_model = NestedFieldInfo(
-                model=self.create_transfer_model_type(unique_name, nested_field_definitions),
+                model=self.create_transfer_model_type(name, nested_field_definitions),
                 field_definitions=nested_field_definitions,
             )
 
@@ -438,7 +529,7 @@ class DTOBackend:
         exclude: Set[str],
         include: Set[str],
         rename_fields: dict[str, str],
-        unique_name: str,
+        name: str,
         nested_depth: int,
     ) -> CollectionType:
         inner_types = field_definition.inner_types
@@ -447,7 +538,7 @@ class DTOBackend:
             exclude=exclude,
             include=include,
             field_name="0",
-            unique_name=f"{unique_name}_0",
+            name=name,
             nested_depth=nested_depth,
             rename_fields=rename_fields,
         )
@@ -461,25 +552,26 @@ class DTOBackend:
         exclude: Set[str],
         include: Set[str],
         rename_fields: dict[str, str],
-        unique_name: str,
+        name: str,
         nested_depth: int,
     ) -> MappingType:
-        inner_types = field_definition.inner_types
+        key_field, value_field = field_definition.inner_types or (FieldDefinition.from_annotation(Any),) * 2
+        key_name, value_name = self._create_inner_names(name, (key_field, value_field))
         key_type = self._create_transfer_type(
-            field_definition=inner_types[0] if inner_types else FieldDefinition.from_annotation(Any),
+            field_definition=key_field,
             exclude=exclude,
             include=include,
             field_name="0",
-            unique_name=f"{unique_name}_0",
+            name=key_name,
             nested_depth=nested_depth,
             rename_fields=rename_fields,
         )
         value_type = self._create_transfer_type(
-            field_definition=inner_types[1] if inner_types else FieldDefinition.from_annotation(Any),
+            field_definition=value_field,
             exclude=exclude,
             include=include,
             field_name="1",
-            unique_name=f"{unique_name}_1",
+            name=value_name,
             nested_depth=nested_depth,
             rename_fields=rename_fields,
         )
@@ -496,7 +588,7 @@ class DTOBackend:
         exclude: Set[str],
         include: Set[str],
         rename_fields: dict[str, str],
-        unique_name: str,
+        name: str,
         nested_depth: int,
     ) -> TupleType:
         inner_types = tuple(
@@ -505,11 +597,17 @@ class DTOBackend:
                 exclude=exclude,
                 include=include,
                 field_name=str(i),
-                unique_name=f"{unique_name}_{i}",
+                name=inner_name,
                 nested_depth=nested_depth,
                 rename_fields=rename_fields,
             )
-            for i, inner_type in enumerate(field_definition.inner_types)
+            for i, (inner_type, inner_name) in enumerate(
+                zip(
+                    field_definition.inner_types,
+                    self._create_inner_names(name, field_definition.inner_types),
+                    strict=True,
+                )
+            )
         )
         return TupleType(
             field_definition=field_definition,
@@ -523,7 +621,7 @@ class DTOBackend:
         exclude: Set[str],
         include: Set[str],
         rename_fields: dict[str, str],
-        unique_name: str,
+        name: str,
         nested_depth: int,
     ) -> UnionType:
         inner_types = tuple(
@@ -532,11 +630,17 @@ class DTOBackend:
                 exclude=exclude,
                 include=include,
                 field_name=str(i),
-                unique_name=f"{unique_name}_{i}",
+                name=inner_name,
                 nested_depth=nested_depth,
                 rename_fields=rename_fields,
             )
-            for i, inner_type in enumerate(field_definition.inner_types)
+            for i, (inner_type, inner_name) in enumerate(
+                zip(
+                    field_definition.inner_types,
+                    self._create_inner_names(name, field_definition.inner_types),
+                    strict=True,
+                )
+            )
         )
         return UnionType(
             field_definition=field_definition,
@@ -545,10 +649,81 @@ class DTOBackend:
         )
 
 
-def _camelize(value: str, capitalize_first_letter: bool) -> str:
-    return "".join(
-        word if index == 0 and not capitalize_first_letter else word.capitalize()
-        for index, word in enumerate(value.split("_"))
+def _escape(name_part: str) -> str:
+    return _INVALID_NAME_CHARACTER.sub(lambda match: f"_{ord(match.group()):x}", name_part)
+
+
+def _is_anonymous(dto_factory: type[AbstractDTO]) -> bool:
+    return "[" in dto_factory.__name__
+
+
+def _dto_identity(dto_factory: type[AbstractDTO]) -> Any:
+    if _is_anonymous(dto_factory):
+        return dto_factory.__bases__[0], dto_factory.config
+    return dto_factory
+
+
+def _config_fingerprint(dto_factory: type[AbstractDTO], model_type: type[Any]) -> str | None:
+    config = dto_factory.config
+    default = dto_factory.get_config_for_model_type(type(config)(), getattr(dto_factory, "model_type", model_type))
+    rendered = ";".join(
+        f"{name}={_render_config_value(getattr(config, name))}"
+        for name in sorted(config_field.name for config_field in fields(config))
+        if getattr(config, name) != getattr(default, name)
+    )
+    return hashlib.sha256(rendered.encode()).hexdigest()[:8] if rendered else None
+
+
+def _render_config_value(value: Any) -> str:
+    if isinstance(value, (set, frozenset)):
+        return f"{{{','.join(sorted(map(_render_config_value, value)))}}}"
+    if isinstance(value, Mapping):
+        items = sorted(f"{_render_config_value(key)}:{_render_config_value(item)}" for key, item in value.items())
+        return f"{{{','.join(items)}}}"
+    if isinstance(value, (list, tuple)):
+        return f"[{','.join(map(_render_config_value, value))}]"
+    if callable(value):
+        return f"{value.__module__}.{getattr(value, '__qualname__', type(value).__qualname__)}"
+    return repr(value)
+
+
+def _describe_dto(dto_factory: type[AbstractDTO]) -> str:
+    if _is_anonymous(dto_factory):
+        model_type = getattr(dto_factory, "model_type", object)
+        return f"'{dto_factory.__bases__[0].__qualname__}[{model_type.__module__}.{model_type.__qualname__}]'"
+    return f"'{dto_factory.__module__}.{dto_factory.__qualname__}'"
+
+
+def _iter_transfer_types(transfer_type: TransferType) -> Iterator[SimpleType]:
+    if isinstance(transfer_type, SimpleType):
+        yield transfer_type
+    elif isinstance(transfer_type, CollectionType):
+        yield from _iter_transfer_types(transfer_type.inner_type)
+    elif isinstance(transfer_type, MappingType):
+        yield from _iter_transfer_types(transfer_type.key_type)
+        yield from _iter_transfer_types(transfer_type.value_type)
+    elif isinstance(transfer_type, (TupleType, UnionType)):
+        for inner_type in transfer_type.inner_types:
+            yield from _iter_transfer_types(inner_type)
+
+
+def _iter_nested_field_info(field_definitions: tuple[TransferDTOFieldDefinition, ...]) -> Iterator[NestedFieldInfo]:
+    for field_definition in field_definitions:
+        for simple_type in _iter_transfer_types(field_definition.transfer_type):
+            if simple_type.nested_field_info is not None:
+                yield simple_type.nested_field_info
+
+
+def _shape(field_definitions: tuple[TransferDTOFieldDefinition, ...]) -> tuple[Any, ...]:
+    return tuple(
+        (
+            field_definition.name,
+            field_definition.is_excluded,
+            ()
+            if field_definition.is_excluded
+            else tuple(_shape(nested.field_definitions) for nested in _iter_nested_field_info((field_definition,))),
+        )
+        for field_definition in field_definitions
     )
 
 
@@ -607,6 +782,7 @@ def _create_struct_field_meta_for_field_definition(field_definition: TransferDTO
 def _create_struct_for_field_definitions(
     *,
     model_name: str,
+    module: str,
     field_definitions: tuple[TransferDTOFieldDefinition, ...],
     rename_strategy: RenameStrategy | dict[str, str] | None,
     forbid_unknown_fields: bool,
@@ -637,6 +813,7 @@ def _create_struct_for_field_definitions(
     return defstruct(
         model_name,
         struct_fields,
+        module=module,
         frozen=True,
         kw_only=True,
         rename=rename_strategy,
