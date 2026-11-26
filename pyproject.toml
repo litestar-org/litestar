@@ -216,6 +216,7 @@ filterwarnings = [
   "ignore::DeprecationWarning:google",
   "ignore::DeprecationWarning:sphinxcontrib",
   "ignore:.*'copy_scope' not set:DeprecationWarning",
+  "ignore:.*DTOConfig.experimental_codegen_backend:DeprecationWarning",
   "ignore:.*Deprecated in litestar:DeprecationWarning",
   "ignore:.*Call to deprecated reset:DeprecationWarning", # redis
   "ignore::pydantic.PydanticDeprecatedSince20::",
