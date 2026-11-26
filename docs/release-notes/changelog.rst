@@ -6,6 +6,26 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: Enforce ``Annotated`` constraints on every type a DTO rewrites
+        :type: bugfix
+        :breaking:
+        :issue: 4181, 4195, 5025, 5031, 5051
+
+        Constraints from ``msgspec.Meta``, ``annotated_types`` or parameter definitions are
+        now enforced on every part of a field's type where msgspec can express them, also for
+        partial DTOs; violating requests get a ``400``. An inbound DTO raises
+        :exc:`~litestar.exceptions.InvalidAnnotationException` at startup, naming the field,
+        for a ``Meta`` msgspec does not support where it is placed, such as
+        ``Annotated[Optional[str], Meta(min_length=1)]``, and for an untagged union of models.
+        See :ref:`usage/dto/1-abstract-dto:Constraints`.
+
+    .. change:: DTO: ``MsgspecDTO.generate_field_definitions`` keeps the parsed ``kwarg_definition``
+        :type: misc
+        :breaking:
+
+        :meth:`~litestar.dto.msgspec_dto.MsgspecDTO.generate_field_definitions` keeps the
+        ``kwarg_definition`` parsed from the annotation instead of one built from ``msgspec.Meta``.
+
     .. change:: DTO: Use a DTO backend without a request
         :type: feature
 
