@@ -145,9 +145,9 @@ class TransferFunctionFactory:
         self._indentation -= 1
 
     @contextmanager
-    def _try_except_pass(self, exception: str, handler: str = "pass") -> Generator[None, None, None]:
-        """Enter a `try / except / pass` block. Content written while inside this context
-        will go into the `try` block.
+    def _try_except(self, exception: str, handler: str = "pass") -> Generator[None, None, None]:
+        """Enter a `try / except` block. Content written while inside this context
+        will go into the `try` block; ``handler`` is the statement of the `except` block.
         """
         with self._start_block("try:"):
             yield
@@ -172,7 +172,7 @@ class TransferFunctionFactory:
         # the happy path of a try/except will be faster than that, so we use that if
         # we expect a value
         else:
-            with self._try_except_pass("KeyError"):
+            with self._try_except("KeyError"):
                 yield value_expr
 
     def _attribute_expr(self, source_name: str, field_name: str) -> str:
@@ -203,16 +203,18 @@ class TransferFunctionFactory:
         # the happy path of a try/except will be faster than that, so we use that if
         # we expect a value
         else:
-            with self._try_except_pass("AttributeError", on_missing):
+            with self._try_except("AttributeError", on_missing):
                 yield value_expr
 
     def _static_default_expr(self, field_definition: TransferDTOFieldDefinition) -> str | None:
         default = UNSET if field_definition.is_partial else field_definition.default
         if default is Empty or isinstance(default, (list, dict, set, bytearray)):
             return None
-        if default is not None and default is not UNSET:
-            return self._add_to_fn_globals("default", default)
-        return str(default)
+        if default is None:
+            return "None"
+        if default is UNSET:
+            return "UNSET"
+        return self._add_to_fn_globals("default", default)
 
     def _keyword_value_expr(self, source_name: str, field_definition: TransferDTOFieldDefinition) -> str:
         if (default := self._static_default_expr(field_definition)) is None:
