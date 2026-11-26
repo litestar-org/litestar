@@ -9,12 +9,15 @@
     .. change:: DTO: Store DTO backends on the route handler
         :type: misc
         :breaking:
+        :pr: 5266
 
-        A route handler keeps the backends of its DTOs.
-        ``AbstractDTO.create_for_field_definition`` returns the backend
-        it builds instead of storing it on the DTO class, and
-        ``AbstractDTO.create_openapi_schema`` takes the ``route_handler`` instead of a
-        ``handler_id``.
+        A route handler keeps the backends of its DTOs, instead of the DTO class keeping
+        them for every handler. This changes two methods that custom DTOs may override
+        or call:
+        :meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` returns
+        the backend it builds, where it returned ``None``, and
+        :meth:`~litestar.dto.base_dto.AbstractDTO.create_openapi_schema` takes the
+        ``route_handler`` instead of a ``handler_id``.
 
     .. change:: DTO: Remove the non-codegen DTO backend
         :type: misc
