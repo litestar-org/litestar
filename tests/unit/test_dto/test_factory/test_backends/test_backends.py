@@ -20,7 +20,7 @@ from litestar.dto import DataclassDTO, DTOConfig, DTOField, MsgspecDTO
 from litestar.dto._backend import DTOBackend, _create_struct_field_meta_for_field_definition
 from litestar.dto._types import CollectionType, SimpleType, TransferDTOFieldDefinition
 from litestar.dto.data_structures import DTOFieldDefinition
-from litestar.enums import MediaType
+from litestar.enums import MediaType, RequestEncodingType
 from litestar.exceptions import SerializationException
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.reference import Reference
@@ -758,3 +758,59 @@ class Outer:
             wrapper_attribute_name=None,
             is_data_field=True,
         )
+
+
+class Cents:
+    def __init__(self, value: int) -> None:
+        self.value = value
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, Cents) and other.value == self.value
+
+
+@dataclass
+class Price:
+    amount: Cents
+
+
+def test_backend_populate_data_from_raw_without_connection() -> None:
+    backend = DataclassDTO[DC].create_for_field_definition(FieldDefinition.from_annotation(JSONBody[DC], name="data"))
+
+    assert backend.populate_data_from_raw(RAW) == STRUCTURED
+
+
+def test_backend_populate_data_from_builtins_without_connection() -> None:
+    backend = DataclassDTO[DC].create_for_field_definition(FieldDefinition.from_annotation(JSONBody[DC], name="data"))
+
+    assert backend.populate_data_from_builtins(DESTRUCTURED) == STRUCTURED
+
+
+def test_backend_encode_data_without_connection() -> None:
+    backend = DataclassDTO[DC].create_for_field_definition(FieldDefinition.from_annotation(DC))
+
+    encoded = backend.encode_data(STRUCTURED)
+
+    assert isinstance(encoded, backend.transfer_model_type)
+    assert to_builtins(encoded) == DESTRUCTURED
+
+
+def test_backend_populate_data_from_raw_with_media_type() -> None:
+    backend = DataclassDTO[DC].create_for_field_definition(FieldDefinition.from_annotation(JSONBody[DC], name="data"))
+
+    assert backend.populate_data_from_raw(MSGPACK_RAW, media_type=RequestEncodingType.MESSAGEPACK) == STRUCTURED
+
+
+@pytest.mark.parametrize(
+    "populate",
+    [
+        lambda backend: backend.populate_data_from_raw(b'{"amount":1250}'),
+        lambda backend: backend.populate_data_from_builtins({"amount": 1250}),
+    ],
+)
+def test_backend_type_decoders_given_at_construction(populate: Callable[[DTOBackend], Any]) -> None:
+    backend = DataclassDTO[Price].create_for_field_definition(
+        FieldDefinition.from_annotation(JSONBody[Price], name="data"),
+        type_decoders=[(lambda target_type: target_type is Cents, lambda target_type, value: target_type(value))],
+    )
+
+    assert populate(backend) == Price(amount=Cents(1250))

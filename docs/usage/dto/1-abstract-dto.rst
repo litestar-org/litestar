@@ -408,3 +408,16 @@ The example sets up a ``/users`` endpoint where a ``User`` object is returned wr
 
 The ``Response`` object encapsulates the ``User`` object in its ``content`` attribute and allows us to configure the
 response received by the client. In this case, we add a custom header.
+
+Using a DTO outside a request
+-----------------------------
+
+:meth:`~litestar.dto.base_dto.AbstractDTO.create_for_field_definition` returns a backend that can also be used with no
+application or request, for example in a worker or a CLI. Annotate the field with a body type such as ``JSONBody`` to
+decode data the way a handler's ``data`` is decoded, and with the bare model to encode data the way a handler's return
+value is encoded. Raw data is read as JSON unless a ``media_type`` is passed, and ``type_decoders`` can be given when the
+backend is created.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/outside_a_request.py
+    :caption: Using a DTO outside a request
+    :language: python
