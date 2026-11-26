@@ -6,6 +6,57 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: Honour ``DTOField`` marks given as a string
+        :type: bugfix
+        :breaking:
+        :pr: 5271
+
+        A mark given to :class:`~litestar.dto.field.DTOField` as a string, such as
+        ``DTOField(mark="private")``, was ignored; it is now converted to
+        :class:`~litestar.dto.field.Mark`, and an unknown mark raises :exc:`ValueError`. With
+        ``forbid_unknown_fields=True``, clients sending such a field get a ``400``, and a
+        ``"private"`` or ``"read-only"`` field now needs a default.
+
+    .. change:: DTO: Stop requiring properties and computed fields in request data
+        :type: bugfix
+        :pr: 5271
+
+        ``DataclassDTO`` and ``MsgspecDTO`` required a model's properties in request data,
+        and ``PydanticDTO`` its computed fields. Both are read-only and are no longer part of
+        the inbound model.
+
+    .. change:: DTO: Apply field filtering to nested models in fixed-length tuples
+        :type: bugfix
+        :breaking:
+        :pr: 5271
+        :issue: 3342
+
+        DTOs now filter and rename models nested in fixed-length tuples such as
+        ``tuple[Model, int]``, and pass ``Model`` instances to handlers. Returning a tuple whose
+        length differs from the annotation now fails with a ``500``.
+
+    .. change:: DTO: Enforce ``Annotated`` constraints on every type a DTO rewrites
+        :type: bugfix
+        :breaking:
+        :pr: 5271
+        :issue: 4181, 4195, 5025, 5031, 5051
+
+        Constraints from ``msgspec.Meta``, ``annotated_types`` or parameter definitions are
+        now enforced on every part of a field's type where msgspec can express them, also for
+        partial DTOs; violating requests get a ``400``. An inbound DTO raises
+        :exc:`~litestar.exceptions.InvalidAnnotationException` at startup, naming the field,
+        for a ``Meta`` msgspec does not support where it is placed, such as
+        ``Annotated[Optional[str], Meta(min_length=1)]``, and for an untagged union of models.
+        See :ref:`usage/dto/1-abstract-dto:Constraints`.
+
+    .. change:: DTO: ``MsgspecDTO.generate_field_definitions`` keeps the parsed ``kwarg_definition``
+        :type: misc
+        :breaking:
+        :pr: 5271
+
+        :meth:`~litestar.dto.msgspec_dto.MsgspecDTO.generate_field_definitions` keeps the
+        ``kwarg_definition`` parsed from the annotation instead of one built from ``msgspec.Meta``.
+
     .. change:: DTO: Use a DTO backend without a request
         :type: feature
         :pr: 5270

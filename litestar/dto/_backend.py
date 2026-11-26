@@ -7,6 +7,7 @@ from __future__ import annotations
 import hashlib
 import re
 from collections.abc import Mapping
+from contextlib import suppress
 from dataclasses import fields, replace
 from functools import partial
 from typing import (
@@ -23,6 +24,7 @@ import msgspec
 from msgspec import UNSET, Struct, UnsetType, convert, defstruct, field
 
 from litestar.dto._codegen_backend import TransferFunctionCache, TransferFunctionFactory
+from litestar.dto._msgspec_rejection import find_rejected_field, rejected_field_message, rejection_hint
 from litestar.dto._types import (
     CollectionType,
     CompositeType,
@@ -37,7 +39,7 @@ from litestar.dto._types import (
 from litestar.dto.data_structures import DTOData, DTOFieldDefinition
 from litestar.dto.field import Mark
 from litestar.enums import RequestEncodingType
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions import ImproperlyConfiguredException, InvalidAnnotationException
 from litestar.params import KwargDefinition
 from litestar.serialization import decode_json, decode_msgpack, default_deserializer
 from litestar.types import Empty
@@ -204,6 +206,40 @@ class DTOBackend:
             destination_type=self.transfer_model_type,
             field_definition=self.field_definition,
         )
+        if self.is_data_field and self._decodes_with_annotation():
+            try:
+                msgspec.json.Decoder(self.annotation, strict=False)
+            except TypeError as exc:
+                raise InvalidAnnotationException(self._startup_error_message(exc)) from exc
+
+    def _startup_error_message(self, exc: TypeError) -> str:
+        prefix = "msgspec cannot decode the transfer model of"
+        with suppress(Exception):
+            rejected = find_rejected_field(self.model_type, self.parsed_field_definitions, self.transfer_model_type)
+            if rejected is not None:
+                owner, field_definition, field_exc = rejected
+                message = rejected_field_message(
+                    prefix,
+                    self.model_type,
+                    field_definition,
+                    field_exc,
+                    owner=owner,
+                    hint=rejection_hint(field_definition),
+                )
+                return message if self.handler_id is None else f"{message} (handler {self.handler_id!r})"
+        return f"{prefix} {self.model_type.__name__!r}: {exc}"
+
+    def _decodes_with_annotation(self) -> bool:
+        from litestar.dto.base_dto import AbstractDTO
+
+        return (
+            self.dto_factory.decode_bytes is AbstractDTO.decode_bytes
+            and self.dto_factory.decode_builtins is AbstractDTO.decode_builtins
+            and all(
+                getattr(type(self), name) is getattr(DTOBackend, name)
+                for name in ("parse_raw", "parse_builtins", "populate_data_from_raw", "populate_data_from_builtins")
+            )
+        )
 
     @property
     def _direction_suffix(self) -> str:
@@ -330,6 +366,7 @@ class DTOBackend:
             field_definitions=field_definitions,
             rename_strategy=self.dto_factory.config.rename_strategy,
             forbid_unknown_fields=self.dto_factory.config.forbid_unknown_fields,
+            is_data_field=self.is_data_field,
         )
         setattr(struct, "__schema_name__", model_name)
         return struct
@@ -785,25 +822,26 @@ def _create_msgspec_field(field_definition: TransferDTOFieldDefinition) -> Any:
     return field(**kwargs)
 
 
-def _create_struct_field_meta_for_field_definition(field_definition: TransferDTOFieldDefinition) -> msgspec.Meta | None:
+def _derived_constraint_kwargs(field_definition: FieldDefinition) -> dict[str, Any]:
     if (kwarg_definition := field_definition.kwarg_definition) is None or not isinstance(
         kwarg_definition, KwargDefinition
     ):
-        return None
+        return {}
 
-    return msgspec.Meta(
-        description=kwarg_definition.description,
-        examples=[e.value for e in kwarg_definition.examples or []],
-        ge=kwarg_definition.ge,
-        gt=kwarg_definition.gt,
-        le=kwarg_definition.le,
-        lt=kwarg_definition.lt,
-        max_length=kwarg_definition.max_length if not field_definition.is_partial else None,
-        min_length=kwarg_definition.min_length if not field_definition.is_partial else None,
-        multiple_of=kwarg_definition.multiple_of,
-        pattern=kwarg_definition.pattern,
-        title=kwarg_definition.title,
-    )
+    kwargs = {
+        "description": kwarg_definition.description,
+        "examples": [e.value for e in kwarg_definition.examples] if kwarg_definition.examples else None,
+        "ge": kwarg_definition.ge,
+        "gt": kwarg_definition.gt,
+        "le": kwarg_definition.le,
+        "lt": kwarg_definition.lt,
+        "max_length": kwarg_definition.max_length,
+        "min_length": kwarg_definition.min_length,
+        "multiple_of": kwarg_definition.multiple_of,
+        "pattern": kwarg_definition.pattern,
+        "title": kwarg_definition.title,
+    }
+    return {name: value for name, value in kwargs.items() if value is not None}
 
 
 def _create_struct_for_field_definitions(
@@ -813,6 +851,7 @@ def _create_struct_for_field_definitions(
     field_definitions: tuple[TransferDTOFieldDefinition, ...],
     rename_strategy: RenameStrategy | dict[str, str] | None,
     forbid_unknown_fields: bool,
+    is_data_field: bool,
 ) -> type[Struct]:
     struct_fields: list[tuple[str, type] | tuple[str, type, type]] = []
 
@@ -820,14 +859,13 @@ def _create_struct_for_field_definitions(
         if field_definition.is_excluded:
             continue
 
-        field_type = _create_transfer_model_type_annotation(field_definition.transfer_type)
+        field_type = _create_transfer_model_type_annotation(
+            field_definition.transfer_type, field_definition.passthrough_constraints, is_data_field
+        )
         if field_definition.is_partial:
             field_type = Union[field_type, UnsetType]
 
-        if field_definition.passthrough_constraints:
-            if (field_meta := _create_struct_field_meta_for_field_definition(field_definition)) is not None:
-                field_type = Annotated[field_type, field_meta]
-        elif field_definition.kwarg_definition:
+        if not field_definition.passthrough_constraints and field_definition.kwarg_definition:
             field_type = Annotated[field_type, field_definition.kwarg_definition]
 
         struct_fields.append(
@@ -917,51 +955,131 @@ def _should_exclude_field(
     return not is_data_field and field_definition.dto_field.mark is Mark.WRITE_ONLY
 
 
-def _create_transfer_model_type_annotation(transfer_type: TransferType) -> Any:
+_SCHEMA_META_ATTRIBUTES: Final = ("title", "description", "examples", "extra_json_schema", "extra")
+
+
+def _msgspec_accepts(annotation: Any, own: tuple[msgspec.Meta, ...], constraint_kwargs: dict[str, Any]) -> bool:
+    try:
+        msgspec.json.Decoder(Annotated[(annotation, *own, msgspec.Meta(**constraint_kwargs))])
+    except (TypeError, ValueError):
+        return False
+    return True
+
+
+def _constraints_for_field_definition(field_definition: FieldDefinition, annotation: Any) -> tuple[msgspec.Meta, ...]:
+    own = tuple(m for m in field_definition.metadata if isinstance(m, msgspec.Meta))
+    derived = {
+        name: value
+        for name, value in _derived_constraint_kwargs(field_definition).items()
+        if all(getattr(m, name) is None for m in own)
+    }
+    if derived and not _msgspec_accepts(annotation, own, derived):
+        derived = {
+            name: value
+            for name, value in derived.items()
+            if name in _SCHEMA_META_ATTRIBUTES or _msgspec_accepts(annotation, own, {name: value})
+        }
+        if not _msgspec_accepts(annotation, own, derived):
+            derived = {name: value for name, value in derived.items() if name in _SCHEMA_META_ATTRIBUTES}
+    return (*own, msgspec.Meta(**derived)) if derived else own
+
+
+def _schema_only_constraints(constraints: tuple[msgspec.Meta, ...]) -> tuple[msgspec.Meta, ...]:
+    return tuple(
+        msgspec.Meta(**schema_attributes)
+        for meta in constraints
+        if (
+            schema_attributes := {
+                name: value for name in _SCHEMA_META_ATTRIBUTES if (value := getattr(meta, name)) is not None
+            }
+        )
+    )
+
+
+def _create_transfer_model_type_annotation(
+    transfer_type: TransferType, passthrough_constraints: bool = True, is_data_field: bool = True
+) -> Any:
     """Create a type annotation for a transfer model.
 
     Uses the parsed type that originates from the data model and the transfer model generated to represent a nested
     type to reconstruct the type annotation for the transfer model.
     """
+    annotation = _create_bare_transfer_model_type_annotation(transfer_type, passthrough_constraints, is_data_field)
+    if not passthrough_constraints or not (
+        constraints := _constraints_for_field_definition(transfer_type.field_definition, annotation)
+    ):
+        return annotation
+    constrained: Any = Annotated[(annotation, *constraints)]
+    if is_data_field:
+        return constrained
+    try:
+        msgspec.json.Decoder(constrained)
+    except TypeError:
+        schema_only = _schema_only_constraints(constraints)
+        return Annotated[(annotation, *schema_only)] if schema_only else annotation
+    return constrained
+
+
+def _create_bare_transfer_model_type_annotation(
+    transfer_type: TransferType, passthrough_constraints: bool, is_data_field: bool
+) -> Any:
     if isinstance(transfer_type, SimpleType):
         if transfer_type.nested_field_info:
             return transfer_type.nested_field_info.model
         return transfer_type.field_definition.annotation
 
     if isinstance(transfer_type, CollectionType):
-        return _create_transfer_model_collection_type(transfer_type)
+        return _create_transfer_model_collection_type(transfer_type, passthrough_constraints, is_data_field)
 
     if isinstance(transfer_type, MappingType):
-        return _create_transfer_model_mapping_type(transfer_type)
+        return _create_transfer_model_mapping_type(transfer_type, passthrough_constraints, is_data_field)
 
     if isinstance(transfer_type, TupleType):
-        return _create_transfer_model_tuple_type(transfer_type)
+        return _create_transfer_model_tuple_type(transfer_type, passthrough_constraints, is_data_field)
 
     if isinstance(transfer_type, UnionType):
-        return _create_transfer_model_union_type(transfer_type)
+        return _create_transfer_model_union_type(transfer_type, passthrough_constraints, is_data_field)
 
     raise RuntimeError(f"Unexpected transfer type: {type(transfer_type)}")
 
 
-def _create_transfer_model_collection_type(transfer_type: CollectionType) -> Any:
+def _create_transfer_model_collection_type(
+    transfer_type: CollectionType, passthrough_constraints: bool, is_data_field: bool
+) -> Any:
     generic_collection_type = transfer_type.field_definition.safe_generic_origin
-    inner_type = _create_transfer_model_type_annotation(transfer_type.inner_type)
+    inner_type = _create_transfer_model_type_annotation(
+        transfer_type.inner_type, passthrough_constraints, is_data_field
+    )
     if transfer_type.field_definition.origin is tuple:
         return generic_collection_type[inner_type, ...]
     return generic_collection_type[inner_type]
 
 
-def _create_transfer_model_tuple_type(transfer_type: TupleType) -> Any:
-    inner_types = tuple(_create_transfer_model_type_annotation(t) for t in transfer_type.inner_types)
+def _create_transfer_model_tuple_type(
+    transfer_type: TupleType, passthrough_constraints: bool, is_data_field: bool
+) -> Any:
+    inner_types = tuple(
+        _create_transfer_model_type_annotation(t, passthrough_constraints, is_data_field)
+        for t in transfer_type.inner_types
+    )
     return transfer_type.field_definition.safe_generic_origin[inner_types]
 
 
-def _create_transfer_model_union_type(transfer_type: UnionType) -> Any:
-    inner_types = tuple(_create_transfer_model_type_annotation(t) for t in transfer_type.inner_types)
+def _create_transfer_model_union_type(
+    transfer_type: UnionType, passthrough_constraints: bool, is_data_field: bool
+) -> Any:
+    inner_types = tuple(
+        _create_transfer_model_type_annotation(t, passthrough_constraints, is_data_field)
+        for t in transfer_type.inner_types
+    )
     return transfer_type.field_definition.safe_generic_origin[inner_types]
 
 
-def _create_transfer_model_mapping_type(transfer_type: MappingType) -> Any:
-    key_type = _create_transfer_model_type_annotation(transfer_type.key_type)
-    value_type = _create_transfer_model_type_annotation(transfer_type.value_type)
+def _create_transfer_model_mapping_type(
+    transfer_type: MappingType, passthrough_constraints: bool, is_data_field: bool
+) -> Any:
+    key_type = _create_transfer_model_type_annotation(transfer_type.key_type, passthrough_constraints, is_data_field)
+    value_type = _create_transfer_model_type_annotation(
+        transfer_type.value_type, passthrough_constraints, is_data_field
+    )
     return transfer_type.field_definition.safe_generic_origin[key_type, value_type]

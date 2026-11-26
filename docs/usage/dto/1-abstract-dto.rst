@@ -44,6 +44,9 @@ configuration.
 Fields marked as ``"private"`` or ``"read-only"`` will not be parsed from client data into the user model, and
 ``"private"`` fields are never serialized into return data.
 
+A mark can also be declared in the annotation with :class:`DTOField <litestar.dto.field.DTOField>`, as a
+:class:`Mark <litestar.dto.field.Mark>` member or as its string value: ``Annotated[str, DTOField(mark="private")]``.
+
 .. literalinclude:: /examples/data_transfer_objects/factory/marking_fields.py
     :caption: Marking fields
     :language: python
@@ -96,7 +99,8 @@ represent fields of the ``Address`` object nested inside the ``User`` object, an
     Given a generic type, with an arbitrary number of type parameters (e.g., ``GenericType[Type0, Type1, ..., TypeN]``),
     we use the index of the type parameter to indicate which type the exclusion should refer to. For example, ``a.0.b``,
     excludes the ``b`` field from the first type parameter of ``a``, ``a.1.b`` excludes the ``b`` field from the second
-    type parameter of ``a``, and so on.
+    type parameter of ``a``, and so on. For a fixed-length tuple such as ``tuple[Dog, Cat]``, the index is the position
+    of the member: ``pets.0.id`` refers to ``Dog.id`` and ``pets.1.id`` to ``Cat.id``.
 
 Renaming fields
 ---------------
@@ -141,6 +145,37 @@ However, we annotate the handler with the ``Foo`` type. This will raise an error
     litestar.exceptions.dto.InvalidAnnotationException: DTO narrowed with
     '<class 'docs.examples.data_transfer_objects.factory.type_checking.User'>', handler type is
     '<class 'docs.examples.data_transfer_objects.factory.type_checking.Foo'>'
+
+Constraints
+-----------
+
+Constraints declared with ``msgspec.Meta``, ``annotated_types`` metadata or a parameter definition such as
+``Parameter(ge=1)`` are validated on inbound data wherever they are declared: on the field, on collection items,
+mapping keys and values, and tuple and union members.
+
+.. code-block:: python
+
+    from dataclasses import dataclass, field
+    from typing import Annotated
+
+    from msgspec import Meta
+
+
+    @dataclass
+    class User:
+        name: Annotated[str, Meta(min_length=2)]
+        nickname: Annotated[str, Meta(pattern="^[a-z]+$")] | None = None
+        tags: list[Annotated[str, Meta(max_length=10)]] = field(default_factory=list)
+
+A request violating them receives a ``400 Bad Request`` response; with ``partial=True``, only the fields sent are
+validated. Data returned from a handler is not validated.
+
+A ``msgspec.Meta`` stays where it is written. If msgspec does not support it there, as in
+``Annotated[str | None, Meta(min_length=2)]``, a DTO for inbound data raises
+:exc:`~litestar.exceptions.InvalidAnnotationException` at startup, naming the field: attach it to the member, as
+``nickname`` does. Other constraints are enforced where msgspec can express them, and not otherwise, such as ``gt`` on
+a ``Decimal``; a ``msgspec.Meta`` wins over a conflicting one. DTO classes that decode the request body themselves, by
+overriding ``decode_bytes`` or ``decode_builtins``, are not checked at startup.
 
 Nested fields
 -------------

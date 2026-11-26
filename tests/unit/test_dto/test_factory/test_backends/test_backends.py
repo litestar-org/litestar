@@ -6,10 +6,13 @@ import inspect
 import re
 from collections.abc import Callable
 from dataclasses import dataclass, field, make_dataclass
+from datetime import date
+from decimal import Decimal
 from types import ModuleType
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Annotated, Optional, Union
 from unittest.mock import MagicMock
 
+import annotated_types
 import msgspec
 import pytest
 from msgspec import Meta, Struct, to_builtins
@@ -17,11 +20,11 @@ from msgspec import Meta, Struct, to_builtins
 from litestar import Litestar, Request, get, post
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.dto import DataclassDTO, DTOConfig, DTOField, MsgspecDTO
-from litestar.dto._backend import DTOBackend, _create_struct_field_meta_for_field_definition
+from litestar.dto._backend import DTOBackend, _constraints_for_field_definition, _derived_constraint_kwargs
 from litestar.dto._types import CollectionType, SimpleType, TransferDTOFieldDefinition
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.enums import MediaType, RequestEncodingType
-from litestar.exceptions import SerializationException
+from litestar.exceptions import InvalidAnnotationException, SerializationException
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.reference import Reference
 from litestar.openapi.spec.schema import Schema
@@ -651,7 +654,7 @@ dto_type = DataclassDTO[Model]
         ({"pattern": "test"},),
     ),
 )
-def test_create_struct_field_meta_for_field_definition(constraint_kwargs: Any) -> None:
+def test_derived_constraint_kwargs(constraint_kwargs: Any) -> None:
     mock_field = MagicMock(spec=TransferDTOFieldDefinition, is_partial=False)
     mock_field.kwarg_definition = KwargDefinition(
         description="test",
@@ -659,12 +662,12 @@ def test_create_struct_field_meta_for_field_definition(constraint_kwargs: Any) -
         title="test",
         **constraint_kwargs,
     )
-    assert _create_struct_field_meta_for_field_definition(mock_field) == Meta(
-        description="test",
-        examples=[1],
-        title="test",
+    assert _derived_constraint_kwargs(mock_field) == {
+        "description": "test",
+        "examples": [1],
+        "title": "test",
         **constraint_kwargs,
-    )
+    }
 
 
 @pytest.mark.parametrize(
@@ -814,6 +817,77 @@ def test_backend_type_decoders_given_at_construction(populate: Callable[[DTOBack
     )
 
     assert populate(backend) == Price(amount=Cents(1250))
+
+
+@pytest.mark.parametrize(
+    "annotation, expected",
+    [
+        pytest.param(Annotated[int, annotated_types.Ge(1)], (Meta(ge=1),), id="derived"),
+        pytest.param(Annotated[int, Meta(ge=1), annotated_types.Ge(3)], (Meta(ge=1),), id="own_meta_wins"),
+        pytest.param(
+            Annotated[int, Meta(ge=1), annotated_types.Le(5)], (Meta(ge=1), Meta(le=5)), id="own_meta_and_derived"
+        ),
+        pytest.param(Annotated[int, Meta(gt=0), annotated_types.Ge(5)], (Meta(gt=0),), id="own_meta_conflict"),
+        pytest.param(Annotated[Decimal, annotated_types.Gt(0)], (), id="derived_rejected_type"),
+        pytest.param(Annotated[int, annotated_types.Ge(1.5)], (), id="derived_rejected_value"),
+        pytest.param(Annotated[date, annotated_types.Ge(date(2020, 1, 1))], (), id="derived_not_numeric"),
+        pytest.param(Annotated[int, annotated_types.Ge(1), annotated_types.Gt(0)], (), id="derived_conflict"),
+        pytest.param(Annotated[str, KwargDefinition(min_length=2, ge=1)], (Meta(min_length=2),), id="partly_rejected"),
+    ],
+)
+def test_constraints_for_field_definition(annotation: Any, expected: tuple[Meta, ...]) -> None:
+    field_definition = FieldDefinition.from_annotation(annotation)
+    assert _constraints_for_field_definition(field_definition, field_definition.annotation) == expected
+
+
+@dataclass
+class UnionMemberA:
+    a: int
+
+
+@dataclass
+class UnionMemberB:
+    b: int
+
+
+@dataclass
+class UnionHolder:
+    f: Union[UnionMemberA, UnionMemberB]
+
+
+_UNION_HOLDER_BACKEND_KWARGS: dict[str, Any] = {
+    "dto_factory": DataclassDTO[UnionHolder],
+    "field_definition": FieldDefinition.from_annotation(UnionHolder),
+    "model_type": UnionHolder,
+    "wrapper_attribute_name": None,
+    "is_data_field": True,
+}
+
+
+@pytest.mark.parametrize(
+    "method_name", ["parse_raw", "parse_builtins", "populate_data_from_raw", "populate_data_from_builtins"]
+)
+def test_backend_subclass_with_own_parsing_is_not_checked(method_name: str) -> None:
+    own_parsing_backend = type("OwnParsingBackend", (DTOBackend,), {method_name: lambda self, *args: None})
+
+    own_parsing_backend(**_UNION_HOLDER_BACKEND_KWARGS)
+    with pytest.raises(InvalidAnnotationException):
+        DTOBackend(**_UNION_HOLDER_BACKEND_KWARGS)
+
+
+def test_startup_error_falls_back_to_msgspec_message_when_field_search_fails(monkeypatch: pytest.MonkeyPatch) -> None:
+    def failing_search(*args: Any) -> Any:
+        raise KeyError("f")
+
+    monkeypatch.setattr("litestar.dto._backend.find_rejected_field", failing_search)
+
+    with pytest.raises(InvalidAnnotationException) as exc_info:
+        DTOBackend(**_UNION_HOLDER_BACKEND_KWARGS)
+
+    assert isinstance(exc_info.value.__cause__, TypeError)
+    assert (
+        str(exc_info.value) == f"msgspec cannot decode the transfer model of 'UnionHolder': {exc_info.value.__cause__}"
+    )
 
 
 def test_create_for_annotation() -> None:

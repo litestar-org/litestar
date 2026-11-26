@@ -5,13 +5,14 @@ from dataclasses import replace
 from typing import TYPE_CHECKING, Annotated, ClassVar
 from unittest.mock import ANY
 
+import annotated_types
 import pytest
 from msgspec import Meta, Struct, field
 
 from litestar import Litestar, post
 from litestar.dto import DTOField, Mark, MsgspecDTO, dto_field
 from litestar.dto.data_structures import DTOFieldDefinition
-from litestar.params import JSONBody
+from litestar.params import JSONBody, KwargDefinition
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
@@ -229,3 +230,16 @@ def test_msgspec_dto_with_classvar() -> None:
     # Only the regular field should be included, not the ClassVar
     assert len(field_defs) == 1
     assert field_defs[0].name == "regular_field"
+
+
+def test_msgspec_dto_keeps_parsed_kwarg_definition() -> None:
+    class Foo(Struct):
+        a: Annotated[str, Meta(min_length=1)] | None
+        b: Annotated[str, annotated_types.MinLen(5)]
+        c: Annotated[int, Meta(extra=dto_field("read-only"))] = 1
+
+    field_defs = {f.name: f for f in MsgspecDTO[Foo].generate_field_definitions(Foo)}
+
+    assert field_defs["a"].kwarg_definition is None
+    assert field_defs["b"].kwarg_definition == KwargDefinition(min_length=5)
+    assert field_defs["c"].dto_field.mark is Mark.READ_ONLY
