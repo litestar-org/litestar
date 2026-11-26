@@ -200,3 +200,50 @@ def test_generated_source_grows_linearly_with_nested_depth() -> None:
 
     assert counts[8] - counts[4] == 2 * (counts[4] - counts[2])
     assert (sizes[8] - sizes[4]) / (sizes[4] - sizes[2]) <= 2.1
+
+
+@dataclass
+class DefaultedChild:
+    value: int = 1
+
+
+@dataclass
+class DefaultedParent:
+    required: int
+    constant: int = 2
+    optional: "int | None" = None
+    child: DefaultedChild = field(default_factory=DefaultedChild)
+
+
+@pytest.mark.parametrize(
+    ("absent", "expected"),
+    [
+        (set(), {"required": 1, "constant": 5, "optional": 6, "child": {"value": 7}}),
+        ({"constant", "optional"}, {"required": 1, "constant": 2, "optional": None, "child": {"value": 7}}),
+        ({"child"}, {"required": 1, "constant": 5, "optional": 6, "child": {"value": 1}}),
+        ({"constant", "optional", "child"}, {"required": 1, "constant": 2, "optional": None, "child": {"value": 1}}),
+    ],
+)
+def test_absent_source_attributes_take_their_default_when_encoding(absent: set[str], expected: dict[str, Any]) -> None:
+    class Source:
+        pass
+
+    source = Source()
+    for name, value in {"required": 1, "constant": 5, "optional": 6, "child": DefaultedChild(7)}.items():
+        if name not in absent:
+            setattr(source, name, value)
+
+    backend = DataclassDTO[DefaultedParent].create_for_field_definition(
+        FieldDefinition.from_annotation(DefaultedParent)
+    )
+
+    assert to_builtins(backend.encode_data(source)) == expected
+
+
+def test_absent_required_source_attribute_fails_when_encoding() -> None:
+    backend = DataclassDTO[DefaultedParent].create_for_field_definition(
+        FieldDefinition.from_annotation(DefaultedParent)
+    )
+
+    with pytest.raises(TypeError, match="Missing required argument 'required'"):
+        backend.encode_data(DefaultedChild())

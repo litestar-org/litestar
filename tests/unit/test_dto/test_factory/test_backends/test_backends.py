@@ -484,6 +484,29 @@ def test_backend_used_in_the_other_direction_raises(is_data_field: bool, use: Ca
         use(_defaults_backend(is_data_field=is_data_field))
 
 
+class SubDC(DC):
+    pass
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        pytest.param(STRUCTURED, id="instance"),
+        pytest.param(SubDC(**vars(STRUCTURED)), id="subclass"),
+        pytest.param(DESTRUCTURED, id="mapping"),
+        pytest.param(
+            SimpleNamespace(**{k: v for k, v in vars(STRUCTURED).items() if k not in {"b", "c"}}), id="defaults"
+        ),
+    ],
+)
+def test_backend_encode_model_with_nested_fields(source: Any) -> None:
+    backend = DTOBackend(DataclassDTO[DC], FieldDefinition.from_annotation(DC), False, DC, None, handler_id="test")
+
+    assert encode_json(backend.encode_data(source)) == RAW
+    with pytest.raises(TypeError, match="Missing required argument 'nested'"):
+        backend.encode_data(SimpleNamespace(a=1, nested_list=[], nested_mapping={}, integer=1))
+
+
 def _custom_accessor(obj: object, attr: str) -> Any:
     return getattr(obj, attr)
 

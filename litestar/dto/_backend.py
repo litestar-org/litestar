@@ -582,6 +582,7 @@ class DTOBackend:
             field_definition=field_definition,
             attribute_accessor=self.attribute_accessor,
             cache=self._transfer_function_cache,
+            source_type=self.model_type,
         )
 
     def _get_handler_for_field_definition(self, field_definition: FieldDefinition) -> CompositeTypeHandler | None:

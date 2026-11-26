@@ -46,9 +46,19 @@ TransferFunctionCache = dict[tuple[Any, ...], Callable[[Any], Any]]
 
 IDENTIFIER_PARTS_PATTERN = re.compile(r"\w+")
 
+_MISSING = object()
+
 
 def _is_plain_identifier(name: str) -> bool:
     return name.isidentifier() and not keyword.iskeyword(name) and name == unicodedata.normalize("NFKC", name)
+
+
+def _is_exact_non_mapping_class(source_type: Any) -> bool:
+    return (
+        isinstance(source_type, type)
+        and not issubclass(source_type, Mapping)
+        and all("__class__" not in vars(base) for base in source_type.__mro__[:-1])
+    )
 
 
 @cache
@@ -135,14 +145,14 @@ class TransferFunctionFactory:
         self._indentation -= 1
 
     @contextmanager
-    def _try_except_pass(self, exception: str) -> Generator[None, None, None]:
+    def _try_except_pass(self, exception: str, handler: str = "pass") -> Generator[None, None, None]:
         """Enter a `try / except / pass` block. Content written while inside this context
         will go into the `try` block.
         """
         with self._start_block("try:"):
             yield
         with self._start_block(expr=f"except {exception}:"):
-            self._add_stmt("pass")
+            self._add_stmt(handler)
 
     @contextmanager
     def _access_mapping_item(
@@ -173,7 +183,9 @@ class TransferFunctionFactory:
         return f"getattr({source_name}, {field_name!r})"
 
     @contextmanager
-    def _access_attribute(self, source_name: str, field_name: str, expect_optional: bool) -> Generator[str, None, None]:
+    def _access_attribute(
+        self, source_name: str, field_name: str, expect_optional: bool, on_missing: str = "pass"
+    ) -> Generator[str, None, None]:
         """Enter a context within which an attribute of an object can be accessed
         safely, i.e. only if the object actually has the attribute.
         Yields an expression that retrieves the object attribute. Content written while
@@ -185,18 +197,26 @@ class TransferFunctionFactory:
         if expect_optional:
             with self._start_block(f"if hasattr({source_name}, {field_name!r}):"):
                 yield value_expr
+            if on_missing != "pass":
+                with self._start_block("else:"):
+                    self._add_stmt(on_missing)
         # the happy path of a try/except will be faster than that, so we use that if
         # we expect a value
         else:
-            with self._try_except_pass("AttributeError"):
+            with self._try_except_pass("AttributeError", on_missing):
                 yield value_expr
 
-    def _keyword_value_expr(self, source_name: str, field_definition: TransferDTOFieldDefinition) -> str:
+    def _static_default_expr(self, field_definition: TransferDTOFieldDefinition) -> str | None:
         default = UNSET if field_definition.is_partial else field_definition.default
         if default is Empty or isinstance(default, (list, dict, set, bytearray)):
-            return f"{source_name}.{field_definition.name}"
+            return None
         if default is not None and default is not UNSET:
-            default = self._add_to_fn_globals("default", default)
+            return self._add_to_fn_globals("default", default)
+        return str(default)
+
+    def _keyword_value_expr(self, source_name: str, field_definition: TransferDTOFieldDefinition) -> str:
+        if (default := self._static_default_expr(field_definition)) is None:
+            return f"{source_name}.{field_definition.name}"
         return f"getattr({source_name}, {field_definition.name!r}, {default})"
 
     @contextmanager
@@ -234,8 +254,9 @@ class TransferFunctionFactory:
         attribute_accessor: Callable[[object, str], Any],
         nested_as_dict: bool,
         cache: TransferFunctionCache,
+        source_type: Any = None,
     ) -> Callable[[Any], Any]:
-        key = ("instance", id(field_definitions), id(destination_type), nested_as_dict)
+        key = ("instance", id(field_definitions), id(destination_type), nested_as_dict, id(source_type))
         if key in cache:
             return cache[key]
         factory = cls(
@@ -253,6 +274,7 @@ class TransferFunctionFactory:
             destination_type_name=destination_type_name,
             field_definitions=field_definitions,
             destination_type_is_dict=destination_type is dict,
+            source_type=source_type,
         )
         transfer_fn = cache[key] = factory._make_function(
             source_value_name=source_instance_name, return_value_name=tmp_return_type_name
@@ -299,6 +321,7 @@ class TransferFunctionFactory:
         field_definition: FieldDefinition | None = None,
         attribute_accessor: Callable[[object, str], Any],
         cache: TransferFunctionCache,
+        source_type: Any = None,
     ) -> Callable[[Any], Any]:
         if field_definition and field_definition.is_optional:
             non_none = [inner for inner in field_definition.inner_types if not inner.is_none_type]
@@ -319,6 +342,7 @@ class TransferFunctionFactory:
                 destination_type=destination_type,
                 source_data_name=source_value_name,
                 assignment_target=return_value_name,
+                source_type=source_type,
             )
             return factory._make_function(source_value_name=source_value_name, return_value_name=return_value_name)
 
@@ -329,6 +353,7 @@ class TransferFunctionFactory:
             attribute_accessor=attribute_accessor,
             nested_as_dict=destination_type is dict,
             cache=cache,
+            source_type=source_type,
         )
 
     def _create_transfer_data_body_nested(
@@ -338,6 +363,7 @@ class TransferFunctionFactory:
         destination_type: type[Any],
         source_data_name: str,
         assignment_target: str,
+        source_type: Any = None,
     ) -> None:
         origin_name = self._add_to_fn_globals("origin", field_definition.instantiable_origin)
         item_definition = field_definition.inner_types[1 if field_definition.is_mapping else 0]
@@ -348,6 +374,7 @@ class TransferFunctionFactory:
             field_definitions=field_definitions,
             attribute_accessor=self.attribute_accessor,
             cache=self._cache,
+            source_type=source_type,
         )
         transfer_func_name = self._add_to_fn_globals("transfer_data", transfer_func)
         item_expr = f"{transfer_func_name}(item)"
@@ -367,8 +394,10 @@ class TransferFunctionFactory:
         destination_type_name: str,
         field_definitions: tuple[TransferDTOFieldDefinition, ...],
         destination_type_is_dict: bool,
+        source_type: Any = None,
     ) -> None:
         local_dict_name = self._create_local_name("unstructured_data")
+        is_keyword_destination = not (self.is_data_field or destination_type_is_dict or self.attribute_accessor_name)
 
         # if the destination type is a dict we can reuse our temporary dictionary of
         # unstructured data as the "return value"
@@ -389,16 +418,26 @@ class TransferFunctionFactory:
                 self._add_stmt(f"{new_source_instance_name} = {source_instance_name}")
                 source_instance_name = new_source_instance_name
 
-            for source_type in ("mapping", "object"):
+            for source_kind in ("mapping", "object"):
                 keyword_call: AbstractContextManager[None] = nullcontext()
-                if source_type == "mapping":
-                    struct_check = f"not isinstance({source_instance_name}, Struct) and " if self.is_data_field else ""
-                    block_expr = f"if {struct_check}isinstance({source_instance_name}, Mapping):"
+                if source_kind == "mapping":
+                    if self.is_data_field:
+                        type_check = f"not isinstance({source_instance_name}, Struct) and "
+                    elif (
+                        is_keyword_destination
+                        and source_instance_name.isidentifier()
+                        and _is_exact_non_mapping_class(source_type)
+                    ):
+                        source_type_name = self._add_to_fn_globals("source_type", source_type)
+                        type_check = f"type({source_instance_name}) is not {source_type_name} and "
+                    else:
+                        type_check = ""
+                    block_expr = f"if {type_check}isinstance({source_instance_name}, Mapping):"
                     access_item = self._access_mapping_item
                 else:
                     block_expr = "else:"
                     access_item = self._access_attribute
-                    if not (self.is_data_field or destination_type_is_dict or self.attribute_accessor_name):
+                    if is_keyword_destination:
                         keyword_call = self._try_keyword_call(
                             assignment_target=tmp_return_type_name,
                             destination_type_name=destination_type_name,
@@ -407,6 +446,18 @@ class TransferFunctionFactory:
                         )
 
                 with self._start_block(expr=block_expr), keyword_call:
+                    if (
+                        source_kind == "object"
+                        and is_keyword_destination
+                        and self._needs_keyword_locals(field_definitions)
+                    ):
+                        self._create_transfer_instance_data_by_keyword(
+                            tmp_return_type_name=tmp_return_type_name,
+                            destination_type_name=destination_type_name,
+                            field_definitions=field_definitions,
+                            source_instance_name=source_instance_name,
+                        )
+                        continue
                     self._add_stmt(f"{local_dict_name} = {{}}")
                     self._create_transfer_instance_data_inner(
                         local_dict_name=local_dict_name,
@@ -419,6 +470,58 @@ class TransferFunctionFactory:
             self._add_stmt(f"{local_dict_name} = {{}}")
             self._add_stmt(build_stmt)
 
+    def _needs_keyword_locals(self, field_definitions: tuple[TransferDTOFieldDefinition, ...]) -> bool:
+        return all(_is_plain_identifier(f.name) and f.name != "__debug__" for f in field_definitions) and not all(
+            self._is_passed_through(f.transfer_type) for f in field_definitions
+        )
+
+    def _create_transfer_instance_data_by_keyword(
+        self,
+        *,
+        tmp_return_type_name: str,
+        destination_type_name: str,
+        field_definitions: tuple[TransferDTOFieldDefinition, ...],
+        source_instance_name: str,
+    ) -> None:
+        """Transfer each field as :meth:`_create_transfer_instance_data_inner` does, into a local instead of a dict
+        entry, and build the destination type in a single keyword call when no field is missing.
+        """
+        missing_name = self._add_to_fn_globals("missing", _MISSING)
+        value_names = {f.name: self._create_local_name(f"value_{f.name}") for f in field_definitions}
+        defaults = {
+            f.name: self._static_default_expr(f)
+            if self._is_passed_through(f.transfer_type) and not f.is_partial
+            else None
+            for f in field_definitions
+        }
+        required = [value_names[name] for name, default in defaults.items() if default is None]
+        if required:
+            self._add_stmt(f"{' = '.join(required)} = {missing_name}")
+        self._create_transfer_instance_data_inner(
+            local_dict_name="",
+            field_definitions=field_definitions,
+            access_field_safe=self._access_attribute,
+            source_instance_name=source_instance_name,
+            assignment_targets=value_names,
+            missing_defaults=defaults,
+        )
+        kwargs = ", ".join(f"{name}={value_name}" for name, value_name in value_names.items())
+        if not required:
+            self._add_stmt(f"{tmp_return_type_name} = {destination_type_name}({kwargs})")
+            return
+        all_present = " and ".join(f"{value_name} is not {missing_name}" for value_name in required)
+        with self._start_block(f"if {all_present}:"):
+            self._add_stmt(f"{tmp_return_type_name} = {destination_type_name}({kwargs})")
+        with self._start_block("else:"):
+            known = "".join(f"{name}={value_name}, " for name, value_name in value_names.items() if defaults[name])
+            unknown = ", ".join(
+                f"({name!r}, {value_name})" for name, value_name in value_names.items() if not defaults[name]
+            )
+            self._add_stmt(
+                f"{tmp_return_type_name} = {destination_type_name}"
+                f"({known}**{{name: value for name, value in ({unknown},) if value is not {missing_name}}})"
+            )
+
     def _create_transfer_instance_data_inner(
         self,
         *,
@@ -426,12 +529,22 @@ class TransferFunctionFactory:
         field_definitions: tuple[TransferDTOFieldDefinition, ...],
         access_field_safe: FieldAccessManager,
         source_instance_name: str,
+        assignment_targets: Mapping[str, str] | None = None,
+        missing_defaults: Mapping[str, str | None] | None = None,
     ) -> None:
         for field_definition in field_definitions:
+            extra: dict[str, str] = {}
+            if (
+                missing_defaults
+                and assignment_targets
+                and (default := missing_defaults[field_definition.name]) is not None
+            ):
+                extra["on_missing"] = f"{assignment_targets[field_definition.name]} = {default}"
             with access_field_safe(
                 source_name=source_instance_name,
                 field_name=field_definition.name,
                 expect_optional=field_definition.is_partial or field_definition.is_optional,
+                **extra,
             ) as source_value_expr:
                 if self.is_data_field and field_definition.is_partial:
                     # we assign the source value to a name here, so we can skip
@@ -449,7 +562,9 @@ class TransferFunctionFactory:
                         transfer_type=field_definition.transfer_type,
                         nested_as_dict=self.nested_as_dict,
                         source_value_name=source_value_name,
-                        assignment_target=f"{local_dict_name}[{field_definition.name!r}]",
+                        assignment_target=assignment_targets[field_definition.name]
+                        if assignment_targets is not None
+                        else f"{local_dict_name}[{field_definition.name!r}]",
                     )
 
     def _create_transfer_type_data_body(
@@ -473,6 +588,7 @@ class TransferFunctionFactory:
                 source_instance_name=source_value_name,
                 destination_type=destination_type,
                 destination_type_name=self._add_to_fn_globals("destination_type", destination_type),
+                source_type=transfer_type.field_definition.annotation,
             )
             return
 
@@ -562,6 +678,7 @@ class TransferFunctionFactory:
         destination_type: Any,
         destination_type_name: str,
         field_definitions: tuple[TransferDTOFieldDefinition, ...],
+        source_type: Any = None,
     ) -> None:
         if not any(self._contains_nested_instance(f.transfer_type) for f in field_definitions):
             self._create_transfer_instance_data(
@@ -570,6 +687,7 @@ class TransferFunctionFactory:
                 destination_type_name=destination_type_name,
                 field_definitions=field_definitions,
                 destination_type_is_dict=destination_type is dict,
+                source_type=source_type,
             )
             return
 
@@ -580,6 +698,7 @@ class TransferFunctionFactory:
             attribute_accessor=self.attribute_accessor,
             nested_as_dict=self.nested_as_dict,
             cache=self._cache,
+            source_type=source_type,
         )
         transfer_fn_name = self._add_to_fn_globals("transfer_instance_data", transfer_fn)
         self._add_stmt(f"{tmp_return_type_name} = {transfer_fn_name}({source_instance_name})")
@@ -623,6 +742,7 @@ class TransferFunctionFactory:
                         field_definitions=field_definitions,
                         source_instance_name=source_value_name,
                         tmp_return_type_name=assignment_target,
+                        source_type=simple_type_.field_definition.annotation,
                     )
                 else:
                     self._add_stmt(f"{assignment_target} = {source_value_name}")
