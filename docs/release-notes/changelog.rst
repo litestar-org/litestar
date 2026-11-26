@@ -6,6 +6,16 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: Store DTO backends on the route handler
+        :type: misc
+        :breaking:
+
+        A route handler keeps the backends of its DTOs in ``data_backend`` and
+        ``return_backend``. ``AbstractDTO.create_for_field_definition`` returns the backend
+        it builds instead of storing it on the DTO class, and
+        ``AbstractDTO.create_openapi_schema`` takes the ``route_handler`` instead of a
+        ``handler_id``.
+
     .. change:: DTO: Remove the non-codegen DTO backend
         :type: misc
         :breaking:

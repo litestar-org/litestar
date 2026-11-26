@@ -64,7 +64,7 @@ class PathItemFactory:
         if (data_field := route_handler.parsed_data_field) is not None:
             request_body = create_request_body(
                 self.context,
-                route_handler.handler_id,
+                route_handler,
                 route_handler.data_dto,
                 data_field,
                 signature_namespace=route_handler.signature_namespace,

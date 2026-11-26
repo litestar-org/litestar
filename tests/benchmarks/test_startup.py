@@ -101,14 +101,11 @@ def test_dto_backend_create(benchmark: BenchmarkFixture, reset_dto_backends: Non
 
     field_definition = FieldDefinition.from_annotation(list[Person])
 
-    def create() -> None:
-        PersonDTO._dto_backends.clear()
+    def create() -> DTOBackend:
         DTOBackend._seen_model_names = set()
-        PersonDTO.create_for_field_definition(field_definition, handler_id="bench")
+        return PersonDTO.create_for_field_definition(field_definition, handler_id="bench")
 
-    benchmark(create)
-    backend = PersonDTO._dto_backends["bench"].get("return_backend")
-    assert backend is not None
+    backend = benchmark(create)
     assert type(backend) is DTOBackend
 
 

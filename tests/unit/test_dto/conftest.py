@@ -9,6 +9,7 @@ from litestar import Request, get
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.dto import AbstractDTO, DTOField, DTOFieldDefinition
 from litestar.enums import MediaType
+from litestar.handlers.base import BaseRouteHandler
 from litestar.openapi.spec import Reference, Schema
 from litestar.testing import RequestFactory
 from litestar.types.serialization import LitestarEncodableType
@@ -38,7 +39,7 @@ def ModelDataDTO() -> type[AbstractDTO]:
 
         @classmethod
         def create_openapi_schema(
-            cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
+            cls, field_definition: FieldDefinition, route_handler: BaseRouteHandler, schema_creator: SchemaCreator
         ) -> Reference | Schema:
             return Schema()
 
@@ -73,7 +74,7 @@ def ModelReturnDTO() -> type[AbstractDTO]:
 
         @classmethod
         def create_openapi_schema(
-            cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
+            cls, field_definition: FieldDefinition, route_handler: BaseRouteHandler, schema_creator: SchemaCreator
         ) -> Reference | Schema:
             return Schema()
 

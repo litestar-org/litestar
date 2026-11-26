@@ -212,7 +212,7 @@ def test_backend_create_openapi_schema(dto_factory: type[DataclassDTO]) -> None:
 
     creator = SchemaCreator(plugins=app.plugins.openapi)
     ref = dto_factory.create_openapi_schema(
-        handler_id=app.get_handler_index_by_name("test")["handler"].handler_id,  # type: ignore[index]
+        route_handler=app.get_handler_index_by_name("test")["handler"],  # type: ignore[index]
         field_definition=FieldDefinition.from_annotation(DC),
         schema_creator=creator,
     )
