@@ -16,12 +16,10 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Protocol,
-    cast,
 )
 
 from msgspec import UNSET
 
-from litestar.dto._backend import DTOBackend
 from litestar.dto._types import (
     CollectionType,
     CompositeType,
@@ -34,145 +32,9 @@ from litestar.dto._types import (
 from litestar.utils.helpers import unique_name_for_scope
 
 if TYPE_CHECKING:
-    from litestar.connection import ASGIConnection
-    from litestar.dto import AbstractDTO
-    from litestar.types.serialization import LitestarEncodableType
     from litestar.typing import FieldDefinition
 
-__all__ = ("DTOCodegenBackend",)
-
-
-class DTOCodegenBackend(DTOBackend):
-    __slots__ = (
-        "_encode_data",
-        "_transfer_to_dict",
-        "_transfer_to_model_type",
-    )
-
-    def __init__(
-        self,
-        dto_factory: type[AbstractDTO],
-        field_definition: FieldDefinition,
-        handler_id: str,
-        is_data_field: bool,
-        model_type: type[Any],
-        wrapper_attribute_name: str | None,
-    ) -> None:
-        """Create dto backend instance.
-
-        Args:
-            dto_factory: The DTO factory class calling this backend.
-            field_definition: Parsed type.
-            handler_id: The name of the handler that this backend is for.
-            is_data_field: Whether the field is a subclass of DTOData.
-            model_type: Model type.
-            wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure,
-              this is the name of the attribute that the data is stored in.
-        """
-        super().__init__(
-            dto_factory=dto_factory,
-            field_definition=field_definition,
-            handler_id=handler_id,
-            is_data_field=is_data_field,
-            model_type=model_type,
-            wrapper_attribute_name=wrapper_attribute_name,
-        )
-        self._transfer_to_dict = self._create_transfer_data_fn(
-            destination_type=dict,
-            field_definition=self.field_definition,
-        )
-        self._transfer_to_model_type = self._create_transfer_data_fn(
-            destination_type=self.model_type,
-            field_definition=self.field_definition,
-        )
-        self._encode_data = self._create_transfer_data_fn(
-            destination_type=self.transfer_model_type,
-            field_definition=self.field_definition,
-        )
-
-    def populate_data_from_builtins(self, builtins: Any, asgi_connection: ASGIConnection) -> Any:
-        """Populate model instance from builtin types.
-
-        Args:
-            builtins: Builtin type.
-            asgi_connection: The current ASGI Connection
-
-        Returns:
-            Instance or collection of ``model_type`` instances.
-        """
-        if self.dto_data_type:
-            return self.dto_data_type(
-                backend=self,
-                data_as_builtins=self._transfer_to_dict(self.parse_builtins(builtins, asgi_connection)),
-            )
-        return self.transfer_data_from_builtins(self.parse_builtins(builtins, asgi_connection))
-
-    def transfer_data_from_builtins(self, builtins: Any) -> Any:
-        """Populate model instance from builtin types.
-
-        Args:
-            builtins: Builtin type.
-
-        Returns:
-            Instance or collection of ``model_type`` instances.
-        """
-        return self._transfer_to_model_type(builtins)
-
-    def populate_data_from_raw(self, raw: bytes, asgi_connection: ASGIConnection) -> Any:
-        """Parse raw bytes into instance of `model_type`.
-
-        Args:
-            raw: bytes
-            asgi_connection: The current ASGI Connection
-
-        Returns:
-            Instance or collection of ``model_type`` instances.
-        """
-        if self.dto_data_type:
-            return self.dto_data_type(
-                backend=self,
-                data_as_builtins=self._transfer_to_dict(self.parse_raw(raw, asgi_connection)),
-            )
-        return self._transfer_to_model_type(self.parse_raw(raw, asgi_connection))
-
-    def encode_data(self, data: Any) -> LitestarEncodableType:
-        """Encode data into a ``LitestarEncodableType``.
-
-        Args:
-            data: Data to encode.
-
-        Returns:
-            Encoded data.
-        """
-        if self.wrapper_attribute_name:
-            wrapped_transfer = self._encode_data(getattr(data, self.wrapper_attribute_name))
-            setattr(data, self.wrapper_attribute_name, wrapped_transfer)
-            return cast("LitestarEncodableType", data)
-
-        return cast("LitestarEncodableType", self._encode_data(data))
-
-    def _create_transfer_data_fn(
-        self,
-        destination_type: type[Any],
-        field_definition: FieldDefinition,
-    ) -> Any:
-        """Create instance or iterable of instances of ``destination_type``.
-
-        Args:
-            destination_type: the model type received by the DTO on type narrowing.
-            field_definition: the parsed type that represents the handler annotation for which the DTO is being applied.
-
-        Returns:
-            Data parsed into ``destination_type``.
-        """
-
-        return TransferFunctionFactory.create_transfer_data(
-            destination_type=destination_type,
-            field_definitions=self.parsed_field_definitions,
-            is_data_field=self.is_data_field,
-            field_definition=field_definition,
-            attribute_accessor=self.attribute_accessor,
-        )
+__all__ = ("TransferFunctionFactory",)
 
 
 class FieldAccessManager(Protocol):

@@ -12,7 +12,6 @@ from typing import TYPE_CHECKING, Generic, NotRequired, TypeVar, get_type_hints
 from typing_extensions import TypedDict
 
 from litestar.dto._backend import DTOBackend
-from litestar.dto._codegen_backend import DTOCodegenBackend
 from litestar.dto.config import DTOConfig
 from litestar.dto.data_structures import DTOData
 from litestar.dto.types import RenameStrategy
@@ -207,7 +206,7 @@ class AbstractDTO(Generic[T]):
                     )
 
             if backend_cls is None:
-                backend_cls = DTOCodegenBackend if cls.config.experimental_codegen_backend is not False else DTOBackend
+                backend_cls = DTOBackend
 
             backend_context[key] = backend_cls(  # type: ignore[literal-required]
                 dto_factory=cls,
