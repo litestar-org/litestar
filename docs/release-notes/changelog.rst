@@ -56,6 +56,7 @@
 
     .. change:: DTO: Handle optional and nested collections of the model
         :type: bugfix
+        :pr: 5274
 
         An optional or nested collection such as ``Optional[list[Model]]``, ``list[Optional[Model]]``
         or ``dict[str, list[Model]]`` no longer causes a ``500``, and a generic wrapper whose attribute
