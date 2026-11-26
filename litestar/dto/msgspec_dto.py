@@ -1,15 +1,17 @@
 from __future__ import annotations
 
-import dataclasses
+from contextlib import suppress
 from dataclasses import replace
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 import msgspec.inspect
 from msgspec import NODEFAULT, Struct, structs
 
+from litestar.dto._msgspec_rejection import CONSTRAINT_HINT, contains_meta, rejected_field_message
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField, extract_dto_field
+from litestar.exceptions.dto_exceptions import InvalidAnnotationException
 from litestar.plugins.core._msgspec import kwarg_definition_from_field
 from litestar.types.empty import Empty
 
@@ -33,6 +35,25 @@ def _default_or_none(value: Any) -> Any:
     return None if value is NODEFAULT else value
 
 
+def _uninspectable_field_message(
+    model_type: type[Struct], field_names: Collection[str], dto_type: type[MsgspecDTO]
+) -> str | None:
+    type_hints = dto_type.get_model_type_hints(model_type)
+    for name in field_names:
+        field_definition = type_hints[name]
+        try:
+            msgspec.inspect.type_info(field_definition.raw)
+        except TypeError as field_exc:
+            return rejected_field_message(
+                "msgspec cannot inspect",
+                model_type,
+                field_definition,
+                field_exc,
+                hint=CONSTRAINT_HINT if contains_meta(field_definition) else None,
+            )
+    return None
+
+
 class MsgspecDTO(AbstractDTO[T], Generic[T]):
     """Support for domain modelling with Msgspec."""
 
@@ -40,9 +61,19 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
     def generate_field_definitions(cls, model_type: type[Struct]) -> Generator[DTOFieldDefinition, None, None]:
         msgspec_fields = {f.name: f for f in structs.fields(model_type)}
 
+        try:
+            struct_info = msgspec.inspect.type_info(model_type)
+        except TypeError as exc:
+            message = None
+            with suppress(Exception):
+                message = _uninspectable_field_message(model_type, msgspec_fields, cls)
+            raise InvalidAnnotationException(
+                message or f"msgspec cannot inspect {model_type.__name__!r}: {exc}"
+            ) from exc
+
         inspect_fields: dict[str, msgspec.inspect.Field] = {
             field.name: field
-            for field in msgspec.inspect.type_info(model_type).fields  # type: ignore[attr-defined]
+            for field in struct_info.fields  # type: ignore[attr-defined]
         }
 
         property_fields = cls.get_property_fields(model_type)
@@ -50,8 +81,7 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
         for key, field_definition in cls.get_model_type_hints(model_type).items():
             if key not in inspect_fields:
                 continue
-            kwarg_definition, extra = kwarg_definition_from_field(inspect_fields[key])
-            field_definition = dataclasses.replace(field_definition, kwarg_definition=kwarg_definition)
+            _, extra = kwarg_definition_from_field(inspect_fields[key])
             field_definition.extra.update(extra)
             dto_field = extract_dto_field(field_definition, field_definition.extra)
             field_definition.extra.pop(DTO_FIELD_META_KEY, None)

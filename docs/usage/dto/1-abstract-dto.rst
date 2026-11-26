@@ -142,6 +142,37 @@ However, we annotate the handler with the ``Foo`` type. This will raise an error
     '<class 'docs.examples.data_transfer_objects.factory.type_checking.User'>', handler type is
     '<class 'docs.examples.data_transfer_objects.factory.type_checking.Foo'>'
 
+Constraints
+-----------
+
+Constraints declared with ``msgspec.Meta``, ``annotated_types`` metadata or a parameter definition such as
+``Parameter(ge=1)`` are validated on inbound data wherever they are declared: on the field, on collection items,
+mapping keys and values, and tuple and union members.
+
+.. code-block:: python
+
+    from dataclasses import dataclass, field
+    from typing import Annotated
+
+    from msgspec import Meta
+
+
+    @dataclass
+    class User:
+        name: Annotated[str, Meta(min_length=2)]
+        nickname: Annotated[str, Meta(pattern="^[a-z]+$")] | None = None
+        tags: list[Annotated[str, Meta(max_length=10)]] = field(default_factory=list)
+
+A request violating them receives a ``400 Bad Request`` response; with ``partial=True``, only the fields sent are
+validated. Data returned from a handler is not validated.
+
+A ``msgspec.Meta`` stays where it is written. If msgspec does not support it there, as in
+``Annotated[str | None, Meta(min_length=2)]``, a DTO for inbound data raises
+:exc:`~litestar.exceptions.InvalidAnnotationException` at startup, naming the field: attach it to the member, as
+``nickname`` does. Other constraints are enforced where msgspec can express them, and not otherwise, such as ``gt`` on
+a ``Decimal``; a ``msgspec.Meta`` wins over a conflicting one. DTO classes that decode the request body themselves, by
+overriding ``decode_bytes`` or ``decode_builtins``, are not checked at startup.
+
 Nested fields
 -------------
 

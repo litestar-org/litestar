@@ -2,31 +2,41 @@
 
 from __future__ import annotations
 
+import re
+import sys
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, make_dataclass
+from datetime import date
+from decimal import Decimal
 from types import ModuleType
-from typing import TYPE_CHECKING, Annotated, Generic, Optional, TypeVar, cast
+from typing import TYPE_CHECKING, Annotated, Generic, Literal, Optional, TypeVar, Union, cast
 from unittest.mock import MagicMock
 
+import annotated_types
 import msgspec
 import pytest
-from msgspec import Struct
+from msgspec import UNSET, Meta, Struct, UnsetType
+from typing_extensions import TypeAliasType as TeTypeAliasType
 
-from litestar import Controller, Response, get, patch, post
+from litestar import Controller, Litestar, Response, get, patch, post
 from litestar.connection.request import Request
 from litestar.datastructures import UploadFile
 from litestar.dto import DataclassDTO, DTOConfig, DTOData, MsgspecDTO, dto_field
 from litestar.dto.types import RenameStrategy
 from litestar.enums import MediaType
-from litestar.params import JSONBody, MultipartBody, URLEncodedBody
+from litestar.exceptions import InvalidAnnotationException
+from litestar.params import JSONBody, MultipartBody, QueryParameter, URLEncodedBody
 from litestar.serialization import encode_json
 from litestar.testing import create_test_client
 from tests.helpers import not_none
 
+try:
+    from typing import TypeAliasType  # type: ignore[attr-defined]
+except ImportError:
+    TypeAliasType = TeTypeAliasType
+
 if TYPE_CHECKING:
     from typing import Any
-
-    from litestar import Litestar
 
 
 def test_url_encoded_form_data() -> None:
@@ -783,7 +793,7 @@ def test_msgspec_dto_copies_constraints(
         assert client.post("/", json={"bar": request_data}).status_code == 400
 
 
-def test_msgspec_dto_dont_copy_length_constraint_for_partial_dto() -> None:
+def test_msgspec_dto_copies_length_constraints_for_partial_dto() -> None:
     class Foo(msgspec.Struct):
         bar: Annotated[str, msgspec.Meta(min_length=2)]
         baz: Annotated[str, msgspec.Meta(max_length=2)]
@@ -791,12 +801,268 @@ def test_msgspec_dto_dont_copy_length_constraint_for_partial_dto() -> None:
     class FooDTO(MsgspecDTO[Foo]):
         config = DTOConfig(partial=True)
 
-    @post("/", dto=FooDTO, signature_types={Foo})
-    def handler(data: JSONBody[Foo]) -> None:
+    @post("/", dto=FooDTO, return_dto=None, signature_types={Foo})
+    def handler(data: JSONBody[DTOData[Foo]]) -> None:
         pass
 
     with create_test_client([handler]) as client:
-        assert client.post("/", json={"bar": "1", "baz": "123"}).status_code == 201
+        assert client.post("/", json={"bar": "1"}).status_code == 400
+        assert client.post("/", json={"baz": "123"}).status_code == 400
+        assert client.post("/", json={"bar": "12", "baz": "12"}).status_code == 201
+        assert client.post("/", json={}).status_code == 201
+
+
+def _make_model(dto_type: Any, annotation: Any, **default: Any) -> Any:
+    if dto_type is DataclassDTO:
+        return make_dataclass("Model", [("f", annotation, field(**default))])
+    return msgspec.defstruct("Model", [("f", annotation, msgspec.field(**default))])
+
+
+def _create_client(dto_type: Any, model: Any, partial: bool = False) -> Any:
+    async def create(data: Any) -> None:
+        return None
+
+    json_body: Any = JSONBody
+    dto_data: Any = DTOData
+    create.__annotations__["data"] = json_body[dto_data[model] if partial else model]
+    dto = dto_type[Annotated[model, DTOConfig(partial=True)]] if partial else dto_type[model]
+    return create_test_client([post("/", dto=dto, return_dto=None)(create)], openapi_config=None)
+
+
+@pytest.mark.parametrize("partial", [False, True])
+@pytest.mark.parametrize(
+    "annotation, default, invalid, valid",
+    [
+        pytest.param(
+            Union[Annotated[str, Meta(min_length=8)], UnsetType], {"default": UNSET}, "12", "12345678", id="issue_4181"
+        ),
+        pytest.param(Optional[Annotated[str, Meta(pattern="^a")]], {"default": None}, "b", "ab", id="issue_4195"),
+        pytest.param(Optional[Annotated[str, Meta(min_length=2)]], {"default": None}, "1", "12", id="issue_5025"),
+        pytest.param(Union[Annotated[str, Meta(min_length=5)], int], {"default": 0}, "12", 3, id="issue_5031"),
+        pytest.param(
+            list[Annotated[str, Meta(min_length=5)]], {"default_factory": list}, ["12"], ["12345"], id="issue_5051"
+        ),
+    ],
+)
+def test_msgspec_dto_enforces_member_constraints_of_reported_issues(
+    partial: bool, annotation: Any, default: dict[str, Any], invalid: Any, valid: Any
+) -> None:
+    with _create_client(MsgspecDTO, _make_model(MsgspecDTO, annotation, **default), partial) as client:
+        assert client.post("/", json={"f": invalid}).status_code == 400
+        assert client.post("/", json={"f": valid}).status_code == 201
+        assert client.post("/", json={}).status_code == 201
+
+
+_MEMBER_CONSTRAINT_CASES = [
+    pytest.param(list[Annotated[str, Meta(min_length=5)]], ["12"], ["12345"], id="list_item"),
+    pytest.param(dict[str, Annotated[str, Meta(min_length=5)]], {"k": "12"}, {"k": "12345"}, id="dict_value"),
+    pytest.param(dict[Annotated[str, Meta(min_length=5)], int], {"k": 1}, {"kkkkk": 1}, id="dict_key"),
+    pytest.param(tuple[Annotated[str, Meta(min_length=5)], int], ["12", 1], ["12345", 1], id="tuple_member"),
+    pytest.param(Union[Annotated[str, Meta(min_length=5)], int], "12", 3, id="union_member"),
+]
+
+
+@pytest.mark.parametrize("dto_type", [DataclassDTO, MsgspecDTO])
+@pytest.mark.parametrize("annotation, invalid, valid", _MEMBER_CONSTRAINT_CASES)
+def test_dto_enforces_member_constraints(dto_type: Any, annotation: Any, invalid: Any, valid: Any) -> None:
+    with _create_client(dto_type, _make_model(dto_type, annotation)) as client:
+        assert client.post("/", json={"f": invalid}).status_code == 400
+        assert client.post("/", json={"f": valid}).status_code == 201
+
+
+Limit = TypeAliasType("Limit", Annotated[int, Meta(ge=0)])
+
+
+@pytest.mark.parametrize("partial", [False, True])
+@pytest.mark.parametrize("dto_type", [DataclassDTO, MsgspecDTO])
+@pytest.mark.parametrize(
+    "annotation, default, invalid, valid",
+    [
+        pytest.param(Annotated[int, Meta(ge=1)], {"default": 1}, 0, 2, id="meta_ge"),
+        pytest.param(
+            Annotated[list[int], Meta(min_length=2)], {"default_factory": list}, [1], [1, 2], id="meta_list_length"
+        ),
+        pytest.param(
+            Limit,
+            {"default": 0},
+            -1,
+            1,
+            id="type_alias",
+            marks=pytest.mark.skipif(sys.version_info < (3, 12), reason="msgspec decodes typing.TypeAliasType only"),
+        ),
+        pytest.param(
+            Annotated[str, annotated_types.MinLen(5)], {"default": "12345"}, "12", "123456", id="annotated_types"
+        ),
+        pytest.param(
+            Annotated[str, QueryParameter(max_length=2)], {"default": "1"}, "123", "12", id="parameter_definition"
+        ),
+    ],
+)
+def test_dto_enforces_field_constraints(
+    dto_type: Any, partial: bool, annotation: Any, default: dict[str, Any], invalid: Any, valid: Any
+) -> None:
+    with _create_client(dto_type, _make_model(dto_type, annotation, **default), partial) as client:
+        assert client.post("/", json={"f": invalid}).status_code == 400
+        assert client.post("/", json={"f": valid}).status_code == 201
+
+
+@pytest.mark.parametrize(
+    "dto_type, annotation, invalid, valid",
+    [
+        pytest.param(MsgspecDTO, Annotated[Decimal, annotated_types.Gt(0)], "0", "1", id="decimal_gt"),
+        pytest.param(DataclassDTO, list[Annotated[Decimal, annotated_types.Gt(0)]], ["0"], ["1"], id="decimal_item"),
+        pytest.param(MsgspecDTO, Annotated[int, annotated_types.Ge(1.5)], 1, 2, id="int_float_bound"),
+        pytest.param(
+            DataclassDTO, Annotated[date, annotated_types.Ge(date(2020, 1, 1))], "2019-01-01", "2021-01-01", id="date"
+        ),
+        pytest.param(DataclassDTO, Annotated[Optional[int], annotated_types.Ge(0)], -1, 1, id="optional_ge"),
+        pytest.param(MsgspecDTO, Annotated[Union[str, int], annotated_types.MinLen(2)], "a", "ab", id="union_min_len"),
+        pytest.param(DataclassDTO, Annotated[int, annotated_types.Ge(1), annotated_types.Gt(0)], 0, 3, id="conflict"),
+    ],
+)
+def test_dto_does_not_enforce_derived_constraints_msgspec_cannot_express(
+    dto_type: Any, annotation: Any, invalid: Any, valid: Any
+) -> None:
+    with _create_client(dto_type, _make_model(dto_type, annotation)) as client:
+        assert client.post("/", json={"f": invalid}).status_code == 201
+        assert client.post("/", json={"f": valid}).status_code == 201
+
+
+@pytest.mark.parametrize("dto_type", [DataclassDTO, MsgspecDTO])
+def test_dto_raises_at_startup_for_an_invalid_pattern(dto_type: Any) -> None:
+    with pytest.raises(re.error):
+        _create_client(dto_type, _make_model(dto_type, Annotated[str, QueryParameter(pattern="(")]))
+
+
+@dataclass
+class ReturnedModel:
+    violating: Annotated[str, Meta(min_length=5)] = "12"
+    misplaced: Annotated[Optional[str], Meta(min_length=5, description="d")] = "12"
+    member: list[Annotated[int, Meta(min_length=1)]] = field(default_factory=lambda: [1])
+
+
+def test_return_dto_does_not_apply_constraints_and_keeps_their_schema_attributes() -> None:
+    @get("/", return_dto=DataclassDTO[ReturnedModel])
+    def read_returned() -> ReturnedModel:
+        return ReturnedModel()
+
+    with create_test_client([read_returned]) as client:
+        assert client.get("/").json() == {"violating": "12", "misplaced": "12", "member": [1]}
+        (component,) = client.get("/schema/openapi.json").json()["components"]["schemas"].values()
+
+    assert component["properties"]["misplaced"]["description"] == "d"
+
+
+@pytest.mark.parametrize(
+    "annotation",
+    [
+        pytest.param(Annotated[Optional[str], Meta(min_length=5)], id="optional_meta"),
+        pytest.param(list[Annotated[int, Meta(min_length=1)]], id="item_meta"),
+    ],
+)
+def test_data_dto_raises_at_startup_when_msgspec_rejects_the_transfer_type(annotation: Any) -> None:
+    model = _make_model(DataclassDTO, annotation)
+
+    @post("/", dto=DataclassDTO[model], return_dto=None, signature_namespace={"model": model})  # type: ignore[valid-type]
+    def create_rejected(data: JSONBody[model]) -> None:  # type: ignore[valid-type]
+        pass
+
+    with pytest.raises(InvalidAnnotationException, match="min_length") as exc_info:
+        Litestar(route_handlers=[create_rejected], openapi_config=None)
+
+    message = str(exc_info.value)
+    assert message.startswith("msgspec cannot decode the transfer model of ")
+    assert "field 'f'" in message
+    assert repr(annotation) in message
+    assert "create_rejected" in message
+    assert "attach the constraint to the member type it applies to" in message
+    assert isinstance(exc_info.value.__cause__, TypeError)
+
+
+@dataclass
+class RejectedInner:
+    g: Annotated[Optional[str], Meta(min_length=5)] = None
+
+
+@dataclass
+class RejectedOuter:
+    _hidden: int
+    inners: dict[str, RejectedInner]
+
+
+@dataclass
+class U1:
+    a: int
+
+
+@dataclass
+class U2:
+    b: int
+
+
+@dataclass
+class UH:
+    f: Union[U1, U2]
+
+
+@pytest.mark.parametrize(
+    "model, expected",
+    [
+        pytest.param(RejectedOuter, f"field 'g' of '{__name__}.RejectedInner'", id="nested_field"),
+        pytest.param(UH, f"field 'f' of '{__name__}.UH'", id="union_of_models"),
+    ],
+)
+def test_data_dto_startup_error_names_the_innermost_field(model: Any, expected: str) -> None:
+    @post("/", dto=DataclassDTO[model], return_dto=None, signature_namespace={"model": model})
+    def create_rejected_outer(data: JSONBody[model]) -> None:  # pyright: ignore[reportInvalidTypeForm]
+        pass
+
+    with pytest.raises(InvalidAnnotationException) as exc_info:
+        Litestar(route_handlers=[create_rejected_outer], openapi_config=None)
+
+    assert expected in str(exc_info.value)
+    assert "RequestBody" not in str(exc_info.value)
+    if model is UH:
+        assert "tag the union members or decode the body yourself" in str(exc_info.value)
+
+
+class OwnDecode(DataclassDTO[UH]):
+    def decode_bytes(self, value: bytes) -> Any:
+        raw = msgspec.json.decode(value)
+        return UH(f=U1(**raw["f"]) if "a" in raw["f"] else U2(**raw["f"]))
+
+
+def test_data_dto_with_own_decoding_is_not_checked_at_startup() -> None:
+    @post("/", dto=OwnDecode, return_dto=None)
+    def create_own_decoded(data: JSONBody[UH]) -> UH:
+        return data
+
+    with create_test_client([create_own_decoded], openapi_config=None) as client:
+        assert client.post("/", json={"f": {"a": 1}}).json() == {"f": {"a": 1}}
+
+
+@pytest.mark.parametrize(
+    "annotation, match",
+    [
+        pytest.param(
+            Annotated[Optional[str], Meta(min_length=5)],
+            r"^msgspec cannot inspect .*field 'f'.*min_length.*attach the constraint to the member type",
+            id="optional_meta",
+        ),
+        pytest.param(Literal[1, "a"], "^msgspec cannot inspect", id="mixed_literal"),
+    ],
+)
+def test_msgspec_dto_raises_invalid_annotation_when_msgspec_rejects_the_model(annotation: Any, match: str) -> None:
+    struct = msgspec.defstruct("Model", [("f", annotation, None)])
+
+    @get("/", return_dto=MsgspecDTO[struct], signature_namespace={"struct": struct})  # type: ignore[valid-type]
+    def read_rejected_struct() -> struct:  # type: ignore[valid-type]
+        return struct()
+
+    with pytest.raises(InvalidAnnotationException, match=match) as exc_info:
+        Litestar(route_handlers=[read_rejected_struct], openapi_config=None)
+
+    assert isinstance(exc_info.value.__cause__, TypeError)
 
 
 def test_openapi_schema_for_type_with_custom_generic_type(create_module: Callable[[str], ModuleType]) -> None:
