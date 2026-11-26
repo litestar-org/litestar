@@ -37,20 +37,6 @@ if TYPE_CHECKING:
 __all__ = ("TransferFunctionFactory",)
 
 
-def _nested_destination_type(
-    *,
-    nested_as_dict: bool,
-    is_data_field: bool,
-    field_annotation: Any,
-    nested_model: Any,
-) -> Any:
-    if nested_as_dict:
-        return dict
-    if is_data_field:
-        return field_annotation
-    return nested_model
-
-
 class FieldAccessManager(Protocol):
     def __call__(self, source_name: str, field_name: str, expect_optional: bool) -> AbstractContextManager[str]: ...
 
@@ -381,12 +367,12 @@ class TransferFunctionFactory:
         assignment_target: str,
     ) -> None:
         if isinstance(transfer_type, SimpleType) and transfer_type.nested_field_info:
-            destination_type: Any = _nested_destination_type(
-                nested_as_dict=nested_as_dict,
-                is_data_field=self.is_data_field,
-                field_annotation=transfer_type.field_definition.annotation,
-                nested_model=transfer_type.nested_field_info.model,
-            )
+            if nested_as_dict:
+                destination_type: Any = dict
+            elif self.is_data_field:
+                destination_type = transfer_type.field_definition.annotation
+            else:
+                destination_type = transfer_type.nested_field_info.model
 
             self._create_transfer_instance_data(
                 field_definitions=transfer_type.nested_field_info.field_definitions,
@@ -462,10 +448,17 @@ class TransferFunctionFactory:
     ) -> None:
         # DTOData keeps nested models as mappings until create_instance(). A mapping
         # can be rebuilt into a model only when the union has a single nested member
-        # (e.g. Optional[Model] or Union[Model, str]), so the target type is unambiguous.
+        # (e.g. Optional[Model] or Union[Model, str]), so the target type is unambiguous,
+        # and when no member is itself a mapping type: for Union[Model, dict[str, str]] a
+        # plain dict is a valid value of the dict member and must not be turned into Model.
         # Untagged unions of multiple nested models (e.g. Union[ModelA, ModelB]) are
         # rejected by msgspec before this transfer runs.
-        allow_mapping_source = self.is_data_field and not nested_as_dict and transfer_type.nested_member_count == 1
+        allow_mapping_source = (
+            self.is_data_field
+            and not nested_as_dict
+            and transfer_type.nested_member_count == 1
+            and not transfer_type.has_mapping_member
+        )
 
         def _handle_transfer_instance(simple_type_: SimpleType, conditional_: str) -> None:
             if simple_type_.field_definition.is_none_type:
@@ -475,13 +468,14 @@ class TransferFunctionFactory:
 
             field_definitions: tuple[TransferDTOFieldDefinition, ...] | None
             if simple_type_.nested_field_info and (nested_as_dict or self.is_data_field):
-                constraint_type = simple_type_.nested_field_info.model
-                destination_type: Any = _nested_destination_type(
-                    nested_as_dict=nested_as_dict,
-                    is_data_field=self.is_data_field,
-                    field_annotation=simple_type_.field_definition.annotation,
-                    nested_model=simple_type_.nested_field_info.model,
+                # Match ``_backend.py``: the source is a transfer model instance on the data
+                # (decode) path, and an instance of the declared annotation on the return path.
+                constraint_type = (
+                    simple_type_.nested_field_info.model
+                    if self.is_data_field
+                    else simple_type_.field_definition.annotation
                 )
+                destination_type: Any = dict if nested_as_dict else simple_type_.field_definition.annotation
                 field_definitions = simple_type_.nested_field_info.field_definitions
             else:
                 constraint_type = simple_type_.field_definition.annotation

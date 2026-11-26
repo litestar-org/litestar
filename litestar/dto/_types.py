@@ -54,15 +54,17 @@ class CompositeType(TransferType):
     """Whether the type represents nested model types within itself."""
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class UnionType(CompositeType):
     """Type for representing union types for data transfer."""
 
-    __slots__ = ("inner_types", "nested_member_count")
+    # ``slots=True`` instead of a manual ``__slots__`` so the fields below can have defaults.
 
     inner_types: tuple[CompositeType | SimpleType, ...]
-    nested_member_count: int
-    """Number of inner types that wrap a nested model. Computed once at transfer-type creation."""
+    nested_member_count: int = 0
+    """Number of direct nested model members (``SimpleType`` with ``nested_field_info``)."""
+    has_mapping_member: bool = False
+    """Whether the union contains a ``MappingType`` member."""
 
 
 @dataclass(frozen=True)

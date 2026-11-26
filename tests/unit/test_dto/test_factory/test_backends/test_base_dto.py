@@ -189,6 +189,38 @@ def test_create_transfer_type_union(
 
 
 @pytest.mark.parametrize(
+    ("field_definition", "nested_member_count", "has_mapping_member"),
+    [
+        (FieldDefinition.from_annotation(Union[Model, None]), 1, False),
+        (FieldDefinition.from_annotation(Union[Model, str]), 1, False),
+        (FieldDefinition.from_annotation(Union[Model, Model2]), 2, False),
+        (FieldDefinition.from_annotation(Union[Model, dict[str, str]]), 1, True),
+        (FieldDefinition.from_annotation(Union[int, str]), 0, False),
+    ],
+)
+def test_create_transfer_type_union_member_flags(
+    field_definition: FieldDefinition,
+    nested_member_count: int,
+    has_mapping_member: bool,
+    backend: DTOBackend,
+) -> None:
+    transfer_type = create_transfer_type(backend, field_definition)
+    assert isinstance(transfer_type, UnionType)
+    assert transfer_type.nested_member_count == nested_member_count
+    assert transfer_type.has_mapping_member is has_mapping_member
+
+
+def test_union_type_flags_default() -> None:
+    union_type = UnionType(
+        field_definition=FieldDefinition.from_annotation(Union[int, str]),
+        has_nested=False,
+        inner_types=(),
+    )
+    assert union_type.nested_member_count == 0
+    assert union_type.has_mapping_member is False
+
+
+@pytest.mark.parametrize(
     ("field_definition", "should_have_nested", "has_nested_field_info"),
     [
         (FieldDefinition.from_annotation(tuple[Model, None]), True, (True, False)),

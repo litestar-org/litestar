@@ -545,6 +545,7 @@ class DTOBackend:
             nested_member_count=sum(
                 1 for inner_type in inner_types if isinstance(inner_type, SimpleType) and inner_type.nested_field_info
             ),
+            has_mapping_member=any(isinstance(inner_type, MappingType) for inner_type in inner_types),
         )
 
 

@@ -228,6 +228,11 @@ class NestedMappingBasket:
 
 
 @dataclass
+class OptionalNestedBasket:
+    items: Optional[list[BasketItem]]
+
+
+@dataclass
 class UnionLeaf:
     name: str
 
@@ -316,6 +321,7 @@ def test_dto_data_create_instance_rebuilds_optional_nested_model() -> None:
         sync_to_thread=False,
     )
     def handler(data: JSONBody[DTOData[UnionTopHolder]]) -> dict[str, Any]:
+        assert data.as_builtins() == {"inner": {"name": "a"}}
         instance = data.create_instance()
         assert isinstance(instance.inner, UnionLeaf), f"got {type(instance.inner).__name__}"
         assert instance.inner.name == "a"
@@ -334,6 +340,7 @@ def test_dto_data_create_instance_rebuilds_optional_nested_model_none() -> None:
         sync_to_thread=False,
     )
     def handler(data: JSONBody[DTOData[UnionTopHolder]]) -> dict[str, Any]:
+        assert data.as_builtins() == {"inner": None}
         instance = data.create_instance()
         assert instance.inner is None
         return {"ok": True}
@@ -357,6 +364,47 @@ def test_dto_data_create_instance_rebuilds_model_in_union_with_scalar() -> None:
         assert client.post("/", json={"inner": {"name": "a"}}).status_code == 201
 
 
+def test_dto_data_create_instance_keeps_scalar_in_union_with_model() -> None:
+    """A scalar member of ``Union[Model, str]`` must not be turned into the model."""
+
+    @post(
+        dto=DataclassDTO[UnionStrHolder],
+        return_dto=None,
+        sync_to_thread=False,
+    )
+    def handler(data: JSONBody[DTOData[UnionStrHolder]]) -> dict[str, Any]:
+        assert data.as_builtins() == {"inner": "a"}
+        assert data.create_instance().inner == "a"
+        return {"ok": True}
+
+    with create_test_client(route_handlers=[handler]) as client:
+        assert client.post("/", json={"inner": "a"}).status_code == 201
+
+
+@pytest.mark.parametrize(
+    ("payload", "expected_builtins", "expected_items"),
+    [
+        ({"items": [{"name": "a"}]}, {"items": [{"name": "a"}]}, [BasketItem(name="a")]),
+        ({"items": None}, {"items": None}, None),
+    ],
+)
+def test_dto_data_optional_nested_collection(
+    payload: dict[str, Any], expected_builtins: dict[str, Any], expected_items: list[BasketItem] | None
+) -> None:
+    @post(
+        dto=DataclassDTO[OptionalNestedBasket],
+        return_dto=None,
+        sync_to_thread=False,
+    )
+    def handler(data: JSONBody[DTOData[OptionalNestedBasket]]) -> dict[str, Any]:
+        assert data.as_builtins() == expected_builtins
+        assert data.create_instance().items == expected_items
+        return {"ok": True}
+
+    with create_test_client(route_handlers=[handler]) as client:
+        assert client.post("/", json=payload).status_code == 201
+
+
 def test_dto_data_create_instance_rebuilds_optional_nested_model_in_list() -> None:
     @post(
         dto=DataclassDTO[UnionListHolder],
@@ -364,6 +412,7 @@ def test_dto_data_create_instance_rebuilds_optional_nested_model_in_list() -> No
         sync_to_thread=False,
     )
     def handler(data: JSONBody[DTOData[UnionListHolder]]) -> dict[str, Any]:
+        assert data.as_builtins() == {"items": [{"name": "a"}, None]}
         instance = data.create_instance()
         assert isinstance(instance.items[0], UnionLeaf)
         assert instance.items[0].name == "a"
