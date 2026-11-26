@@ -48,7 +48,7 @@ class Node:
 @dataclass
 class Cafe:
     id: int = 0
-    adresse: Address = field(default_factory=Address)
+    address: Address = field(default_factory=Address)
 
 
 Cafe.__name__ = "Café"
@@ -280,7 +280,7 @@ def transfer_models(app: Litestar) -> set[type[Any]]:
         backend.transfer_model_type
         for route in app.routes
         for handler in getattr(route, "route_handler_map", {}).values()
-        for backend in (handler.data_backend, handler.return_backend)
+        for backend in (handler._dto_data_backend, handler._dto_return_backend)
         if backend is not None
     }
 
@@ -318,9 +318,9 @@ def transfer_models(app: Litestar) -> set[type[Any]]:
             unusual_class_names,
             [
                 "Caf_e9ResponseBody",
-                "Caf_e9ResponseBody.adresse",
+                "Caf_e9ResponseBody.address",
                 "CafeDTOResponseBody",
-                "CafeDTOResponseBody.adresse",
+                "CafeDTOResponseBody.address",
                 "SnakeDTOResponseBody",
                 "UniDTOResponseBody",
                 "UniDTOResponseBody.gr_f6_dfe",
