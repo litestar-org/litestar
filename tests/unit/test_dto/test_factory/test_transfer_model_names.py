@@ -280,7 +280,7 @@ def transfer_models(app: Litestar) -> set[type[Any]]:
         backend.transfer_model_type
         for route in app.routes
         for handler in getattr(route, "route_handler_map", {}).values()
-        for backend in (handler.data_backend, handler.return_backend)
+        for backend in (handler._dto_data_backend, handler._dto_return_backend)
         if backend is not None
     }
 

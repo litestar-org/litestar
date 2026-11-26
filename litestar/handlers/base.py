@@ -56,6 +56,8 @@ class BaseRouteHandler:
 
     __slots__ = (
         "_dto",
+        "_dto_data_backend",
+        "_dto_return_backend",
         "_inherited_dto",
         "_inherited_return_dto",
         "_injection_setup",
@@ -65,7 +67,6 @@ class BaseRouteHandler:
         "_parsed_return_field",
         "_return_dto",
         "_validate_request_parameters",
-        "data_backend",
         "dependencies",
         "exception_handlers",
         "fn",
@@ -75,7 +76,6 @@ class BaseRouteHandler:
         "opt",
         "parameters",
         "paths",
-        "return_backend",
         "signature_namespace",
         "type_decoders",
         "type_encoders",
@@ -90,10 +90,10 @@ class BaseRouteHandler:
     there are none. Set on registration
     """
 
-    data_backend: DTOBackend | None
+    _dto_data_backend: DTOBackend | None
     """The backend of the handler's data DTO. Set on registration"""
 
-    return_backend: DTOBackend | None
+    _dto_return_backend: DTOBackend | None
     """The backend of the handler's return DTO. Set on registration"""
 
     def __init__(
@@ -149,8 +149,8 @@ class BaseRouteHandler:
         self._parsed_return_field: FieldDefinition | EmptyType = Empty
         self._parsed_data_field: FieldDefinition | None = None
         self._parameter_field_definitions: dict[str, FieldDefinition] | EmptyType = Empty
-        self.data_backend = None
-        self.return_backend = None
+        self._dto_data_backend = None
+        self._dto_return_backend = None
 
         self.dependencies = narrow_dependencies(dependencies)
         self._dto = dto
@@ -408,12 +408,12 @@ class BaseRouteHandler:
 
     def _resolve_data_dto(self, app: Litestar) -> type[AbstractDTO] | None:
         """Resolve the data DTO from the handler's declaration, the layers above it and the serialization plugins,
-        and build :attr:`data_backend` if it applies to the handler's data.
+        and build :attr:`_dto_data_backend` if it applies to the handler's data.
 
         Returns:
             An optional :class:`DTO type <.dto.base_dto.AbstractDTO>`
         """
-        data_dto, self.data_backend = resolve_data_backend(self, app)
+        data_dto, self._dto_data_backend = resolve_data_backend(self, app)
         return data_dto
 
     @property
@@ -428,12 +428,12 @@ class BaseRouteHandler:
 
     def _resolve_return_dto(self, app: Litestar, data_dto: type[AbstractDTO] | None) -> type[AbstractDTO] | None:
         """Resolve the return DTO from the handler's declaration, the layers above it, ``data_dto`` and the
-        serialization plugins, and build :attr:`return_backend`.
+        serialization plugins, and build :attr:`_dto_return_backend`.
 
         Returns:
             The :class:`DTO type <.dto.base_dto.AbstractDTO>` that applies to the return value, if any
         """
-        return_dto, self.return_backend = resolve_return_backend(self, app, data_dto)
+        return_dto, self._dto_return_backend = resolve_return_backend(self, app, data_dto)
         return return_dto
 
     def _create_di_request_context(self, app_ctx: DIContext | None, scope: Scope) -> DIContext:

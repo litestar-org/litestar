@@ -146,8 +146,8 @@
         :type: misc
         :breaking:
 
-        A route handler keeps the backends of its DTOs in ``data_backend`` and
-        ``return_backend``. ``AbstractDTO.create_for_field_definition`` returns the backend
+        A route handler keeps the backends of its DTOs.
+        ``AbstractDTO.create_for_field_definition`` returns the backend
         it builds instead of storing it on the DTO class, and
         ``AbstractDTO.create_openapi_schema`` takes the ``route_handler`` instead of a
         ``handler_id``.
