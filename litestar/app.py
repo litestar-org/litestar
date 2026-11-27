@@ -26,7 +26,7 @@ from litestar._openapi.plugin import OpenAPIPlugin
 from litestar._openapi.schema_generation import openapi_schema_plugins
 from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.app import AppConfig, ExperimentalFeatures
-from litestar.config.response_cache import ResponseCacheConfig
+from litestar.config.response_cache import DEFAULT_STORE_MAX_ENTRIES, DEFAULT_STORE_MAX_SIZE, ResponseCacheConfig
 from litestar.connection import Request, WebSocket
 from litestar.constants import DEFAULT_MULTIPART_FORM_ALLOWED_CHARSETS
 from litestar.datastructures.state import State
@@ -50,6 +50,7 @@ from litestar.plugins import (
 )
 from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
+from litestar.stores.memory import MemoryStore
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition, RouteHandlerMapItem, TemplateConfigType
@@ -421,7 +422,9 @@ class Litestar(Router):
         self._openapi_schema: OpenAPI | None = None
         self._debug: bool = True
         self.stores: StoreRegistry = (
-            config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
+            config.stores
+            if isinstance(config.stores, StoreRegistry)
+            else StoreRegistry(config.stores, default_factory=self._create_default_store)
         )
         self._lifespan_managers = config.lifespan
         for store in self.stores._stores.values():
@@ -541,6 +544,11 @@ class Litestar(Router):
         self.asgi_router.construct_routing_trie()
 
         self.asgi_handler = self._create_asgi_handler()
+
+    def _create_default_store(self, name: str) -> Store:
+        if name == self.response_cache_config.store:
+            return MemoryStore(max_size=DEFAULT_STORE_MAX_SIZE, max_entries=DEFAULT_STORE_MAX_ENTRIES)
+        return MemoryStore()
 
     @staticmethod
     def _patch_opentelemetry_middleware(config: AppConfig) -> AppConfig:

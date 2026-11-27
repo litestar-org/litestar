@@ -47,12 +47,19 @@ You can configure caching behaviour on the application level by passing an insta
 Changing where data is stored
 +++++++++++++++++++++++++++++
 
-By default, caching will use the :class:`~.stores.memory.MemoryStore`, but it can be configured with
-any :class:`~.stores.base.Store`, for example :class:`~.stores.redis.RedisStore`:
+By default, caching will use a :class:`~.stores.memory.MemoryStore` limited to 100 MB of keys and values, and to 100,000
+entries; once it is full, the oldest entries are deleted. It can be configured with any :class:`~.stores.base.Store`,
+for example a ``MemoryStore`` with different limits, or a :class:`~.stores.redis.RedisStore`:
 
 .. literalinclude:: /examples/caching/redis_store.py
     :language: python
     :caption: Using Redis as the cache store.
+
+.. note::
+    These limits apply to the store Litestar creates under the name set in
+    :attr:`ResponseCacheConfig.store <.config.response_cache.ResponseCacheConfig.store>`. If another feature, such as
+    rate limiting or server side sessions, is configured to use a store of the same name, it shares this store and
+    its values can be deleted when the cache is full. Use distinct store names, or register the store explicitly.
 
 Specifying a cache key builder
 ++++++++++++++++++++++++++++++
