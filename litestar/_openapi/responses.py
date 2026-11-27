@@ -141,7 +141,7 @@ class ResponseFactory:
             if dto := self.route_handler.return_dto:
                 result = dto.create_openapi_schema(
                     field_definition=self.field_definition,
-                    handler_id=self.route_handler.handler_id,
+                    route_handler=self.route_handler,
                     schema_creator=self.schema_creator,
                 )
             else:

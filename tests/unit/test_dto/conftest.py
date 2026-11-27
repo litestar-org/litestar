@@ -7,8 +7,9 @@ import pytest
 
 from litestar import Request, get
 from litestar._openapi.schema_generation import SchemaCreator
-from litestar.dto import AbstractDTO, DTOConfig, DTOField, DTOFieldDefinition
+from litestar.dto import AbstractDTO, DTOField, DTOFieldDefinition
 from litestar.enums import MediaType
+from litestar.handlers.base import BaseRouteHandler
 from litestar.openapi.spec import Reference, Schema
 from litestar.testing import RequestFactory
 from litestar.types.serialization import LitestarEncodableType
@@ -25,10 +26,8 @@ def int_factory() -> Callable[[], int]:
 
 
 @pytest.fixture
-def ModelDataDTO(use_experimental_dto_backend: bool) -> type[AbstractDTO]:
+def ModelDataDTO() -> type[AbstractDTO]:
     class DTOCls(AbstractDTO[Model]):
-        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
-
         def decode_builtins(self, value: Any) -> Model:
             return Model(a=1, b="2")
 
@@ -40,7 +39,7 @@ def ModelDataDTO(use_experimental_dto_backend: bool) -> type[AbstractDTO]:
 
         @classmethod
         def create_openapi_schema(
-            cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
+            cls, field_definition: FieldDefinition, route_handler: BaseRouteHandler, schema_creator: SchemaCreator
         ) -> Reference | Schema:
             return Schema()
 
@@ -75,7 +74,7 @@ def ModelReturnDTO() -> type[AbstractDTO]:
 
         @classmethod
         def create_openapi_schema(
-            cls, field_definition: FieldDefinition, handler_id: str, schema_creator: SchemaCreator
+            cls, field_definition: FieldDefinition, route_handler: BaseRouteHandler, schema_creator: SchemaCreator
         ) -> Reference | Schema:
             return Schema()
 

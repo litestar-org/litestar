@@ -129,6 +129,7 @@ A **huge** thanks to our sponsors:
 
 <a href="https://github.com/scalar/scalar/?utm_source=litestar&utm_medium=website&utm_campaign=main-badge" target="_blank" title="Scalar.com - Document, Discover and Test APIs with Scalar."><img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/scalar.svg" width="180" alt="Scalar.com"></a>
 <a href="https://telemetrysports.com/" title="Telemetry Sports - Changing the way data influences the sports experience"><img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/telemetry-sports/unofficial-telemetry-whitebg.svg" width="150" alt="Telemetry Sports"></a>
+<a href="https://codspeed.io/?utm_source=oss-sponsorship&utm_medium=litestar-org" title="CodSpeed - Performance testing in CI"><picture><source media="(prefers-color-scheme: dark)" srcset="https://codspeed.io/codspeed-logo-dark.svg"><source media="(prefers-color-scheme: light)" srcset="https://codspeed.io/codspeed-logo-light.svg"><img src="https://codspeed.io/codspeed-logo-light.svg" width="180" alt="CodSpeed"></picture></a>
 
 <a href="https://docs.litestar.dev/latest/#sponsors" class="external-link" target="_blank">Check out our sponsors in the docs</a>
 
