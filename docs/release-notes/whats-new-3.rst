@@ -431,21 +431,19 @@ Built-in middleware migrated to ``ASGIMiddleware``
 
 Litestar's built-in middleware are being moved from the legacy ``AbstractMiddleware`` and
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
-``CORSMiddleware``, ``ResponseCacheMiddleware``, ``CSRFMiddleware``,
-``CompressionMiddleware``, ``AllowedHostsMiddleware``, ``RateLimitMiddleware``,
-``PrometheusMiddleware`` and ``SessionMiddleware`` have made this move.
-``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved into
-``litestar.middleware._internal``, removing them from the public API; for CSRF this
-includes the ``litestar.middleware.csrf`` module and its ``generate_csrf_token`` /
-``generate_csrf_hash`` helpers.
+``CORSMiddleware``, ``CSRFMiddleware``, ``CompressionMiddleware``,
+``AllowedHostsMiddleware``, ``RateLimitMiddleware``, ``PrometheusMiddleware`` and
+``SessionMiddleware`` have made this move. ``CSRFMiddleware`` has also been moved into
+``litestar.middleware._internal``, removing it from the public API; this includes the
+``litestar.middleware.csrf`` module and its ``generate_csrf_token`` /
+``generate_csrf_hash`` helpers. ``ResponseCacheMiddleware`` is removed; the route handler
+does the caching.
 
 These classes are constructed by Litestar itself from their configuration objects (for
 CSRF, via a ``from_config`` classmethod on the middleware), so applications that only
-configure them - for CORS, via
-:class:`~litestar.config.cors.CORSConfig`, for response caching, via
-:class:`~litestar.config.response_cache.ResponseCacheConfig` and the handler-level
-``cache`` argument, for CSRF, via :class:`~litestar.config.csrf.CSRFConfig`, for
-compression, via :class:`~litestar.config.compression.CompressionConfig`, and for
+configure them - for CORS, via :class:`~litestar.config.cors.CORSConfig`, for CSRF, via
+:class:`~litestar.config.csrf.CSRFConfig`, for compression, via
+:class:`~litestar.config.compression.CompressionConfig`, and for
 allowed hosts, via :class:`~litestar.config.allowed_hosts.AllowedHostsConfig` - are
 unaffected. Their ``exclude`` patterns are still matched against the request path;
 ``CSRFConfig``, ``CompressionConfig`` and ``AllowedHostsConfig`` additionally accept
