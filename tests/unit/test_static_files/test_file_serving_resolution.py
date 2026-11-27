@@ -14,7 +14,7 @@ from litestar import MediaType, get
 from litestar.file_system import BaseFileSystem, BaseLocalFileSystem, FileSystemRegistry, maybe_wrap_fsspec_file_system
 from litestar.params import FromPath
 from litestar.static_files import _get_fs_info, create_static_files_router
-from litestar.status_codes import HTTP_200_OK
+from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from litestar.testing import create_test_client
 from tests.unit.test_response.test_file_response import MockFileSystem
 
@@ -498,3 +498,32 @@ async def test_staticfiles_get_fs_info_no_access_to_non_static_file_with_prefix(
 
     assert path is None
     assert info is None
+
+
+@pytest.mark.parametrize(
+    "path",
+    (
+        "/static/public%2F..%2Fprivate.txt",
+        "/static%2F.%2Fprivate.txt",
+        "/static/public%2F.%2Flogo.txt",
+        "/static/public%5C..%5Cprivate.txt",
+        "/static/public%2F..",
+    ),
+)
+@pytest.mark.parametrize("html_mode", (True, False))
+def test_path_with_dot_segments_returns_404(tmp_path: Path, path: str, html_mode: bool) -> None:
+    (tmp_path / "public").mkdir()
+    (tmp_path / "public" / "logo.txt").write_text("logo")
+    (tmp_path / "private.txt").write_text("private")
+    (tmp_path / "index.html").write_text("index")
+    (tmp_path / ".well-known").mkdir()
+    (tmp_path / ".well-known" / "..foo").write_text("foo")
+
+    with create_test_client(
+        [create_static_files_router(path="/static", directories=[tmp_path], html_mode=html_mode)]
+    ) as client:
+        assert client.get("/static/public/logo.txt").status_code == HTTP_200_OK
+        assert client.get("/static/private.txt").status_code == HTTP_200_OK
+        assert client.get("/static/.well-known/..foo").status_code == HTTP_200_OK
+        assert client.get(path).status_code == HTTP_404_NOT_FOUND
+        assert client.head(path).status_code == HTTP_404_NOT_FOUND

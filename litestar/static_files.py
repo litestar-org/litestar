@@ -189,6 +189,9 @@ async def _handler(
     allow_symlinks_outside_directory: bool,
     request: Request,
 ) -> ASGIFileResponse:
+    if not {".", ".."}.isdisjoint(request.scope["path"].replace("\\", "/").split("/")):
+        raise NotFoundException
+
     split_path = path.split("/")
     filename = split_path[-1]
     joined_path = Path(*split_path)

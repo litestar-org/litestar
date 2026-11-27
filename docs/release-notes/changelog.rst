@@ -6,6 +6,18 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Static files: Return ``404`` for paths containing ``.`` or ``..`` segments
+        :type: bugfix
+        :breaking:
+
+        The handlers created by
+        :func:`~litestar.static_files.create_static_files_router` resolved ``.`` and
+        ``..`` segments of the requested path, while middleware ``exclude`` patterns
+        and guards saw the unresolved path. A request such as
+        ``/static/public/../private.txt`` was therefore served ``private.txt``, even if
+        only ``^/static/public`` was excluded from authentication. Such paths now
+        receive a ``404 - Not Found`` response.
+
     .. change:: DTO: Store DTO backends on the route handler
         :type: misc
         :breaking:
