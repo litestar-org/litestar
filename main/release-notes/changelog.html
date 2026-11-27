@@ -547,6 +547,14 @@ data-aria-dark="Switch to auto color mode">
 <strong>Released: </strong>2364-01-27<section id="3.0.0-feature">
 <h3>Features<a class="headerlink" href="#3.0.0-feature" title="Link to this heading">¶</a></h3>
 <dl>
+<dt><code class="docutils literal notranslate"><span class="pre">MemoryStore</span></code>: Add <code class="docutils literal notranslate"><span class="pre">max_size</span></code> and <code class="docutils literal notranslate"><span class="pre">max_entries</span></code><a class="headerlink reference internal" href="#3.0.0-memorystore" id="3.0.0-memorystore">#</a></dt><dd><div class="changelog-change docutils container">
+<p><a class="reference internal" href="../reference/stores/memory.html#litestar.stores.memory.MemoryStore" title="litestar.stores.memory.MemoryStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryStore</span></code></a> can be limited with the new
+<code class="docutils literal notranslate"><span class="pre">max_size</span></code> (total size of the keys and values in bytes) and <code class="docutils literal notranslate"><span class="pre">max_entries</span></code>
+parameters; when a limit is exceeded, the oldest values are deleted. No limit is
+applied by default.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5280">https://github.com/litestar-org/litestar/pull/5280</a></span></p>
+</div>
+</dd>
 <dt>Add option to run the ASGI lifespan protocol for <code class="docutils literal notranslate"><span class="pre">asgi</span></code> handlers<a class="headerlink reference internal" href="#3.0.0-add option to run the asgi lifespan protocol for" id="3.0.0-add option to run the asgi lifespan protocol for">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Add a flag <code class="docutils literal notranslate"><span class="pre">lifespan</span></code> to <a class="reference internal" href="../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">asgi()</span></code></a>, defaulting to
 <code class="docutils literal notranslate"><span class="pre">False</span></code>. When set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the ASGI lifespan protocol will be ran for the
@@ -1467,6 +1475,18 @@ to indicate whether to bypass the middleware for the current request.</p>
 <section id="3.0.0-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#3.0.0-bugfix" title="Link to this heading">¶</a></h3>
 <dl>
+<dt>Limit the size of the default response cache store<a class="headerlink reference internal" href="#3.0.0-limit the size of the default response cache store" id="3.0.0-limit the size of the default response cache store">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>The <a class="reference internal" href="../reference/stores/memory.html#litestar.stores.memory.MemoryStore" title="litestar.stores.memory.MemoryStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryStore</span></code></a> created by default for the
+response cache had no size limit. Since the cache key includes the query
+string, requests with distinct query strings to a cached route made it grow
+without bound.</p>
+<p>This store is now limited to 100 MB of keys and values, and to 100,000 entries;
+once it is full, the oldest entries are deleted. A store registered explicitly,
+or created by a user-supplied
+<a class="reference internal" href="../reference/stores/registry.html#litestar.stores.registry.StoreRegistry" title="litestar.stores.registry.StoreRegistry"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoreRegistry</span></code></a>, is not changed.</p>
+<p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/5280">https://github.com/litestar-org/litestar/pull/5280</a></span></p>
+</div>
+</dd>
 <dt>Don’t allow layer parameters without an associated type<a class="headerlink reference internal" href="#3.0.0-don't allow layer parameters without an associated type" id="3.0.0-don't allow layer parameters without an associated type">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug that would cause the constraints of a layer parameter, e.g.
 <code class="docutils literal notranslate"><span class="pre">parameters={&quot;limit&quot;:</span> <span class="pre">QueryParameter(gt=0)}</span></code>, to be silently ignored if no

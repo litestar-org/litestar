@@ -601,8 +601,9 @@ parameter to <a class="reference internal" href="../reference/config.html#litest
 <a class="reference internal" href="../reference/config.html#litestar.config.response_cache.ResponseCacheConfig" title="litestar.config.response_cache.ResponseCacheConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseCacheConfig</span></code></a> to the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span> <span class="pre">instance</span></code></a>.</p>
 <section id="changing-where-data-is-stored">
 <h3>Changing where data is stored<a class="headerlink" href="#changing-where-data-is-stored" title="Link to this heading">¶</a></h3>
-<p>By default, caching will use the <a class="reference internal" href="../reference/stores/memory.html#litestar.stores.memory.MemoryStore" title="litestar.stores.memory.MemoryStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryStore</span></code></a>, but it can be configured with
-any <a class="reference internal" href="../reference/stores/base.html#litestar.stores.base.Store" title="litestar.stores.base.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a>, for example <a class="reference internal" href="../reference/stores/redis.html#litestar.stores.redis.RedisStore" title="litestar.stores.redis.RedisStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">RedisStore</span></code></a>:</p>
+<p>By default, caching will use a <a class="reference internal" href="../reference/stores/memory.html#litestar.stores.memory.MemoryStore" title="litestar.stores.memory.MemoryStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryStore</span></code></a> limited to 100 MB of keys and values, and to 100,000
+entries; once it is full, the oldest entries are deleted. It can be configured with any <a class="reference internal" href="../reference/stores/base.html#litestar.stores.base.Store" title="litestar.stores.base.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a>,
+for example a <code class="docutils literal notranslate"><span class="pre">MemoryStore</span></code> with different limits, or a <a class="reference internal" href="../reference/stores/redis.html#litestar.stores.redis.RedisStore" title="litestar.stores.redis.RedisStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">RedisStore</span></code></a>:</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">Using Redis as the cache store.</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
@@ -627,6 +628,13 @@ any <a class="reference internal" href="../reference/stores/base.html#litestar.s
 </span><span data-line="20"><span class="p">)</span>
 </span></pre></div>
 </div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These limits apply to the store Litestar creates under the name set in
+<a class="reference internal" href="../reference/config.html#litestar.config.response_cache.ResponseCacheConfig.store" title="litestar.config.response_cache.ResponseCacheConfig.store"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ResponseCacheConfig.store</span></code></a>. If another feature, such as
+rate limiting or server side sessions, is configured to use a store of the same name, it shares this store and
+its values can be deleted when the cache is full. Use distinct store names, or register the store explicitly.</p>
 </div>
 </section>
 <section id="specifying-a-cache-key-builder">

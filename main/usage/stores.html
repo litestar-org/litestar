@@ -453,6 +453,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#deleting-expired-values">Deleting expired values</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#limiting-the-size-of-a-memory-store">Limiting the size of a memory store</a></li>
 <li><a class="reference internal" href="#what-can-be-stored">What can be stored</a></li>
 <li><a class="reference internal" href="#namespacing">Namespacing</a></li>
 </ul>
@@ -721,6 +722,20 @@ second:</p>
 This means that every time a new instance of this store is created, it will start out empty.</p>
 </div>
 </section>
+</section>
+<section id="limiting-the-size-of-a-memory-store">
+<h3>Limiting the size of a memory store<a class="headerlink" href="#limiting-the-size-of-a-memory-store" title="Link to this heading">¶</a></h3>
+<p>Values that do not expire, or that are set faster than they expire, make a
+<a class="reference internal" href="../reference/stores/memory.html#litestar.stores.memory.MemoryStore" title="litestar.stores.memory.MemoryStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryStore</span></code></a> grow. To prevent this, it can be limited by the total size of its keys and
+values in bytes, by the number of values, or both. When a limit is exceeded, the oldest values are deleted:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">litestar.stores.memory</span><span class="w"> </span><span class="kn">import</span> <span class="n">MemoryStore</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="n">store</span> <span class="o">=</span> <span class="n">MemoryStore</span><span class="p">(</span><span class="n">max_size</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span> <span class="n">max_entries</span><span class="o">=</span><span class="mi">10_000</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>No limit is applied by default, since deleting values early is not suitable for all applications, for example
+server side sessions. The exception to this is the store Litestar creates for
+<a class="reference internal" href="caching.html"><span class="doc">response caching</span></a>.</p>
 </section>
 <section id="what-can-be-stored">
 <h3>What can be stored<a class="headerlink" href="#what-can-be-stored" title="Link to this heading">¶</a></h3>
