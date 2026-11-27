@@ -9,6 +9,7 @@
     .. change:: Static files: Return ``404`` for paths containing ``.`` or ``..`` segments
         :type: bugfix
         :breaking:
+        :pr: 5279
 
         The handlers created by
         :func:`~litestar.static_files.create_static_files_router` resolved ``.`` and
