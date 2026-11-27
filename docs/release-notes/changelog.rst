@@ -8,6 +8,7 @@
 
     .. change:: Cache the output of route handlers instead of their ASGI response
         :type: feature
+        :pr: 5278
         :breaking:
 
         The route handler caches the status code, media type, encoding, body and headers
