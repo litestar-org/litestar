@@ -625,7 +625,7 @@ class Outer(msgspec.Struct):
     backend = DTOBackend(
         handler_id="test",
         dto_factory=MsgspecDTO[module.Outer],  # type: ignore[name-defined]
-        field_definition=TransferDTOFieldDefinition.from_annotation(module.Outer),
+        field_definition=FieldDefinition.from_annotation(module.Outer),
         model_type=module.Outer,
         wrapper_attribute_name=None,
         is_data_field=True,
@@ -668,8 +668,51 @@ class Outer:
         DTOBackend(
             handler_id="test",
             dto_factory=DataclassDTO[module.Outer],  # type: ignore[name-defined]
-            field_definition=TransferDTOFieldDefinition.from_annotation(module.Outer),
+            field_definition=FieldDefinition.from_annotation(module.Outer),
             model_type=module.Outer,
             wrapper_attribute_name=None,
             is_data_field=True,
         )
+
+
+@pytest.mark.parametrize(
+    ("value", "expected_type"),
+    [
+        ({"k": "v"}, dict),
+        ({"value": "hello"}, dict),
+    ],
+)
+def test_codegen_nested_union_with_mapping_member_does_not_rebuild_plain_dict(
+    create_module: Callable[[str], ModuleType],
+    value: Any,
+    expected_type: type,
+) -> None:
+    # A mapping source may only be rebuilt into the nested model when no union member is itself
+    # a mapping: for ``Union[Inner, dict[str, str]]`` a plain dict is a valid ``dict`` value.
+    module = create_module("""
+from typing import Union
+import dataclasses
+
+@dataclasses.dataclass
+class Inner:
+    value: str
+
+
+@dataclasses.dataclass
+class Outer:
+    some_field: Union[Inner, dict[str, str]]
+""")
+
+    backend = DTOBackend(
+        handler_id="test",
+        dto_factory=DataclassDTO[module.Outer],  # type: ignore[name-defined]
+        field_definition=FieldDefinition.from_annotation(module.Outer),
+        model_type=module.Outer,
+        wrapper_attribute_name=None,
+        is_data_field=True,
+    )
+
+    instance = backend.transfer_data_from_builtins({"some_field": value})
+    assert isinstance(instance, module.Outer)
+    assert type(instance.some_field) is expected_type
+    assert instance.some_field == value

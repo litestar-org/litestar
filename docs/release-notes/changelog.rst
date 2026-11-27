@@ -6,6 +6,27 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: DTO: Keep nested ``DTOData`` models as dicts until ``create_instance()``
+        :type: bugfix
+        :breaking:
+        :pr: 5069
+        :issue: 3620
+
+        Fix a bug where nested models inside collections, mappings and unions were
+        instantiated while decoding the request body, even when the handler received
+        :class:`~litestar.dto.data_structures.DTOData`. Nested values now stay plain
+        ``dict`` values until
+        :meth:`~litestar.dto.data_structures.DTOData.create_instance` is called,
+        matching how the top-level model is handled.
+
+        As a result,
+        :meth:`~litestar.dto.data_structures.DTOData.as_builtins` returns ``dict``
+        values instead of model instances for nested models, and validation of nested
+        models, e.g. Pydantic constraints, runs when
+        :meth:`~litestar.dto.data_structures.DTOData.create_instance` is called instead
+        of while decoding the request. Invalid nested data no longer results in a
+        ``400`` response before the handler is called.
+
     .. change:: DTO: Store DTO backends on the route handler
         :type: misc
         :breaking:

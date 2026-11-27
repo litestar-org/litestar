@@ -198,17 +198,18 @@ class TransferFunctionFactory:
         transfer_type: TransferType,
         is_data_field: bool,
         attribute_accessor: Callable[[object, str], Any],
+        nested_as_dict: bool,
     ) -> Callable[[Any], Any]:
         factory = cls(
             is_data_field=is_data_field,
-            nested_as_dict=False,
+            nested_as_dict=nested_as_dict,
             attribute_accessor=attribute_accessor,
         )
         tmp_return_type_name = factory._create_local_name("tmp_return_type")
         source_value_name = factory._create_local_name("source_value")
         factory._create_transfer_type_data_body(
             transfer_type=transfer_type,
-            nested_as_dict=False,
+            nested_as_dict=nested_as_dict,
             assignment_target=tmp_return_type_name,
             source_value_name=source_value_name,
         )
@@ -387,6 +388,7 @@ class TransferFunctionFactory:
                 transfer_type=transfer_type,
                 source_value_name=source_value_name,
                 assignment_target=assignment_target,
+                nested_as_dict=nested_as_dict,
             )
             return
 
@@ -397,6 +399,7 @@ class TransferFunctionFactory:
                     is_data_field=self.is_data_field,
                     transfer_type=transfer_type.inner_type,
                     attribute_accessor=self.attribute_accessor,
+                    nested_as_dict=nested_as_dict,
                 )
                 transfer_type_data_name = self._add_to_fn_globals("transfer_type_data", transfer_type_data_fn)
                 self._add_stmt(
@@ -414,6 +417,7 @@ class TransferFunctionFactory:
                     is_data_field=self.is_data_field,
                     transfer_type=transfer_type.value_type,
                     attribute_accessor=self.attribute_accessor,
+                    nested_as_dict=nested_as_dict,
                 )
                 transfer_type_data_name = self._add_to_fn_globals("transfer_type_data", transfer_type_data_fn)
                 self._add_stmt(
@@ -426,12 +430,36 @@ class TransferFunctionFactory:
 
         self._add_stmt(f"{assignment_target} = {source_value_name}")
 
+    @staticmethod
+    def _nested_union_isinstance_expr(
+        source_value_name: str, constraint_type_name: str, allow_mapping_source: bool
+    ) -> str:
+        expr = f"isinstance({source_value_name}, {constraint_type_name})"
+        if allow_mapping_source:
+            return f"{expr} or isinstance({source_value_name}, Mapping)"
+        return expr
+
     def _create_transfer_nested_union_type_data(
         self,
         transfer_type: UnionType,
         source_value_name: str,
         assignment_target: str,
+        nested_as_dict: bool,
     ) -> None:
+        # DTOData keeps nested models as mappings until create_instance(). A mapping
+        # can be rebuilt into a model only when the union has a single nested member
+        # (e.g. Optional[Model] or Union[Model, str]), so the target type is unambiguous,
+        # and when no member is itself a mapping type: for Union[Model, dict[str, str]] a
+        # plain dict is a valid value of the dict member and must not be turned into Model.
+        # Untagged unions of multiple nested models (e.g. Union[ModelA, ModelB]) are
+        # rejected by msgspec before this transfer runs.
+        allow_mapping_source = (
+            self.is_data_field
+            and not nested_as_dict
+            and transfer_type.nested_member_count == 1
+            and not transfer_type.has_mapping_member
+        )
+
         def _handle_transfer_instance(simple_type_: SimpleType, conditional_: str) -> None:
             if simple_type_.field_definition.is_none_type:
                 with self._start_block(f"{conditional_} {source_value_name} is None:"):
@@ -439,9 +467,15 @@ class TransferFunctionFactory:
                 return
 
             field_definitions: tuple[TransferDTOFieldDefinition, ...] | None
-            if simple_type_.nested_field_info and self.is_data_field:
-                constraint_type = simple_type_.nested_field_info.model
-                destination_type = simple_type_.field_definition.annotation
+            if simple_type_.nested_field_info and (nested_as_dict or self.is_data_field):
+                # Match ``_backend.py``: the source is a transfer model instance on the data
+                # (decode) path, and an instance of the declared annotation on the return path.
+                constraint_type = (
+                    simple_type_.nested_field_info.model
+                    if self.is_data_field
+                    else simple_type_.field_definition.annotation
+                )
+                destination_type: Any = dict if nested_as_dict else simple_type_.field_definition.annotation
                 field_definitions = simple_type_.nested_field_info.field_definitions
             else:
                 constraint_type = simple_type_.field_definition.annotation
@@ -456,8 +490,13 @@ class TransferFunctionFactory:
 
             constraint_type_name = self._add_to_fn_globals("constraint_type", constraint_type)
             destination_type_name = self._add_to_fn_globals("destination_type", destination_type)
+            isinstance_expr = self._nested_union_isinstance_expr(
+                source_value_name,
+                constraint_type_name,
+                allow_mapping_source and bool(simple_type_.nested_field_info),
+            )
 
-            with self._start_block(f"{conditional_} isinstance({source_value_name}, {constraint_type_name}):"):
+            with self._start_block(f"{conditional_} {isinstance_expr}:"):
                 if field_definitions:
                     self._create_transfer_instance_data(
                         destination_type_name=destination_type_name,
@@ -496,7 +535,7 @@ class TransferFunctionFactory:
             with self._start_block("else:"):
                 self._create_transfer_type_data_body(
                     transfer_type=non_simple_types[0],
-                    nested_as_dict=False,
+                    nested_as_dict=nested_as_dict,
                     source_value_name=source_value_name,
                     assignment_target=assignment_target,
                 )
