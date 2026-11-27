@@ -6,6 +6,30 @@
 .. changelog:: 3.0.0
     :date: 2364-01-27
 
+    .. change:: Limit the size of the default response cache store
+        :type: bugfix
+        :breaking:
+        :pr: 5280
+
+        The :class:`~litestar.stores.memory.MemoryStore` created by default for the
+        response cache had no size limit. Since the cache key includes the query
+        string, requests with distinct query strings to a cached route made it grow
+        without bound.
+
+        This store is now limited to 100 MB of keys and values, and to 100,000 entries;
+        once it is full, the oldest entries are deleted. A store registered explicitly,
+        or created by a user-supplied
+        :class:`~litestar.stores.registry.StoreRegistry`, is not changed.
+
+    .. change:: ``MemoryStore``: Add ``max_size`` and ``max_entries``
+        :type: feature
+        :pr: 5280
+
+        :class:`~litestar.stores.memory.MemoryStore` can be limited with the new
+        ``max_size`` (total size of the keys and values in bytes) and ``max_entries``
+        parameters; when a limit is exceeded, the oldest values are deleted. No limit is
+        applied by default.
+
     .. change:: DTO: Store DTO backends on the route handler
         :type: misc
         :breaking:

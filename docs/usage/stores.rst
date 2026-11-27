@@ -122,6 +122,24 @@ When using the :class:`FileStore <.file.FileStore>`, expired items may also be d
     This means that every time a new instance of this store is created, it will start out empty.
 
 
+Limiting the size of a memory store
++++++++++++++++++++++++++++++++++++
+
+Values that do not expire, or that are set faster than they expire, make a
+:class:`MemoryStore <.memory.MemoryStore>` grow. To prevent this, it can be limited by the total size of its keys and
+values in bytes, by the number of values, or both. When a limit is exceeded, the oldest values are deleted:
+
+.. code-block:: python
+
+    from litestar.stores.memory import MemoryStore
+
+    store = MemoryStore(max_size=50 * 1024 * 1024, max_entries=10_000)
+
+No limit is applied by default, since deleting values early is not suitable for all applications, for example
+server side sessions. The exception to this is the store Litestar creates for
+:doc:`response caching </usage/caching>`.
+
+
 What can be stored
 ++++++++++++++++++
 

@@ -22,6 +22,10 @@ if TYPE_CHECKING:
 __all__ = ("CACHE_FOREVER", "ResponseCacheConfig", "default_cache_key_builder")
 
 
+DEFAULT_STORE_MAX_SIZE = 100 * 1024 * 1024
+DEFAULT_STORE_MAX_ENTRIES = 100_000
+
+
 @final
 class CACHE_FOREVER:  # noqa: N801
     """Sentinel value indicating that a cached response should be stored without an expiration, explicitly skipping the
