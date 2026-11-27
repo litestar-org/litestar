@@ -188,9 +188,13 @@ class MutableScopeHeaders(MutableMapping):
         Returns:
             None
         """
-        existing = self.get(key)
-        if existing is not None:
-            value = ",".join([*existing.split(","), value])
+        try:
+            existing_entries = self.getall(key)
+        except KeyError:
+            existing_entries = []
+        existing_values = [v for existing in existing_entries for v in existing.split(",")]
+        if existing_values:
+            value = ",".join([*existing_values, value])
         self[key] = value
 
     def __getitem__(self, key: str) -> str:
