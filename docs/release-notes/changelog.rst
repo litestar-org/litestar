@@ -9,6 +9,7 @@
     .. change:: Limit the size of the default response cache store
         :type: bugfix
         :breaking:
+        :pr: 5280
 
         The :class:`~litestar.stores.memory.MemoryStore` created by default for the
         response cache had no size limit. Since the cache key includes the query
@@ -22,6 +23,7 @@
 
     .. change:: ``MemoryStore``: Add ``max_size`` and ``max_entries``
         :type: feature
+        :pr: 5280
 
         :class:`~litestar.stores.memory.MemoryStore` can be limited with the new
         ``max_size`` (total size of the keys and values in bytes) and ``max_entries``
