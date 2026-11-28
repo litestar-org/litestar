@@ -376,6 +376,9 @@ def test_etag_to_header_weak() -> None:
         ("text/plain;q=0.8,text/html", ["text/plain", "text/html"], "text/html"),
         ("text/plain;q=ab,text/html", ["text/plain", "text/html"], "text/plain"),
         ("text/*,text/html", ["text/plain", "text/html"], "text/html"),
+        ("text/plain;q=0", ["text/plain"], None),
+        ("text/plain;q=0.0", ["text/plain"], None),
+        ("text/plain;q=0, application/json", ["text/plain", "application/json"], "application/json"),
     ),
 )
 def test_accept_best_match(accept_value: str, provided_types: list[str], best_match: Optional[str]) -> None:
@@ -386,3 +389,4 @@ def test_accept_best_match(accept_value: str, provided_types: list[str], best_ma
 def test_accept_accepts() -> None:
     accept = Accept("text/plain;q=0.8,text/html")
     assert accept.accepts(MediaType.TEXT)
+    assert not Accept("text/plain;q=0").accepts("text/plain")
