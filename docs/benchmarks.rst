@@ -15,6 +15,8 @@ Methodology
   `here <https://github.com/litestar-org/api-performance-tests/tree/main/frameworks>`__)
 - Each application is run using `uvicorn <https://uvicorn.dev/>`__ with
   **one worker** and `uvloop <https://uvloop.readthedocs.io/>`__
+- Metrics recorded include both **Requests Per Second (RPS)** (throughput, higher is better) and
+  **Latency** in milliseconds (response turnaround time, lower is better), reporting mean latency and percentiles (p50, p95, p99)
 - Test data has been randomly generated and is being imported from a shared module
 - All frameworks are used with their "stock" configuration, i.e. without applying any
   additional optimizations. All tests have been written according to the respective
@@ -40,6 +42,11 @@ Serializing a dictionary into JSON
 
    RPS JSON
 
+.. figure:: /images/benchmarks/latency_json.svg
+   :alt: Latency JSON
+
+   Latency JSON
+
 .. note::
     Because all frameworks are being used in their "stock" configuration, Litestar will
     run the data through `msgspec <https://msgspec.dev>`_ and FastAPI
@@ -56,6 +63,11 @@ Serializing Pydantic models and dataclasses into JSON
 
    RPS serializing Pydantic models and dataclasses into JSON
 
+.. figure:: /images/benchmarks/latency_serialization.svg
+   :alt: Latency serializing Pydantic models and dataclasses into JSON
+
+   Latency serializing Pydantic models and dataclasses into JSON
+
 
 Files
 ~~~~~
@@ -64,6 +76,11 @@ Files
    :alt: RPS files
 
    RPS files
+
+.. figure:: /images/benchmarks/latency_files.svg
+   :alt: Latency files
+
+   Latency files
 
 .. note::
     Synchronous file responses are not / only partially supported for Sanic and Quart
@@ -84,6 +101,11 @@ Path and query parameter handling
 
    RPS path and query parameters
 
+.. figure:: /images/benchmarks/latency_params.svg
+   :alt: Latency path and query parameters
+
+   Latency path and query parameters
+
 Dependency injection
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -95,6 +117,11 @@ Dependency injection
    :alt: RPS Dependency injection
 
    RPS Dependency injection
+
+.. figure:: /images/benchmarks/latency_dependency-injection.svg
+   :alt: Latency Dependency injection
+
+   Latency Dependency injection
 
 
 .. note::
@@ -108,6 +135,11 @@ Plaintext
    :alt: RPS Plaintext
 
    RPS Plaintext
+
+.. figure:: /images/benchmarks/latency_plaintext.svg
+   :alt: Latency Plaintext
+
+   Latency Plaintext
 
 Interpreting the results
 ------------------------
