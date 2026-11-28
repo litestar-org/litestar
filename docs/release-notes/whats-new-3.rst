@@ -433,7 +433,9 @@ Litestar's built-in middleware are being moved from the legacy ``AbstractMiddlew
 ``MiddlewareProtocol`` bases onto :class:`~litestar.middleware.ASGIMiddleware`.
 ``CORSMiddleware``, ``ResponseCacheMiddleware``, ``CSRFMiddleware``,
 ``CompressionMiddleware``, ``AllowedHostsMiddleware``, ``RateLimitMiddleware``,
-``PrometheusMiddleware`` and ``SessionMiddleware`` have made this move.
+``PrometheusMiddleware``, ``SessionMiddleware`` and
+:class:`~litestar.middleware.authentication.AbstractAuthenticationMiddleware` with its
+JWT and session subclasses have made this move.
 ``ResponseCacheMiddleware`` and ``CSRFMiddleware`` have also been moved into
 ``litestar.middleware._internal``, removing them from the public API; for CSRF this
 includes the ``litestar.middleware.csrf`` module and its ``generate_csrf_token`` /
@@ -470,6 +472,28 @@ returns a ``SessionMiddleware`` instance instead of a ``DefineMiddleware``, so
 configurations are still matched against the request path; the new
 ``exclude_path_pattern`` option matches against the handler's path (e.g.
 ``/user/{user_id:int}``) at startup.
+
+Custom authentication middleware built on ``AbstractAuthenticationMiddleware`` keeps
+implementing ``authenticate_request``, but is now registered as an instance instead of
+through ``DefineMiddleware``, and the ``app`` argument is gone from the constructor:
+
+.. code-block:: python
+
+    # before
+    middleware = DefineMiddleware(MyAuthenticationMiddleware, exclude="schema")
+
+    # after
+    middleware = MyAuthenticationMiddleware(exclude="schema")
+
+The ``middleware`` property of :class:`~litestar.security.jwt.JWTAuth`,
+:class:`~litestar.security.jwt.JWTCookieAuth`,
+:class:`~litestar.security.jwt.OAuth2PasswordBearerAuth` and
+:class:`~litestar.security.session_auth.SessionAuth` returns a middleware instance.
+``SessionAuth.on_app_init`` now installs the session middleware and the authentication
+middleware as two application-level middleware; ``SessionAuth.middleware`` returns the
+authentication middleware only. The ``exclude`` patterns of these configurations are
+still matched against the request path; the new ``exclude_path_pattern`` option matches
+against the handler's path (e.g. ``/user/{user_id:int}``) at startup.
 
 Code that composed one of the others directly into an ASGI stack must drop the ``app``
 argument, pass the settings as keyword arguments rather than a configuration object, and

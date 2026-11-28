@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from litestar.exceptions import NotAuthorizedException
 from litestar.middleware.authentication import (
@@ -8,6 +8,7 @@ from litestar.middleware.authentication import (
     AuthenticationResult,
 )
 from litestar.security.jwt.token import Token
+from litestar.utils.sync import ensure_async_callable
 
 __all__ = ("JWTAuthenticationMiddleware", "JWTCookieAuthenticationMiddleware")
 
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from litestar.connection import ASGIConnection
-    from litestar.types import ASGIApp, Method, Scopes
+    from litestar.types import Method, Scopes, SyncOrAsyncUnion
 
 
 class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
@@ -26,41 +27,27 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
     This class provides JWT authentication functionalities.
     """
 
-    __slots__ = (
-        "algorithm",
-        "auth_header",
-        "leeway",
-        "require_claims",
-        "retrieve_user_handler",
-        "revoked_token_handler",
-        "strict_audience",
-        "token_audience",
-        "token_cls",
-        "token_issuer",
-        "token_secret",
-        "verify_expiry",
-        "verify_not_before",
-    )
-
     def __init__(
         self,
+        *,
         algorithm: str,
-        app: ASGIApp,
         auth_header: str,
         exclude: str | list[str] | None,
         exclude_http_methods: Sequence[Method] | None,
         exclude_opt_key: str,
-        retrieve_user_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
-        scopes: Scopes,
+        retrieve_user_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], SyncOrAsyncUnion[Any]],
+        scopes: Scopes | None,
         token_secret: str,
         token_cls: type[Token] = Token,
+        exclude_path_pattern: str | list[str] | None = None,
         token_audience: Sequence[str] | None = None,
         token_issuer: Sequence[str] | None = None,
         require_claims: Sequence[str] | None = None,
         verify_expiry: bool = True,
         verify_not_before: bool = True,
         strict_audience: bool = False,
-        revoked_token_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]] | None = None,
+        revoked_token_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], SyncOrAsyncUnion[bool]]
+        | None = None,
         leeway: int = 0,
     ) -> None:
         """Check incoming requests for an encoded token in the auth header specified, and if present retrieve the user
@@ -68,9 +55,10 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
 
         Args:
             algorithm: JWT hashing algorithm to use.
-            app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
             auth_header: Request header key from which to retrieve the token. E.g. ``Authorization`` or ``X-Api-Key``.
-            exclude: A pattern or list of patterns to skip.
+            exclude: A pattern or list of patterns to skip, matched against the request path.
+            exclude_path_pattern: A pattern or list of patterns to skip, matched against the handler path at
+                startup.
             exclude_opt_key: An identifier to use on routes to disable authentication for a particular route.
             exclude_http_methods: A sequence of http methods that do not require authentication.
             retrieve_user_handler: A function that receives a :class:`Token <.security.jwt.Token>` and returns a user,
@@ -96,16 +84,25 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
             leeway: A number of potential seconds as a clock error for expired tokens.
         """
         super().__init__(
-            app=app,
             exclude=exclude,
+            exclude_path_pattern=exclude_path_pattern,
             exclude_from_auth_key=exclude_opt_key,
             exclude_http_methods=exclude_http_methods,
             scopes=scopes,
         )
         self.algorithm = algorithm
         self.auth_header = auth_header
-        self.retrieve_user_handler = retrieve_user_handler
-        self.revoked_token_handler = revoked_token_handler
+        self.retrieve_user_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]] = (
+            ensure_async_callable(retrieve_user_handler)
+        )
+        self.revoked_token_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[bool]] | None = (
+            cast(
+                "Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[bool]]",
+                ensure_async_callable(revoked_token_handler),
+            )
+            if revoked_token_handler
+            else None
+        )
         self.token_secret = token_secret
         self.token_cls = token_cls
         self.token_audience = token_audience
@@ -178,28 +175,28 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
 class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
     """Cookie based JWT authentication middleware."""
 
-    __slots__ = ("auth_cookie_key",)
-
     def __init__(
         self,
+        *,
         algorithm: str,
-        app: ASGIApp,
         auth_cookie_key: str,
         auth_header: str,
         exclude: str | list[str] | None,
         exclude_opt_key: str,
         exclude_http_methods: Sequence[Method] | None,
-        retrieve_user_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
-        scopes: Scopes,
+        retrieve_user_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], SyncOrAsyncUnion[Any]],
+        scopes: Scopes | None,
         token_secret: str,
         token_cls: type[Token] = Token,
+        exclude_path_pattern: str | list[str] | None = None,
         token_audience: Sequence[str] | None = None,
         token_issuer: Sequence[str] | None = None,
         require_claims: Sequence[str] | None = None,
         verify_expiry: bool = True,
         verify_not_before: bool = True,
         strict_audience: bool = False,
-        revoked_token_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]] | None = None,
+        revoked_token_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], SyncOrAsyncUnion[bool]]
+        | None = None,
         leeway: int = 0,
     ) -> None:
         """Check incoming requests for an encoded token in the auth header or cookie name specified, and if present
@@ -207,10 +204,11 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
 
         Args:
             algorithm: JWT hashing algorithm to use.
-            app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
             auth_cookie_key: Cookie name from which to retrieve the token. E.g. ``token`` or ``accessToken``.
             auth_header: Request header key from which to retrieve the token. E.g. ``Authorization`` or ``X-Api-Key``.
-            exclude: A pattern or list of patterns to skip.
+            exclude: A pattern or list of patterns to skip, matched against the request path.
+            exclude_path_pattern: A pattern or list of patterns to skip, matched against the handler path at
+                startup.
             exclude_opt_key: An identifier to use on routes to disable authentication for a particular route.
             exclude_http_methods: A sequence of http methods that do not require authentication.
             retrieve_user_handler: A function that receives a :class:`Token <.security.jwt.Token>` and returns a user,
@@ -237,9 +235,9 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         """
         super().__init__(
             algorithm=algorithm,
-            app=app,
             auth_header=auth_header,
             exclude=exclude,
+            exclude_path_pattern=exclude_path_pattern,
             exclude_http_methods=exclude_http_methods,
             exclude_opt_key=exclude_opt_key,
             retrieve_user_handler=retrieve_user_handler,
