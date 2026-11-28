@@ -61,7 +61,7 @@ def test_allows_customization_of_operation_id_creator() -> None:
             "get": {
                 "deprecated": False,
                 "operationId": "id_x",
-                "responses": {"200": {"description": "Request fulfilled, document follows", "headers": {}}},
+                "responses": {"200": {"description": "OK", "headers": {}}},
                 "summary": "Handler1",
             }
         },
@@ -69,7 +69,7 @@ def test_allows_customization_of_operation_id_creator() -> None:
             "get": {
                 "deprecated": False,
                 "operationId": "id_y",
-                "responses": {"200": {"description": "Request fulfilled, document follows", "headers": {}}},
+                "responses": {"200": {"description": "OK", "headers": {}}},
                 "summary": "Handler2",
             }
         },
