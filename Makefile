@@ -148,3 +148,15 @@ docs-linkcheck: 									## Run the link check on the docs
 .PHONY: docs-linkcheck-full
 docs-linkcheck-full: 									## Run the full link check on the docs
 	@uv run --isolated sphinx-build -b linkcheck ./docs ./docs/_build -D linkcheck_anchors=0
+
+# =============================================================================
+# Release
+# =============================================================================
+
+.PHONY: release-preview
+release-preview: 									## Preview a release (no writes). Usage: make release-preview BUMP=stable [BASE=v2.23.0]
+	@bash tools/release_preview.sh "$(or $(VERSION),$(BUMP),patch)" "$(BASE)"
+
+.PHONY: release-prepare
+release-prepare: 									## Prepare a release locally (branch+bump+changelog+commit, no push). Usage: make release-prepare BUMP=minor | VERSION=4.0.0b1
+	@bash tools/release_prepare.sh "$(or $(VERSION),$(BUMP),patch)"
