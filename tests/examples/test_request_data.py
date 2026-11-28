@@ -37,8 +37,10 @@ def test_request_data_3() -> None:
         response = client.post("/", json={"id": 1, "name": "John"})
         assert response.status_code == 201
         assert response.json() == {"id": 1, "name": "John"}
-        schema = client.get("/schema/openapi.json")
-        assert "Create a new user." in schema.json()["components"]["schemas"]["User"]["description"]
+        schema = client.get("/schema/openapi.json").json()
+        request_body_schema = schema["paths"]["/"]["post"]["requestBody"]["content"]["application/json"]["schema"]
+        assert request_body_schema["description"] == "Create a new user."
+        assert "description" not in schema["components"]["schemas"]["User"]
 
 
 def test_request_data_4() -> None:
