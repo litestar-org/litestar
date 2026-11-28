@@ -14,12 +14,15 @@ from _pytest.fixtures import FixtureRequest
 from pytest_mock import MockerFixture
 from time_machine import Traveller
 
+from litestar import Litestar, get
+from litestar.config.response_cache import ResponseCacheConfig
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.stores.file import FileStore
 from litestar.stores.memory import MemoryStore
 from litestar.stores.redis import RedisStore
 from litestar.stores.registry import StoreRegistry
 from litestar.stores.valkey import ValkeyStore
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
     from redis.asyncio import Redis
@@ -580,3 +583,178 @@ async def test_valkey_store_with_client_shutdown(valkey_service: None) -> None:
         for x in valkey_store._valkey.connection_pool._available_connections
         + list(valkey_store._valkey.connection_pool._in_use_connections)
     )
+
+
+async def test_memory_max_size_evicts_oldest() -> None:
+    store = MemoryStore(max_size=12)
+
+    await store.set("a", b"12345")
+    await store.set("b", b"12345")
+    await store.set("a", b"54321")
+    assert await store.get("a") == b"54321"
+    assert await store.get("b") == b"12345"
+
+    await store.set("c", "1")
+
+    assert await store.get("b") is None
+    assert await store.get("a") == b"54321"
+    assert await store.get("c") == b"1"
+
+
+async def test_memory_max_size_value_too_large() -> None:
+    store = MemoryStore(max_size=12)
+
+    await store.set("a", b"12345")
+    await store.set("b", b"12345")
+    await store.set("a", b"123456789012")
+
+    assert await store.get("a") is None
+    assert await store.get("b") == b"12345"
+
+
+@pytest.mark.parametrize("free", ["delete", "delete_all", "delete_expired", "get"])
+async def test_memory_max_size_freed_space_is_reusable(free: str, frozen_datetime: Traveller) -> None:
+    store = MemoryStore(max_size=12)
+    await store.set("a", b"12345", expires_in=1)
+    await store.set("b", b"12345", expires_in=1)
+    frozen_datetime.shift(2)
+
+    if free == "delete":
+        await store.delete("a")
+        await store.delete("b")
+    elif free == "delete_all":
+        await store.delete_all()
+    elif free == "delete_expired":
+        await store.delete_expired()
+    else:
+        assert await store.get("a") is None
+        assert await store.get("b") is None
+
+    await store.set("c", b"12345")
+    await store.set("d", b"12345")
+
+    assert await store.get("c") == b"12345"
+    assert await store.get("d") == b"12345"
+
+
+async def test_memory_max_entries_evicts_oldest() -> None:
+    store = MemoryStore(max_entries=2)
+
+    await store.set("a", b"1")
+    await store.set("b", b"2")
+    await store.set("a", b"3")
+    await store.set("c", b"4")
+
+    assert await store.get("b") is None
+    assert await store.get("a") == b"3"
+    assert await store.get("c") == b"4"
+
+
+async def test_memory_max_size_and_max_entries() -> None:
+    store = MemoryStore(max_size=12, max_entries=3)
+
+    for key in "abcd":
+        await store.set(key, b"1")
+    assert list(store._store) == ["b", "c", "d"]
+
+    await store.set("e", b"12345678")
+    assert list(store._store) == ["d", "e"]
+
+
+async def test_memory_max_size_get_and_renew(frozen_datetime: Traveller) -> None:
+    store = MemoryStore(max_size=12)
+    await store.set("a", b"12345", expires_in=10)
+    await store.set("b", b"12345", expires_in=10)
+
+    frozen_datetime.shift(5)
+    assert await store.get("a", renew_for=10) == b"12345"
+    assert list(store._store) == ["a", "b"]
+
+    frozen_datetime.shift(6)
+    assert await store.get("b") is None
+    await store.set("c", b"12345")
+
+    assert list(store._store) == ["a", "c"]
+
+
+def test_default_response_cache_store_is_bounded() -> None:
+    app = Litestar([])
+
+    response_cache_store = app.stores.get("response_cache")
+    other_store = app.stores.get("sessions")
+
+    assert isinstance(response_cache_store, MemoryStore)
+    assert response_cache_store._max_size == 100 * 1024 * 1024
+    assert response_cache_store._max_entries == 100_000
+    assert isinstance(other_store, MemoryStore)
+    assert other_store._max_size is None
+    assert other_store._max_entries is None
+
+
+def test_default_response_cache_store_follows_config_name() -> None:
+    app = Litestar([], response_cache_config=ResponseCacheConfig(store="my_cache"))
+
+    assert cast("MemoryStore", app.stores.get("my_cache"))._max_size == 100 * 1024 * 1024
+
+
+def test_registered_response_cache_store_is_kept(memory_store: MemoryStore) -> None:
+    assert Litestar([], stores={"response_cache": memory_store}).stores.get("response_cache") is memory_store
+
+    app = Litestar([])
+    app.stores.register("response_cache", memory_store)
+    assert app.stores.get("response_cache") is memory_store
+
+    registry = StoreRegistry()
+    app = Litestar([], stores=registry)
+    assert app.stores is registry
+    assert cast("MemoryStore", app.stores.get("response_cache"))._max_size is None
+
+
+def test_response_cache_does_not_grow_without_bound() -> None:
+    @get("/", cache=True, sync_to_thread=False)
+    def handler() -> str:
+        return "x" * 1000
+
+    with (
+        patch("litestar.app.DEFAULT_STORE_MAX_SIZE", 20_000),
+        create_test_client([handler]) as client,
+    ):
+        for i in range(100):
+            assert client.get(f"/?u={i}").status_code == 200
+
+        store = cast("MemoryStore", client.app.stores.get("response_cache"))
+
+    assert 0 < len(store._store) < 20
+    assert sum(len(key) + len(obj.data) for key, obj in store._store.items()) <= 20_000
+
+
+async def test_memory_negative_limit_stores_nothing() -> None:
+    store = MemoryStore(max_entries=-1)
+
+    await store.set("a", b"1")
+
+    assert await store.get("a") is None
+
+
+async def test_memory_max_size_counts_encoded_str_value() -> None:
+    store = MemoryStore(max_size=5)
+
+    await store.set("a", "éé")
+    assert await store.get("a") == "éé".encode()
+
+    await store.set("a", "ééé")
+    assert await store.get("a") is None
+
+
+async def test_memory_max_size_counts_non_ascii_key() -> None:
+    store = MemoryStore(max_size=10)
+
+    await store.set("ab", b"12345678")
+    assert await store.get("ab") == b"12345678"
+
+    await store.set("a😀", b"123")
+    assert await store.get("a😀") is None
+
+    await store.set("a😀", b"12")
+    assert await store.get("a😀") == b"12"
+    assert await store.get("ab") is None
